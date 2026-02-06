@@ -5,7 +5,7 @@
 
 #include "aggregator.grpc.pb.h"
 #include "hermeneutic/price_bands/price_bands_publisher.hpp"
-#include "services/common/grpc_helpers.hpp"
+#include "common/grpc_helpers.hpp"
 
 int main(int argc, char** argv) {
   std::string endpoint = "127.0.0.1:50051";

@@ -23,7 +23,7 @@ inline hermeneutic::common::AggregatedBookView ToDomain(
   return view;
 }
 
-inline void AttachAuth(grpc::ClientContext& context, const std::string& token) {
+inline void AttachAuth(::grpc::ClientContext& context, const std::string& token) {
   if (!token.empty()) {
     context.AddMetadata("authorization", "Bearer " + token);
   }

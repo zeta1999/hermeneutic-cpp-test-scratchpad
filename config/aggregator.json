@@ -1,0 +1,29 @@
+{
+  "symbol": "BTCUSDT",
+  "publish_interval_ms": 50,
+  "grpc": {
+    "listen_address": "0.0.0.0",
+    "port": 50051,
+    "auth_token": "agg-local-token"
+  },
+  "feeds": [
+    {
+      "name": "binance",
+      "url": "ws://127.0.0.1:9001/binance",
+      "auth_token": "binance-token",
+      "interval_ms": 150
+    },
+    {
+      "name": "coinbase",
+      "url": "ws://127.0.0.1:9002/coinbase",
+      "auth_token": "coinbase-token",
+      "interval_ms": 200
+    },
+    {
+      "name": "kraken",
+      "url": "ws://127.0.0.1:9003/kraken",
+      "auth_token": "kraken-token",
+      "interval_ms": 220
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+FROM debian:bookworm-slim AS build
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    cmake \
+    git \
+    pkg-config \
+    libssl-dev && rm -rf /var/lib/apt/lists/*
+WORKDIR /src
+COPY . .
+RUN cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
+    && cmake --build build --target aggregator_service
+
+FROM debian:bookworm-slim
+RUN useradd -m app
+WORKDIR /app
+COPY --from=build /src/build/services/aggregator_service/aggregator_service /usr/local/bin/aggregator_service
+COPY config/ config/
+COPY data/ data/
+USER app
+ENTRYPOINT ["/usr/local/bin/aggregator_service", "config/aggregator.docker.json"]

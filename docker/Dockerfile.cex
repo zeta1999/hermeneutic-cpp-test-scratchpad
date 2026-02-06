@@ -1,0 +1,20 @@
+FROM debian:bookworm-slim AS build
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    cmake \
+    git \
+    pkg-config \
+    libssl-dev \
+    && rm -rf /var/lib/apt/lists/*
+WORKDIR /src
+COPY . .
+RUN cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
+    && cmake --build build --target cex_type1_service
+
+FROM debian:bookworm-slim
+RUN useradd -m app
+WORKDIR /app
+COPY --from=build /src/build/services/cex_type1_service/cex_type1_service /usr/local/bin/cex_type1_service
+COPY data/ data/
+USER app
+ENTRYPOINT ["/usr/local/bin/cex_type1_service"]

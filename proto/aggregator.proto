@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package hermeneutic.grpc;
+
+message SubscribeRequest {
+  string symbol = 1;
+}
+
+message AggregatedQuote {
+  string price = 1;
+  string quantity = 2;
+}
+
+message AggregatedBook {
+  AggregatedQuote best_bid = 1;
+  AggregatedQuote best_ask = 2;
+  uint32 exchange_count = 3;
+  int64 timestamp_unix_millis = 4;
+}
+
+service AggregatorService {
+  rpc StreamBooks(SubscribeRequest) returns (stream AggregatedBook);
+}

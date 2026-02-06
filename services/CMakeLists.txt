@@ -1,0 +1,5 @@
+add_subdirectory(aggregator_service)
+add_subdirectory(bbo_service)
+add_subdirectory(volume_bands_service)
+add_subdirectory(price_bands_service)
+add_subdirectory(cex_type1_service)

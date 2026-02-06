@@ -1,0 +1,15 @@
+
+Decimal type
+initial work:
+write a Decimal style numerical type as a wrapper of uint128
+the whole trick is to represent number N as N * 10^18
+you might need stuff in abseil - or search for code bases with uint128 and large numbers div/mul
+make sure the precision is kept 
+
+fuzzying 
+
+grafana + influxdb? / postgres ? 
+
+sanitizers, options for building clang und gcc
+go lockless/waitfree
+

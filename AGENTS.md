@@ -1,0 +1,16 @@
+# Repository Guidelines
+
+## Project Structure & Module Organization
+Sources live under `src/<module>` for `cex_type1`, `lob`, `aggregator`, `bbo`, `volume_bands`, and `price_bands`, with mirrored headers in `include/<module>`. Service entrypoints (for example, `services/aggregator_service/`) should stay thin shims that wire configuration and call the matching library. Tests land in `tests/<module>/` and import common doctest helpers from `tests/support/`. Vendor code (spdlog, simdjson, POCO) belongs in `cmake/deps/` via `FetchContent` so every target consumes the same versions. Container assets stay in `docker/` (one Dockerfile per service) and the demo `compose.yaml` in the root orchestrates everything.
+
+## Build, Test, and Development Commands
+Configure once with `cmake -S . -B build -DCMAKE_BUILD_TYPE=RelWithDebInfo`, then rebuild incrementally via `cmake --build build --parallel`. Execute unit suites through `ctest --test-dir build --output-on-failure`; filter modules with `ctest -R aggregator`. Start three mock exchanges via `cex_type1_service <name> data/<file> <port> <token> <interval>`, bring up the aggregator with `./build/services/aggregator_service/aggregator_service config/aggregator.json`, then attach gRPC clients (`bbo_service|volume_bands_service|price_bands_service <host:port> <token> BTCUSDT`). Build container images through `cmake --build build --target docker-images`, then launch the full demonstration stack using `docker compose up --build` from the repository root.
+
+## Coding Style & Naming Conventions
+Use clang-format’s LLVM base with 4-space indentation and braces on new lines for types and namespaces. Classes/structs use PascalCase (`LimitOrderBook`), functions camelCase (`ingestEvent`), constants SCREAMING_SNAKE_CASE, and gRPC proto fields snake_case. Favor RAII smart pointers, wrap network IO in thin adapters, and rely on `spdlog` structured logging for Docker log scraping. Format before committing via `clang-format -i $(rg -l --iglob '*.[ch]pp')`, and spot concurrency bugs with `cmake --build build --target tidy`.
+
+## Testing Guidelines
+Every module ships with doctest suites named `test_<feature>.cpp`, tagging each case with the module (`TEST_CASE("aggregator/queue_fanout")`) for selective runs. Keep unit specs under `tests/<module>/` and move websocket/gRPC scenarios to `tests/integration/` so they can be skipped locally. Mock POCO clients in unit tests and keep deterministic fixtures seeded through `TestDataFactory`. Aim for 80% statement coverage on `lob` and `aggregator`, run `ctest -L fast` before pushing, and reserve the `integration` label for CI-only workflows.
+
+## Commit & Pull Request Guidelines
+History is empty, so seed it with Conventional Commits in the form `<type>: <summary>` such as `feat: add aggregator queue plumbing`; follow with wrapped body text plus `Refs #12` when tying to an issue. Pull requests should describe the user-facing impact, list touched services, and attach evidence that `ctest` and relevant Docker targets ran. Note interface changes to gRPC or websocket contracts, mention reviewers for networking-critical parts, and call out any new secrets/config knobs so ops can update compose files.

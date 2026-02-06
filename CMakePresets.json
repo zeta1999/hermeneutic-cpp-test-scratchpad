@@ -1,0 +1,31 @@
+{
+  "version": 4,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 21,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "relwithdebinfo",
+      "displayName": "RelWithDebInfo",
+      "description": "RelWithDebInfo configure with shared third-party deps",
+      "binaryDir": "build",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "relwithdebinfo-8jobs",
+      "displayName": "RelWithDebInfo build (8-way)",
+      "description": "Caps build parallelism at 8 threads to avoid oversubscription",
+      "configurePreset": "relwithdebinfo",
+      "jobs": 8,
+      "environment": {
+        "CMAKE_BUILD_PARALLEL_LEVEL": "8"
+      }
+    }
+  ]
+}

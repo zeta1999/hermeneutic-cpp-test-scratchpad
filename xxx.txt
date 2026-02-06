@@ -1,0 +1,6 @@
+
+ 1. cmake --build build --parallel to regenerate all targets with the patched gRPC header.
+  2. ctest --test-dir build --output-on-failure to ensure nothing else regressed.
+
+  1.66 -> 1.44
+  

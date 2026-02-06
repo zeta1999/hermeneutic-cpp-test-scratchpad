@@ -1,0 +1,55 @@
+version: "3.9"
+services:
+  cex-binance:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.cex
+    image: hermeneutic/cex
+    command: ["/usr/local/bin/cex_type1_service", "binance", "/app/data/binance.ndjson", "9001", "binance-token", "150"]
+  cex-coinbase:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.cex
+    image: hermeneutic/cex
+    command: ["/usr/local/bin/cex_type1_service", "coinbase", "/app/data/coinbase.ndjson", "9002", "coinbase-token", "200"]
+  cex-kraken:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.cex
+    image: hermeneutic/cex
+    command: ["/usr/local/bin/cex_type1_service", "kraken", "/app/data/kraken.ndjson", "9003", "kraken-token", "220"]
+  aggregator:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.aggregator
+    image: hermeneutic/aggregator
+    depends_on:
+      - cex-binance
+      - cex-coinbase
+      - cex-kraken
+    ports:
+      - "50051:50051"
+  bbo:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.bbo
+    image: hermeneutic/bbo
+    depends_on:
+      - aggregator
+    command: ["/usr/local/bin/bbo_service", "aggregator:50051", "agg-docker-token", "BTCUSDT"]
+  volume_bands:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.volume
+    image: hermeneutic/volume
+    depends_on:
+      - aggregator
+    command: ["/usr/local/bin/volume_bands_service", "aggregator:50051", "agg-docker-token", "BTCUSDT"]
+  price_bands:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.price
+    image: hermeneutic/price
+    depends_on:
+      - aggregator
+    command: ["/usr/local/bin/price_bands_service", "aggregator:50051", "agg-docker-token", "BTCUSDT"]

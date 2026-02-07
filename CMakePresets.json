@@ -27,6 +27,15 @@
       "environment": {
         "CMAKE_BUILD_PARALLEL_LEVEL": "8"
       }
+    },
+    {
+      "name": "relwithdebinfo-8jobs-quiet",
+      "displayName": "RelWithDebInfo build (8-way, quiet)",
+      "description": "Same as relwithdebinfo-8jobs but passes -s to make/ninja for terse output",
+      "inherits": "relwithdebinfo-8jobs",
+      "nativeToolOptions": [
+        "-s"
+      ]
     }
   ]
 }

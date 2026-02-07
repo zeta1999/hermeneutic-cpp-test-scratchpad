@@ -43,6 +43,17 @@ make: *** [all] Error 2
 wss
 => make sure we reconnect on error, and maybe skip sequence numbers
 => have a look at logs
+
 => build, how to remove the whole dep check each time by default ***
+  ==> time cmake --build --preset relwithdebinfo-8jobs --target aggregator
+Built target simdjson
+Built target spdlog
+Built target common
+Built target lob
+Built target aggregator
+cmake --build --preset relwithdebinfo-8jobs --target aggregator  0.11s user 0.05s system 103% cpu 0.163 total
+
 => decimal type is probably crap 
+
 => documented diffs with actual protocols (see docs/protocol_diffs/*.md)
+done

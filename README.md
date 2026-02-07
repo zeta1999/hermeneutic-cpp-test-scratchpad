@@ -24,13 +24,19 @@ This repository models the assignment brief with a CMake-driven C++ workspace. T
 
 ```bash
 cmake --preset relwithdebinfo
-cmake --build --preset relwithdebinfo-8jobs
+cmake --build --preset relwithdebinfo-8jobs       # verbose build
+# or: cmake --build --preset relwithdebinfo-8jobs-quiet   # hides "[xx%] Built target" noise
 ctest --test-dir build
 ```
 
 The build preset pins `CMAKE_BUILD_PARALLEL_LEVEL` to 8 so future `cmake --build`
 invocations avoid oversubscribing local CPUs; feel free to opt back into manual
 `--parallel` flags if you need a different level of concurrency.
+
+Third-party dependency tests (for example re2's `charclass_test` and similar)
+are disabled by default via `RE2_BUILD_TESTING=OFF` so `cmake --build` only
+produces the libraries our binaries need. If you really need to exercise those
+vendored test suites, reconfigure with `-DRE2_BUILD_TESTING=ON`.
 
 Executables land at `build/services/<name>/<name>`. Run three mock exchanges, then the aggregator, then the gRPC clients:
 

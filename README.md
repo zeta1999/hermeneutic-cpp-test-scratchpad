@@ -59,6 +59,19 @@ docker compose up --build
 
 Expose the aggregator gRPC endpoint on `localhost:50051` and watch client logs roll through the container output.
 
+## Mock CEX protocol
+
+The mock exchange services stream newline-delimited JSON events over WebSocket. Each event carries a
+`sequence` and one of the following `type` values:
+
+- `snapshot`: Initializes the book with `bids` and `asks` arrays (each element has `price` and `quantity`).
+- `new_order`: Adds a fresh order identified by `order_id`, including `side`, `price`, and `quantity`.
+- `cancel_order`: Removes a previously announced `order_id`.
+
+The client feed (`cex_type1::makeWebSocketFeed`) converts those protocol messages into order-book events
+that drive the aggregator's `LimitOrderBook`, so snapshot resets and per-order cancels behave like a real
+matching engine feed without materializing the entire NDJSON file in memory.
+
 ## Key design notes
 
 - **Precision** is handled via a fixed-point 128-bit `Decimal` so multiplying prices and volumes for band calculations is deterministic.

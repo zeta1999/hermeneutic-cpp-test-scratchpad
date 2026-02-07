@@ -11,8 +11,8 @@ namespace hermeneutic::aggregator {
 
 using common::AggregatedBookView;
 using common::AggregatedQuote;
+using common::BookEvent;
 using common::Decimal;
-using common::MarketUpdate;
 
 namespace {
 constexpr Decimal kZero = Decimal::fromRaw(0);
@@ -39,8 +39,8 @@ void AggregationEngine::stop() {
   }
 }
 
-void AggregationEngine::push(MarketUpdate update) {
-  queue_.push(std::move(update));
+void AggregationEngine::push(BookEvent event) {
+  queue_.push(std::move(event));
 }
 
 AggregationEngine::SubscriberId AggregationEngine::subscribe(Subscriber subscriber) {
@@ -61,7 +61,7 @@ common::AggregatedBookView AggregationEngine::latest() const {
 }
 
 void AggregationEngine::run() {
-  MarketUpdate update;
+  BookEvent update;
   while (running_.load()) {
     if (!queue_.wait_pop(update)) {
       break;

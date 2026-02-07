@@ -14,10 +14,11 @@
 #include <chrono>
 #include <csignal>
 #include <fstream>
+#include <memory>
+#include <mutex>
 #include <spdlog/spdlog.h>
 #include <string>
 #include <thread>
-#include <vector>
 
 namespace {
 std::atomic<bool> g_running{true};
@@ -26,11 +27,44 @@ void handleSignal(int) {
   g_running = false;
 }
 
+class PayloadCycler {
+ public:
+  explicit PayloadCycler(std::string path) : path_(std::move(path)) { reopen(); }
+
+  std::string next() {
+    std::lock_guard<std::mutex> lock(mutex_);
+    for (;;) {
+      std::string line;
+      if (!std::getline(stream_, line)) {
+        reopen();
+        continue;
+      }
+      if (!line.empty()) {
+        return line;
+      }
+    }
+  }
+
+ private:
+  void reopen() {
+    stream_.close();
+    stream_.clear();
+    stream_.open(path_);
+    if (!stream_.is_open()) {
+      throw std::runtime_error("could not open feed file: " + path_);
+    }
+  }
+
+  std::string path_;
+  std::ifstream stream_;
+  std::mutex mutex_;
+};
+
 class FeedRequestHandler : public Poco::Net::HTTPRequestHandler {
  public:
   FeedRequestHandler(std::string exchange,
                      std::string token,
-                     std::vector<std::string> payloads,
+                     std::shared_ptr<PayloadCycler> payloads,
                      std::chrono::milliseconds interval)
       : exchange_(std::move(exchange)),
         token_(std::move(token)),
@@ -51,13 +85,9 @@ class FeedRequestHandler : public Poco::Net::HTTPRequestHandler {
       ws.setReceiveTimeout(Poco::Timespan(5, 0));
       spdlog::info("{} client connected", exchange_);
       while (g_running.load()) {
-        for (const auto& payload : payloads_) {
-          ws.sendFrame(payload.data(), static_cast<int>(payload.size()), Poco::Net::WebSocket::FRAME_TEXT);
-          std::this_thread::sleep_for(interval_);
-          if (!g_running.load()) {
-            break;
-          }
-        }
+        auto payload = payloads_->next();
+        ws.sendFrame(payload.data(), static_cast<int>(payload.size()), Poco::Net::WebSocket::FRAME_TEXT);
+        std::this_thread::sleep_for(interval_);
       }
     } catch (const std::exception& ex) {
       spdlog::warn("{} WebSocket error: {}", exchange_, ex.what());
@@ -67,7 +97,7 @@ class FeedRequestHandler : public Poco::Net::HTTPRequestHandler {
  private:
   std::string exchange_;
   std::string token_;
-  std::vector<std::string> payloads_;
+  std::shared_ptr<PayloadCycler> payloads_;
   std::chrono::milliseconds interval_;
 };
 
@@ -75,7 +105,7 @@ class FeedRequestFactory : public Poco::Net::HTTPRequestHandlerFactory {
  public:
   FeedRequestFactory(std::string exchange,
                      std::string token,
-                     std::vector<std::string> payloads,
+                     std::shared_ptr<PayloadCycler> payloads,
                      std::chrono::milliseconds interval)
       : exchange_(std::move(exchange)),
         token_(std::move(token)),
@@ -93,28 +123,9 @@ class FeedRequestFactory : public Poco::Net::HTTPRequestHandlerFactory {
  private:
   std::string exchange_;
   std::string token_;
-  std::vector<std::string> payloads_;
+  std::shared_ptr<PayloadCycler> payloads_;
   std::chrono::milliseconds interval_;
 };
-
-// TODO: could be a coroutine for instance or some iterator ~s
-std::vector<std::string> loadPayloads(const std::string& path) {
-  std::ifstream stream(path);
-  if (!stream.is_open()) {
-    throw std::runtime_error("could not open feed file: " + path);
-  }
-  std::vector<std::string> payloads;
-  std::string line;
-  while (std::getline(stream, line)) {
-    if (!line.empty()) {
-      payloads.push_back(line);
-    }
-  }
-  if (payloads.empty()) {
-    throw std::runtime_error("feed file has no payloads: " + path);
-  }
-  return payloads;
-}
 
 }  // namespace
 
@@ -134,7 +145,7 @@ int main(int argc, char** argv) {
   }
 
   try {
-    auto payloads = loadPayloads(file);
+    auto payloads = std::make_shared<PayloadCycler>(file);
     Poco::Net::ServerSocket socket(port);
     Poco::Net::HTTPServerParams::Ptr params = new Poco::Net::HTTPServerParams;
     params->setMaxQueued(10);

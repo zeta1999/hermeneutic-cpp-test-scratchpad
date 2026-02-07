@@ -4,42 +4,113 @@
 
 namespace hermeneutic::lob {
 
+using common::BookEvent;
+using common::BookEventKind;
 using common::Decimal;
-using common::MarketUpdate;
+using common::MarketOrder;
 using common::PriceLevel;
 
 namespace {
 const Decimal kZero = Decimal::fromRaw(0);
-}
 
-void LimitOrderBook::apply(const MarketUpdate& update) {
-  if (!exchange_name_.empty() && exchange_name_ != update.exchange) {
-    throw std::invalid_argument("update exchange mismatch");
-  }
-  if (exchange_name_.empty()) {
-    exchange_name_ = update.exchange;
-  }
-
-  if (update.side == common::Side::Bid) {
-    auto iterator = bids_.find(update.price);
-    if (update.quantity <= kZero) {
-      if (iterator != bids_.end()) {
-        bids_.erase(iterator);
+void applyDelta(common::Side side,
+                common::Decimal price,
+                common::Decimal delta,
+                std::map<common::Decimal, common::Decimal, std::greater<common::Decimal>>& bids,
+                std::map<common::Decimal, common::Decimal, std::less<common::Decimal>>& asks) {
+  if (side == common::Side::Bid) {
+    auto it = bids.find(price);
+    Decimal next = delta;
+    if (it != bids.end()) {
+      next = it->second + delta;
+    }
+    if (next <= kZero) {
+      if (it != bids.end()) {
+        bids.erase(it);
       }
       return;
     }
-    bids_[update.price] = update.quantity;
+    bids[price] = next;
     return;
   }
 
-  auto iterator = asks_.find(update.price);
-  if (update.quantity <= kZero) {
-    if (iterator != asks_.end()) {
-      asks_.erase(iterator);
+  auto it = asks.find(price);
+  Decimal next = delta;
+  if (it != asks.end()) {
+    next = it->second + delta;
+  }
+  if (next <= kZero) {
+    if (it != asks.end()) {
+      asks.erase(it);
     }
     return;
   }
-  asks_[update.price] = update.quantity;
+  asks[price] = next;
+}
+
+}  // namespace
+
+void LimitOrderBook::apply(const BookEvent& event) {
+  if (!exchange_name_.empty() && exchange_name_ != event.exchange) {
+    throw std::invalid_argument("update exchange mismatch");
+  }
+  if (exchange_name_.empty()) {
+    exchange_name_ = event.exchange;
+  }
+
+  if (event.sequence != 0 && event.sequence <= last_sequence_) {
+    return;
+  }
+  if (event.sequence != 0) {
+    last_sequence_ = event.sequence;
+  }
+
+  switch (event.kind) {
+    case BookEventKind::Snapshot: {
+      bids_.clear();
+      asks_.clear();
+      orders_.clear();
+      for (const auto& level : event.snapshot.bids) {
+        if (level.quantity > kZero) {
+          bids_[level.price] = level.quantity;
+        }
+      }
+      for (const auto& level : event.snapshot.asks) {
+        if (level.quantity > kZero) {
+          asks_[level.price] = level.quantity;
+        }
+      }
+      break;
+    }
+    case BookEventKind::NewOrder: {
+      const auto& order = event.order;
+      if (order.order_id.empty()) {
+        break;
+      }
+      auto existing = orders_.find(order.order_id);
+      if (existing != orders_.end()) {
+        auto removal = common::Decimal::fromRaw(0) - existing->second.quantity;
+        applyDelta(existing->second.side, existing->second.price, removal, bids_, asks_);
+        orders_.erase(existing);
+      }
+      orders_.emplace(order.order_id, order);
+      applyDelta(order.side, order.price, order.quantity, bids_, asks_);
+      break;
+    }
+    case BookEventKind::CancelOrder: {
+      if (event.order.order_id.empty()) {
+        break;
+      }
+      auto existing = orders_.find(event.order.order_id);
+      if (existing == orders_.end()) {
+        break;
+      }
+      auto removal = common::Decimal::fromRaw(0) - existing->second.quantity;
+      applyDelta(existing->second.side, existing->second.price, removal, bids_, asks_);
+      orders_.erase(existing);
+      break;
+    }
+  }
 }
 
 common::PriceLevel LimitOrderBook::bestBid() const {

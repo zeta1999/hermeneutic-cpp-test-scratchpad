@@ -165,7 +165,7 @@ int main(int argc, char** argv) {
           .interval = feed_config.interval,
       };
       auto feed = hermeneutic::cex_type1::makeWebSocketFeed(
-          options, [&engine](hermeneutic::common::MarketUpdate update) { engine.push(std::move(update)); });
+          options, [&engine](hermeneutic::common::BookEvent event) { engine.push(std::move(event)); });
       feeds.push_back(std::move(feed));
     }
 

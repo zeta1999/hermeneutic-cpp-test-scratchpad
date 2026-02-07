@@ -18,7 +18,7 @@ struct FeedOptions {
 
 class ExchangeFeed {
  public:
-  using Callback = std::function<void(common::MarketUpdate)>;
+  using Callback = std::function<void(common::BookEvent)>;
   virtual ~ExchangeFeed() = default;
 
   virtual void start() = 0;

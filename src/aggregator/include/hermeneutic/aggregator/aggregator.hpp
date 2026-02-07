@@ -24,7 +24,7 @@ class AggregationEngine {
   void start();
   void stop();
 
-  void push(common::MarketUpdate update);
+  void push(common::BookEvent event);
   SubscriberId subscribe(Subscriber subscriber);
   void unsubscribe(SubscriberId id);
 
@@ -39,7 +39,7 @@ class AggregationEngine {
   std::unordered_map<std::string, lob::LimitOrderBook> books_;
   common::AggregatedBookView view_{};
 
-  common::ConcurrentQueue<common::MarketUpdate> queue_;
+  common::ConcurrentQueue<common::BookEvent> queue_;
   std::thread worker_;
   std::atomic<bool> running_{false};
 

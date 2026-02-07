@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <cstddef>
+#include <cstdint>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -25,17 +26,27 @@ struct PriceLevel {
   Decimal quantity;
 };
 
-struct MarketUpdate {
-  std::string exchange;
-  Side side{Side::Bid};
-  Decimal price{};
-  Decimal quantity{};
-  std::chrono::system_clock::time_point timestamp{};
-};
-
 struct OrderBookSnapshot {
   std::vector<PriceLevel> bids;
   std::vector<PriceLevel> asks;
+};
+
+enum class BookEventKind { NewOrder, CancelOrder, Snapshot };
+
+struct MarketOrder {
+  std::string order_id;
+  Side side{Side::Bid};
+  Decimal price{};
+  Decimal quantity{};
+};
+
+struct BookEvent {
+  std::string exchange;
+  BookEventKind kind{BookEventKind::NewOrder};
+  std::uint64_t sequence{0};
+  MarketOrder order;
+  OrderBookSnapshot snapshot;
+  std::chrono::system_clock::time_point timestamp{};
 };
 
 struct AggregatedQuote {

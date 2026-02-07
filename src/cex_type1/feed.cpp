@@ -17,6 +17,25 @@
 
 namespace hermeneutic::cex_type1 {
 
+namespace {
+
+common::Side parseSide(std::string_view text) {
+  return text == "ask" ? common::Side::Ask : common::Side::Bid;
+}
+
+common::Decimal parseDecimal(const simdjson::dom::element& element) {
+  auto str = element.get_string();
+  if (str.error() == simdjson::SUCCESS) {
+    return common::Decimal::fromString(std::string(str.value()));
+  }
+  if (auto number_value = element.get_double(); number_value.error() == simdjson::SUCCESS) {
+    return common::Decimal::fromDouble(number_value.value());
+  }
+  throw std::runtime_error("invalid decimal payload");
+}
+
+}  // namespace
+
 class WebSocketExchangeFeed : public ExchangeFeed {
  public:
   WebSocketExchangeFeed(FeedOptions options, Callback callback)
@@ -91,14 +110,62 @@ class WebSocketExchangeFeed : public ExchangeFeed {
       try {
         auto doc = parser.parse(payload.data(), payload.size());
         auto obj = doc.get_object();
-        auto side = std::string(obj["side"].get_string().value());
-        common::MarketUpdate update;
-        update.exchange = options_.exchange;
-        update.side = (side == "ask") ? common::Side::Ask : common::Side::Bid;
-        update.price = common::Decimal::fromString(std::string(obj["price"].get_string().value()));
-        update.quantity = common::Decimal::fromString(std::string(obj["quantity"].get_string().value()));
-        update.timestamp = std::chrono::system_clock::now();
-        callback_(std::move(update));
+        auto type = obj["type"].get_string();
+        if (type.error() != simdjson::SUCCESS) {
+          continue;
+        }
+        common::BookEvent event;
+        event.exchange = options_.exchange;
+        event.timestamp = std::chrono::system_clock::now();
+        if (auto seq = obj["sequence"].get_uint64(); seq.error() == simdjson::SUCCESS) {
+          event.sequence = seq.value();
+        }
+        auto type_string = type.value();
+        if (type_string == "snapshot") {
+          event.kind = common::BookEventKind::Snapshot;
+          if (auto bids = obj["bids"].get_array(); bids.error() == simdjson::SUCCESS) {
+            for (auto level_element : bids.value()) {
+              auto level_obj = level_element.get_object();
+              common::PriceLevel level;
+              level.price = parseDecimal(level_obj["price"]);
+              level.quantity = parseDecimal(level_obj["quantity"]);
+              event.snapshot.bids.push_back(std::move(level));
+            }
+          }
+          if (auto asks = obj["asks"].get_array(); asks.error() == simdjson::SUCCESS) {
+            for (auto level_element : asks.value()) {
+              auto level_obj = level_element.get_object();
+              common::PriceLevel level;
+              level.price = parseDecimal(level_obj["price"]);
+              level.quantity = parseDecimal(level_obj["quantity"]);
+              event.snapshot.asks.push_back(std::move(level));
+            }
+          }
+          callback_(std::move(event));
+        } else if (type_string == "new_order") {
+          event.kind = common::BookEventKind::NewOrder;
+          auto order_id = obj["order_id"].get_string();
+          if (order_id.error() != simdjson::SUCCESS) {
+            continue;
+          }
+          event.order.order_id = std::string(order_id.value());
+          auto side_value = obj["side"].get_string();
+          if (side_value.error() != simdjson::SUCCESS) {
+            continue;
+          }
+          event.order.side = parseSide(side_value.value());
+          event.order.price = parseDecimal(obj["price"]);
+          event.order.quantity = parseDecimal(obj["quantity"]);
+          callback_(std::move(event));
+        } else if (type_string == "cancel_order") {
+          event.kind = common::BookEventKind::CancelOrder;
+          auto order_id = obj["order_id"].get_string();
+          if (order_id.error() != simdjson::SUCCESS) {
+            continue;
+          }
+          event.order.order_id = std::string(order_id.value());
+          callback_(std::move(event));
+        }
       } catch (const std::exception& ex) {
         spdlog::warn("Feed {} parse error: {}", options_.exchange, ex.what());
       }

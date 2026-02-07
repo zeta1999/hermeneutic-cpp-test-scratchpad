@@ -75,7 +75,8 @@ TEST_CASE("cex_type1/websocket_loopback feed emits updates") {
   using namespace std::chrono_literals;
   const std::string exchange = "loop";
   const std::string token = "unit-token";
-  const std::string payload = R"({"side":"bid","price":"101.25","quantity":"0.5"})";
+  const std::string payload =
+      R"({"type":"new_order","sequence":1,"order_id":"ord-1","side":"bid","price":"101.25","quantity":"0.5"})";
   std::signal(SIGPIPE, SIG_IGN);
 
   try {
@@ -99,14 +100,14 @@ TEST_CASE("cex_type1/websocket_loopback feed emits updates") {
     std::mutex mutex;
     std::condition_variable cv;
     bool received = false;
-    hermeneutic::common::MarketUpdate captured;
+    hermeneutic::common::BookEvent captured;
 
     auto feed = hermeneutic::cex_type1::makeWebSocketFeed(
         {.exchange = exchange,
          .url = "ws://127.0.0.1:" + std::to_string(port) + "/" + exchange,
          .auth_token = token,
          .interval = 10ms},
-        [&](hermeneutic::common::MarketUpdate update) {
+        [&](hermeneutic::common::BookEvent update) {
           std::lock_guard<std::mutex> lock(mutex);
           captured = std::move(update);
           received = true;
@@ -122,9 +123,10 @@ TEST_CASE("cex_type1/websocket_loopback feed emits updates") {
     server.stop();
 
     CHECK(captured.exchange == exchange);
-    CHECK(captured.side == hermeneutic::common::Side::Bid);
-    CHECK(captured.price == hermeneutic::common::Decimal::fromString("101.25"));
-    CHECK(captured.quantity == hermeneutic::common::Decimal::fromString("0.5"));
+    CHECK(captured.kind == hermeneutic::common::BookEventKind::NewOrder);
+    CHECK(captured.order.side == hermeneutic::common::Side::Bid);
+    CHECK(captured.order.price == hermeneutic::common::Decimal::fromString("101.25"));
+    CHECK(captured.order.quantity == hermeneutic::common::Decimal::fromString("0.5"));
   } catch (const Poco::Exception& ex) {
     std::cerr << "Poco exception: " << ex.displayText() << std::endl;
     CHECK(false);

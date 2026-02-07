@@ -1,28 +1,44 @@
 #include <chrono>
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include <doctest/doctest.h>
+
+#include <cstdint>
 #include <thread>
 
 #include "hermeneutic/aggregator/aggregator.hpp"
 #include "hermeneutic/common/events.hpp"
 
+using hermeneutic::common::BookEvent;
+using hermeneutic::common::BookEventKind;
 using hermeneutic::common::Decimal;
-using hermeneutic::common::MarketUpdate;
 using hermeneutic::common::Side;
+
+namespace {
+
+BookEvent makeNewOrder(std::string exchange,
+                       std::string id,
+                       Side side,
+                       std::string price,
+                       std::string quantity,
+                       std::uint64_t sequence) {
+  BookEvent event;
+  event.exchange = std::move(exchange);
+  event.kind = BookEventKind::NewOrder;
+  event.sequence = sequence;
+  event.order.order_id = std::move(id);
+  event.order.side = side;
+  event.order.price = Decimal::fromString(price);
+  event.order.quantity = Decimal::fromString(quantity);
+  return event;
+}
+
+}  // namespace
 
 TEST_CASE("aggregator consolidates best bid and ask") {
   hermeneutic::aggregator::AggregationEngine engine;
   engine.start();
-  MarketUpdate binance{.exchange = "binance",
-                       .side = Side::Bid,
-                       .price = Decimal::fromString("100.00"),
-                       .quantity = Decimal::fromInteger(1)};
-  MarketUpdate coinbase{.exchange = "coinbase",
-                        .side = Side::Bid,
-                        .price = Decimal::fromString("101.00"),
-                        .quantity = Decimal::fromInteger(2)};
-  engine.push(binance);
-  engine.push(coinbase);
+  engine.push(makeNewOrder("binance", "b-1", Side::Bid, "100.00", "1", 1));
+  engine.push(makeNewOrder("coinbase", "c-1", Side::Bid, "101.00", "2", 2));
   std::this_thread::sleep_for(std::chrono::milliseconds(10));
   auto view = engine.latest();
   CHECK(view.best_bid.price.toString(2) == "101.00");

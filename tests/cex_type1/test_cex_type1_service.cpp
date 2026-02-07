@@ -54,7 +54,7 @@ TEST_CASE("cex_type1_service/executable streams payloads") {
   auto temp_file = std::filesystem::temp_directory_path() / "cex_type1_service_test.ndjson";
   {
     std::ofstream out(temp_file);
-    out << "{\"side\":\"bid\",\"price\":\"100.25\",\"quantity\":\"1.5\"}" << std::endl;
+    out << "{\"type\":\"new_order\",\"sequence\":1,\"order_id\":\"svc-order\",\"side\":\"bid\",\"price\":\"100.25\",\"quantity\":\"1.5\"}" << std::endl;
   }
 
   Poco::UInt16 port = 0;
@@ -105,14 +105,14 @@ TEST_CASE("cex_type1_service/executable streams payloads") {
   std::mutex mutex;
   std::condition_variable cv;
   bool received = false;
-  hermeneutic::common::MarketUpdate captured;
+  hermeneutic::common::BookEvent captured;
 
   auto feed = hermeneutic::cex_type1::makeWebSocketFeed(
       {.exchange = exchange,
        .url = "ws://127.0.0.1:" + std::to_string(port) + "/" + exchange,
        .auth_token = token,
        .interval = 20ms},
-      [&](hermeneutic::common::MarketUpdate update) {
+      [&](hermeneutic::common::BookEvent update) {
         std::lock_guard<std::mutex> lock(mutex);
         captured = std::move(update);
         received = true;
@@ -134,7 +134,8 @@ TEST_CASE("cex_type1_service/executable streams payloads") {
   cleanup();
 
   CHECK(captured.exchange == exchange);
-  CHECK(captured.side == hermeneutic::common::Side::Bid);
-  CHECK(captured.price == hermeneutic::common::Decimal::fromString("100.25"));
-  CHECK(captured.quantity == hermeneutic::common::Decimal::fromString("1.5"));
+  CHECK(captured.kind == hermeneutic::common::BookEventKind::NewOrder);
+  CHECK(captured.order.side == hermeneutic::common::Side::Bid);
+  CHECK(captured.order.price == hermeneutic::common::Decimal::fromString("100.25"));
+  CHECK(captured.order.quantity == hermeneutic::common::Decimal::fromString("1.5"));
 }

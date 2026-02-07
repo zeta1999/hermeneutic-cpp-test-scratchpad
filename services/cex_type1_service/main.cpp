@@ -12,7 +12,10 @@
 
 #include <atomic>
 #include <chrono>
+#include <cctype>
 #include <csignal>
+#include <cstdint>
+#include <cstdlib>
 #include <fstream>
 #include <memory>
 #include <mutex>
@@ -29,7 +32,10 @@ void handleSignal(int) {
 
 class PayloadCycler {
  public:
-  explicit PayloadCycler(std::string path) : path_(std::move(path)) { reopen(); }
+  PayloadCycler(std::string path, std::uint64_t skip_until)
+      : path_(std::move(path)), skip_until_(skip_until), past_threshold_(skip_until == 0) {
+    reopen();
+  }
 
   std::string next() {
     std::lock_guard<std::mutex> lock(mutex_);
@@ -39,9 +45,16 @@ class PayloadCycler {
         reopen();
         continue;
       }
-      if (!line.empty()) {
-        return line;
+      if (line.empty()) {
+        continue;
       }
+      if (!past_threshold_) {
+        if (!sequenceAllows(line)) {
+          continue;
+        }
+        past_threshold_ = true;
+      }
+      return line;
     }
   }
 
@@ -55,8 +68,41 @@ class PayloadCycler {
     }
   }
 
+  bool sequenceAllows(const std::string& line) const {
+    if (skip_until_ == 0) {
+      return true;
+    }
+    auto sequence = extractSequence(line);
+    return sequence >= skip_until_;
+  }
+
+  std::uint64_t extractSequence(const std::string& line) const {
+    auto pos = line.find("\"sequence\"");
+    if (pos == std::string::npos) {
+      return 0;
+    }
+    pos = line.find(':', pos);
+    if (pos == std::string::npos) {
+      return 0;
+    }
+    ++pos;
+    while (pos < line.size() && std::isspace(static_cast<unsigned char>(line[pos]))) {
+      ++pos;
+    }
+    std::size_t start = pos;
+    while (pos < line.size() && std::isdigit(static_cast<unsigned char>(line[pos]))) {
+      ++pos;
+    }
+    if (start == pos) {
+      return 0;
+    }
+    return std::strtoull(line.c_str() + start, nullptr, 10);
+  }
+
   std::string path_;
   std::ifstream stream_;
+  std::uint64_t skip_until_;
+  bool past_threshold_;
   std::mutex mutex_;
 };
 
@@ -131,7 +177,8 @@ class FeedRequestFactory : public Poco::Net::HTTPRequestHandlerFactory {
 
 int main(int argc, char** argv) {
   if (argc < 5) {
-    spdlog::error("Usage: cex_type1_service <exchange> <file> <port> <token> [interval_ms]");
+    spdlog::error(
+        "Usage: cex_type1_service <exchange> <file> <port> <token> [interval_ms] [start_sequence]");
     return 1;
   }
 
@@ -144,8 +191,13 @@ int main(int argc, char** argv) {
     interval_ms = std::stoi(argv[5]);
   }
 
+  std::uint64_t start_sequence = 0;
+  if (argc > 6) {
+    start_sequence = std::strtoull(argv[6], nullptr, 10);
+  }
+
   try {
-    auto payloads = std::make_shared<PayloadCycler>(file);
+    auto payloads = std::make_shared<PayloadCycler>(file, start_sequence);
     Poco::Net::ServerSocket socket(port);
     Poco::Net::HTTPServerParams::Ptr params = new Poco::Net::HTTPServerParams;
     params->setMaxQueued(10);

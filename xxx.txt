@@ -42,6 +42,9 @@ make: *** [all] Error 2
 
 wss
 => make sure we reconnect on error, and maybe skip sequence numbers
+ still, while loop with wait or ... condition variables etc. ??
+ [CODE REVIEW lol]
+
 => have a look at logs
 
 => build, how to remove the whole dep check each time by default ***
@@ -57,3 +60,4 @@ cmake --build --preset relwithdebinfo-8jobs --target aggregator  0.11s user 0.05
 
 => documented diffs with actual protocols (see docs/protocol_diffs/*.md)
 done
+

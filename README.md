@@ -52,6 +52,9 @@ Executables land at `build/services/<name>/<name>`. Run three mock exchanges, th
 
 - WebSocket clients attach a `Bearer <token>` header, and the mock CEX server validates it before streaming NDJSON lines.
 - The aggregator gRPC server validates the same style of `Authorization` metadata before emitting server-streamed `AggregatedBook` updates.
+- `cex_type1_service` accepts optional `[start_sequence]` (after `[interval_ms]`) to skip replaying any NDJSON
+  events whose `sequence` value is below that threshold, useful when you want long-lived servers to fast-forward
+  near the end of a capture file.
 
 ## Docker + demo stack
 

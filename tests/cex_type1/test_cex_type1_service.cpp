@@ -3,6 +3,7 @@
 
 #include <Poco/Net/ServerSocket.h>
 #include <Poco/Net/SocketAddress.h>
+#include <Poco/Net/StreamSocket.h>
 #include <Poco/Process.h>
 
 #include <chrono>
@@ -54,7 +55,8 @@ TEST_CASE("cex_type1_service/executable streams payloads") {
   auto temp_file = std::filesystem::temp_directory_path() / "cex_type1_service_test.ndjson";
   {
     std::ofstream out(temp_file);
-    out << "{\"type\":\"new_order\",\"sequence\":1,\"order_id\":101,\"side\":\"bid\",\"price\":\"100.25\",\"quantity\":\"1.5\"}" << std::endl;
+    out << "{\"type\":\"new_order\",\"sequence\":1,\"order_id\":101,\"side\":\"bid\",\"price\":\"90.25\",\"quantity\":\"1.5\"}" << std::endl;
+    out << "{\"type\":\"new_order\",\"sequence\":2,\"order_id\":102,\"side\":\"bid\",\"price\":\"101.50\",\"quantity\":\"0.4\"}" << std::endl;
   }
 
   Poco::UInt16 port = 0;
@@ -68,13 +70,14 @@ TEST_CASE("cex_type1_service/executable streams payloads") {
   }
 
   const std::string exchange = "svc-test";
-  const std::string token = "svc-token";
-  std::vector<std::string> args = {
+const std::string token = "svc-token";
+std::vector<std::string> args = {
       exchange,
       temp_file.string(),
       std::to_string(port),
       token,
       "10",
+      "2",
   };
 
   std::unique_ptr<Poco::ProcessHandle> handle;
@@ -104,8 +107,28 @@ TEST_CASE("cex_type1_service/executable streams payloads") {
 
   std::mutex mutex;
   std::condition_variable cv;
-  bool received = false;
-  hermeneutic::common::BookEvent captured;
+  std::vector<hermeneutic::common::BookEvent> received_events;
+
+  auto waitForServer = [&](int attempts) {
+    for (int i = 0; i < attempts; ++i) {
+      try {
+        Poco::Net::StreamSocket probe;
+        probe.connect(Poco::Net::SocketAddress("127.0.0.1", port));
+        probe.close();
+        return true;
+      } catch (...) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(40));
+      }
+    }
+    return false;
+  };
+
+  if (!waitForServer(50)) {
+    cleanup();
+    std::cerr << "cex_type1_service did not accept connections in time" << std::endl;
+    CHECK(false);
+    return;
+  }
 
   auto feed = hermeneutic::cex_type1::makeWebSocketFeed(
       {.exchange = exchange,
@@ -114,18 +137,23 @@ TEST_CASE("cex_type1_service/executable streams payloads") {
        .interval = 20ms},
       [&](hermeneutic::common::BookEvent update) {
         std::lock_guard<std::mutex> lock(mutex);
-        captured = std::move(update);
-        received = true;
+        received_events.push_back(std::move(update));
         cv.notify_one();
       });
+
+  auto has_target = [&]() {
+    return std::any_of(received_events.begin(), received_events.end(), [](const auto& evt) {
+      return evt.sequence >= 2;
+    });
+  };
 
   feed->start();
   {
     std::unique_lock<std::mutex> lock(mutex);
-    if (!cv.wait_for(lock, 3s, [&] { return received; })) {
+    if (!cv.wait_for(lock, 3s, [&] { return has_target(); })) {
       feed->stop();
       cleanup();
-      std::cerr << "cex_type1_service test did not receive update" << std::endl;
+      std::cerr << "cex_type1_service test did not receive sequence >= 2" << std::endl;
       CHECK(false);
       return;
     }
@@ -133,9 +161,18 @@ TEST_CASE("cex_type1_service/executable streams payloads") {
   feed->stop();
   cleanup();
 
-  CHECK(captured.exchange == exchange);
-  CHECK(captured.kind == hermeneutic::common::BookEventKind::NewOrder);
-  CHECK(captured.order.side == hermeneutic::common::Side::Bid);
-  CHECK(captured.order.price == hermeneutic::common::Decimal::fromString("100.25"));
-  CHECK(captured.order.quantity == hermeneutic::common::Decimal::fromString("1.5"));
+  auto target = std::find_if(received_events.begin(), received_events.end(), [](const auto& evt) {
+    return evt.sequence >= 2;
+  });
+  if (target == received_events.end()) {
+    CHECK(false);
+    return;
+  }
+  CHECK(target->exchange == exchange);
+  CHECK(target->kind == hermeneutic::common::BookEventKind::NewOrder);
+  CHECK(target->sequence == 2);
+  CHECK(target->order.order_id == 102);
+  CHECK(target->order.side == hermeneutic::common::Side::Bid);
+  CHECK(target->order.price == hermeneutic::common::Decimal::fromString("101.50"));
+  CHECK(target->order.quantity == hermeneutic::common::Decimal::fromString("0.4"));
 }

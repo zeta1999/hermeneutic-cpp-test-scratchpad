@@ -1,32 +1,32 @@
 version: "3.9"
 services:
-  cex-binance:
+  cex-notbinance:
     build:
       context: ..
       dockerfile: docker/Dockerfile.cex
     image: hermeneutic/cex
-    command: ["/usr/local/bin/cex_type1_service", "binance", "/app/data/binance.ndjson", "9001", "binance-token", "150"]
-  cex-coinbase:
+    command: ["/usr/local/bin/cex_type1_service", "notbinance", "/app/data/notbinance.ndjson", "9001", "notbinance-token", "150"]
+  cex-notcoinbase:
     build:
       context: ..
       dockerfile: docker/Dockerfile.cex
     image: hermeneutic/cex
-    command: ["/usr/local/bin/cex_type1_service", "coinbase", "/app/data/coinbase.ndjson", "9002", "coinbase-token", "200"]
-  cex-kraken:
+    command: ["/usr/local/bin/cex_type1_service", "notcoinbase", "/app/data/notcoinbase.ndjson", "9002", "notcoinbase-token", "200"]
+  cex-notkraken:
     build:
       context: ..
       dockerfile: docker/Dockerfile.cex
     image: hermeneutic/cex
-    command: ["/usr/local/bin/cex_type1_service", "kraken", "/app/data/kraken.ndjson", "9003", "kraken-token", "220"]
+    command: ["/usr/local/bin/cex_type1_service", "notkraken", "/app/data/notkraken.ndjson", "9003", "notkraken-token", "220"]
   aggregator:
     build:
       context: ..
       dockerfile: docker/Dockerfile.aggregator
     image: hermeneutic/aggregator
     depends_on:
-      - cex-binance
-      - cex-coinbase
-      - cex-kraken
+      - cex-notbinance
+      - cex-notcoinbase
+      - cex-notkraken
     ports:
       - "50051:50051"
   bbo:

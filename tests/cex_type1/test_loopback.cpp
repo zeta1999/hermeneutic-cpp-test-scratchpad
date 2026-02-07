@@ -76,7 +76,7 @@ TEST_CASE("cex_type1/websocket_loopback feed emits updates") {
   const std::string exchange = "loop";
   const std::string token = "unit-token";
   const std::string payload =
-      R"({"type":"new_order","sequence":1,"order_id":"ord-1","side":"bid","price":"101.25","quantity":"0.5"})";
+      R"({"type":"new_order","sequence":1,"order_id":101,"side":"bid","price":"101.25","quantity":"0.5"})";
   std::signal(SIGPIPE, SIG_IGN);
 
   try {

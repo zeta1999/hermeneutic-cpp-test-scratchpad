@@ -8,21 +8,21 @@
   },
   "feeds": [
     {
-      "name": "binance",
-      "url": "ws://127.0.0.1:9001/binance",
-      "auth_token": "binance-token",
+      "name": "notbinance",
+      "url": "ws://127.0.0.1:9001/notbinance",
+      "auth_token": "notbinance-token",
       "interval_ms": 150
     },
     {
-      "name": "coinbase",
-      "url": "ws://127.0.0.1:9002/coinbase",
-      "auth_token": "coinbase-token",
+      "name": "notcoinbase",
+      "url": "ws://127.0.0.1:9002/notcoinbase",
+      "auth_token": "notcoinbase-token",
       "interval_ms": 200
     },
     {
-      "name": "kraken",
-      "url": "ws://127.0.0.1:9003/kraken",
-      "auth_token": "kraken-token",
+      "name": "notkraken",
+      "url": "ws://127.0.0.1:9003/notkraken",
+      "auth_token": "notkraken-token",
       "interval_ms": 220
     }
   ]

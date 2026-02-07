@@ -54,7 +54,7 @@ TEST_CASE("cex_type1_service/executable streams payloads") {
   auto temp_file = std::filesystem::temp_directory_path() / "cex_type1_service_test.ndjson";
   {
     std::ofstream out(temp_file);
-    out << "{\"type\":\"new_order\",\"sequence\":1,\"order_id\":\"svc-order\",\"side\":\"bid\",\"price\":\"100.25\",\"quantity\":\"1.5\"}" << std::endl;
+    out << "{\"type\":\"new_order\",\"sequence\":1,\"order_id\":101,\"side\":\"bid\",\"price\":\"100.25\",\"quantity\":\"1.5\"}" << std::endl;
   }
 
   Poco::UInt16 port = 0;

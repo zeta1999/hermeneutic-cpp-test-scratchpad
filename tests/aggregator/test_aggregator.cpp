@@ -16,7 +16,7 @@ using hermeneutic::common::Side;
 namespace {
 
 BookEvent makeNewOrder(std::string exchange,
-                       std::string id,
+                       std::uint64_t id,
                        Side side,
                        std::string price,
                        std::string quantity,
@@ -25,7 +25,7 @@ BookEvent makeNewOrder(std::string exchange,
   event.exchange = std::move(exchange);
   event.kind = BookEventKind::NewOrder;
   event.sequence = sequence;
-  event.order.order_id = std::move(id);
+  event.order.order_id = id;
   event.order.side = side;
   event.order.price = Decimal::fromString(price);
   event.order.quantity = Decimal::fromString(quantity);
@@ -37,8 +37,8 @@ BookEvent makeNewOrder(std::string exchange,
 TEST_CASE("aggregator consolidates best bid and ask") {
   hermeneutic::aggregator::AggregationEngine engine;
   engine.start();
-  engine.push(makeNewOrder("binance", "b-1", Side::Bid, "100.00", "1", 1));
-  engine.push(makeNewOrder("coinbase", "c-1", Side::Bid, "101.00", "2", 2));
+  engine.push(makeNewOrder("notbinance", 1, Side::Bid, "100.00", "1", 1));
+  engine.push(makeNewOrder("notcoinbase", 2, Side::Bid, "101.00", "2", 2));
   std::this_thread::sleep_for(std::chrono::milliseconds(10));
   auto view = engine.latest();
   CHECK(view.best_bid.price.toString(2) == "101.00");

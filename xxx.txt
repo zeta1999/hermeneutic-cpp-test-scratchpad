@@ -45,3 +45,4 @@ wss
 => have a look at logs
 => build, how to remove the whole dep check each time by default ***
 => decimal type is probably crap 
+=> documented diffs with actual protocols (see docs/protocol_diffs/*.md)

@@ -84,7 +84,7 @@ void LimitOrderBook::apply(const BookEvent& event) {
     }
     case BookEventKind::NewOrder: {
       const auto& order = event.order;
-      if (order.order_id.empty()) {
+      if (order.order_id == 0) {
         break;
       }
       auto existing = orders_.find(order.order_id);
@@ -98,7 +98,7 @@ void LimitOrderBook::apply(const BookEvent& event) {
       break;
     }
     case BookEventKind::CancelOrder: {
-      if (event.order.order_id.empty()) {
+      if (event.order.order_id == 0) {
         break;
       }
       auto existing = orders_.find(event.order.order_id);

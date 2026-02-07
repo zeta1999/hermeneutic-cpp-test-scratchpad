@@ -35,9 +35,9 @@ invocations avoid oversubscribing local CPUs; feel free to opt back into manual
 Executables land at `build/services/<name>/<name>`. Run three mock exchanges, then the aggregator, then the gRPC clients:
 
 ```bash
-./build/services/cex_type1_service/cex_type1_service binance data/binance.ndjson 9001 binance-token 150 &
-./build/services/cex_type1_service/cex_type1_service coinbase data/coinbase.ndjson 9002 coinbase-token 200 &
-./build/services/cex_type1_service/cex_type1_service kraken data/kraken.ndjson 9003 kraken-token 220 &
+./build/services/cex_type1_service/cex_type1_service notbinance data/notbinance.ndjson 9001 notbinance-token 150 &
+./build/services/cex_type1_service/cex_type1_service notcoinbase data/notcoinbase.ndjson 9002 notcoinbase-token 200 &
+./build/services/cex_type1_service/cex_type1_service notkraken data/notkraken.ndjson 9003 notkraken-token 220 &
 ./build/services/aggregator_service/aggregator_service config/aggregator.json &
 ./build/services/bbo_service/bbo_service 127.0.0.1:50051 agg-local-token BTCUSDT &
 ./build/services/volume_bands_service/volume_bands_service 127.0.0.1:50051 agg-local-token BTCUSDT &
@@ -71,6 +71,9 @@ The mock exchange services stream newline-delimited JSON events over WebSocket. 
 The client feed (`cex_type1::makeWebSocketFeed`) converts those protocol messages into order-book events
 that drive the aggregator's `LimitOrderBook`, so snapshot resets and per-order cancels behave like a real
 matching engine feed without materializing the entire NDJSON file in memory.
+
+See `docs/protocol_diffs/` for notes comparing this mock format to the real-time feeds published by Binance,
+Coinbase, and Kraken.
 
 ## Key design notes
 

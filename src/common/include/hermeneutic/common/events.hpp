@@ -34,7 +34,7 @@ struct OrderBookSnapshot {
 enum class BookEventKind { NewOrder, CancelOrder, Snapshot };
 
 struct MarketOrder {
-  std::string order_id;
+  std::uint64_t order_id{0};
   Side side{Side::Bid};
   Decimal price{};
   Decimal quantity{};

@@ -1,3 +1,3 @@
 {"type":"snapshot","sequence":1,"bids":[{"price":"30000.50","quantity":"1.5"},{"price":"29999.00","quantity":"0.8"}],"asks":[{"price":"30010.00","quantity":"2.0"},{"price":"30012.00","quantity":"1.1"}]}
-{"type":"new_order","sequence":2,"order_id":"binance-bid-1","side":"bid","price":"30005.00","quantity":"0.4"}
-{"type":"cancel_order","sequence":3,"order_id":"binance-bid-1"}
+{"type":"new_order","sequence":2,"order_id":2001,"side":"bid","price":"30005.00","quantity":"0.4"}
+{"type":"cancel_order","sequence":3,"order_id":2001}

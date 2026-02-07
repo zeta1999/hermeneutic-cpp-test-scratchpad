@@ -1,0 +1,3 @@
+{"type":"snapshot","sequence":1,"bids":[{"price":"30001.25","quantity":"0.9"}],"asks":[{"price":"30009.75","quantity":"1.4"}]}
+{"type":"new_order","sequence":2,"order_id":4001,"side":"bid","price":"30002.00","quantity":"0.6"}
+{"type":"cancel_order","sequence":3,"order_id":4001}

@@ -34,6 +34,24 @@ common::Decimal parseDecimal(const simdjson::dom::element& element) {
   throw std::runtime_error("invalid decimal payload");
 }
 
+bool parseOrderId(const simdjson::dom::element& element, std::uint64_t& id) {
+  auto numeric = element.get_uint64();
+  if (numeric.error() == simdjson::SUCCESS) {
+    id = numeric.value();
+    return true;
+  }
+  auto string_value = element.get_string();
+  if (string_value.error() == simdjson::SUCCESS) {
+    try {
+      id = std::stoull(std::string(string_value.value()));
+      return true;
+    } catch (...) {
+      return false;
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 class WebSocketExchangeFeed : public ExchangeFeed {
@@ -144,11 +162,11 @@ class WebSocketExchangeFeed : public ExchangeFeed {
           callback_(std::move(event));
         } else if (type_string == "new_order") {
           event.kind = common::BookEventKind::NewOrder;
-          auto order_id = obj["order_id"].get_string();
-          if (order_id.error() != simdjson::SUCCESS) {
+          std::uint64_t order_id = 0;
+          if (!parseOrderId(obj["order_id"], order_id)) {
             continue;
           }
-          event.order.order_id = std::string(order_id.value());
+          event.order.order_id = order_id;
           auto side_value = obj["side"].get_string();
           if (side_value.error() != simdjson::SUCCESS) {
             continue;
@@ -159,11 +177,11 @@ class WebSocketExchangeFeed : public ExchangeFeed {
           callback_(std::move(event));
         } else if (type_string == "cancel_order") {
           event.kind = common::BookEventKind::CancelOrder;
-          auto order_id = obj["order_id"].get_string();
-          if (order_id.error() != simdjson::SUCCESS) {
+          std::uint64_t order_id = 0;
+          if (!parseOrderId(obj["order_id"], order_id)) {
             continue;
           }
-          event.order.order_id = std::string(order_id.value());
+          event.order.order_id = order_id;
           callback_(std::move(event));
         }
       } catch (const std::exception& ex) {

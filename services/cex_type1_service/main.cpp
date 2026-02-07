@@ -97,6 +97,7 @@ class FeedRequestFactory : public Poco::Net::HTTPRequestHandlerFactory {
   std::chrono::milliseconds interval_;
 };
 
+// TODO: could be a coroutine for instance or some iterator ~s
 std::vector<std::string> loadPayloads(const std::string& path) {
   std::ifstream stream(path);
   if (!stream.is_open()) {

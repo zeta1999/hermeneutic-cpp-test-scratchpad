@@ -48,7 +48,11 @@ FetchContent_Declare(
   GIT_TAG ${POCO_VERSION}
 )
 
+set(_hermeneutic_saved_build_testing ${BUILD_TESTING})
+set(BUILD_TESTING OFF CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(spdlog simdjson grpc poco)
+set(BUILD_TESTING ${_hermeneutic_saved_build_testing} CACHE BOOL "" FORCE)
+unset(_hermeneutic_saved_build_testing)
 
 FetchContent_GetProperties(grpc)
 if(grpc_POPULATED)

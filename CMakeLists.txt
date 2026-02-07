@@ -19,9 +19,9 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-include(cmake/deps/FetchDependencies.cmake)
-
 option(BUILD_TESTING "Build the unit test suite" ON)
+
+include(cmake/deps/FetchDependencies.cmake)
 
 add_subdirectory(proto)
 add_subdirectory(src)

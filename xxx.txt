@@ -4,3 +4,35 @@
 
   1.66 -> 1.44
   
+
+  /Users/bechaderenaud/work/hermeneutic/hermeneutic-cpp-test-scratchpad/build/_deps/grpc-src/include/grpcpp/support/proto_buffer_writer.h:191:20: warning: implicit conversion changes signedness: 'int64_t' (aka 'long long') to 'unsigned long long' [-Wsign-conversion]
+   52 |     Slice slice(byte_size);
+      |           ~~~~~ ^~~~~~~~~
+  191 |     set_byte_count(ByteCount() + cur);
+      |                    ^~~~~~~~~~~ ~
+In file included from /Users/bechaderenaud/work/hermeneutic/hermeneutic-cpp-test-scratchpad/services/price_bands_service/main.cpp:6:
+In file included from /Users/bechaderenaud/work/hermeneutic/hermeneutic-cpp-test-scratchpad/build/proto/aggregator.grpc.pb.h:18:
+/Users/bechaderenaud/work/hermeneutic/hermeneutic-cpp-test-scratchpad/build/_deps/grpc-src/include/grpcpp/impl/proto_utils.h:52:17: warning: implicit conversion changes signedness: 'int' to 'size_t' (aka 'unsigned long') [-Wsign-conversion]
+   52 |     Slice slice(byte_size);
+      |           ~~~~~ ^~~~~~~~~
+/Users/bechaderenaud/work/hermeneutic/hermeneutic-cpp-test-scratchpad/services/bbo_service/main.cpp:8:10: fatal error: 'services/common/grpc_helpers.hpp' file not found
+    8 | #include "services/common/grpc_helpers.hpp"
+      |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/bechaderenaud/work/hermeneutic/hermeneutic-cpp-test-scratchpad/services/volume_bands_service/main.cpp:8:10: fatal error: 'services/common/grpc_helpers.hpp' file not found
+    8 | #include "services/common/grpc_helpers.hpp"
+      |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/bechaderenaud/work/hermeneutic/hermeneutic-cpp-test-scratchpad/services/price_bands_service/main.cpp:8:10: fatal error: 'services/common/grpc_helpers.hpp' file not found
+    8 | #include "services/common/grpc_helpers.hpp"
+      |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+29 warnings and 1 error generated.
+29 warnings and 1 error generated.
+29 warnings and 1 error generated.
+make[2]: make[2]: *** [services/volume_bands_service/CMakeFiles/volume_bands_service.dir/main.cpp.o] Error 1
+*** [services/bbo_service/CMakeFiles/bbo_service.dir/main.cpp.o] Error 1
+make[2]: *** [services/price_bands_service/CMakeFiles/price_bands_service.dir/main.cpp.o] Error 1
+make[1]: *** [services/bbo_service/CMakeFiles/bbo_service.dir/all] Error 2
+make[1]: *** Waiting for unfinished jobs....
+make[1]: *** [services/volume_bands_service/CMakeFiles/volume_bands_service.dir/all] Error 2
+make[1]: *** [services/price_bands_service/CMakeFiles/price_bands_service.dir/all] Error 2
+make: *** [all] Error 2
+(base) bechaderenaud@phoenix build % 

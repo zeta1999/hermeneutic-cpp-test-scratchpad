@@ -12,7 +12,8 @@
       "description": "RelWithDebInfo configure with shared third-party deps",
       "binaryDir": "build",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+        "BUILD_TESTING": true
       }
     }
   ],

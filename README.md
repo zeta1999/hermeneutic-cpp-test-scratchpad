@@ -93,7 +93,7 @@ Coinbase, and Kraken.
 
 ## Key design notes
 
-- **Precision** is handled via a fixed-point 128-bit `Decimal` so multiplying prices and volumes for band calculations is deterministic.
+- **Precision** is handled via a fixed-point `Decimal` scaled by 10^18 (which fits comfortably in 60 bits). Configure the backend with `-DHERMENEUTIC_DECIMAL_BACKEND=int128|double|wide` to flip between the default `__int128` storage, a "crappy" double-backed variant, or the wide-integer implementation that performs 256-bit mul/div before narrowing back to 128 bits.
 - **Mock exchange connectivity** uses POCO WebSocket clients/servers with token auth so the aggregator exercises the same threading and reconnection patterns a production feed would require.
 - **gRPC transport** lives in `proto/aggregator.proto`, giving the aggregator server a strongly typed contract and letting downstream publishers use a shared helper to turn proto payloads back into domain structs.
 - **Subscribers** attach to `AggregationEngine` via callbacks, so adding additional gRPC services or transports later is just another subscription.

@@ -24,6 +24,11 @@ option(HERMENEUTIC_ALLOW_TESTLESS_BUILDS
        "Permit configuring without the project's tests"
        OFF)
 
+set(HERMENEUTIC_DECIMAL_BACKEND "int128"
+    CACHE STRING "Decimal backend (int128, double, wide)")
+set_property(CACHE HERMENEUTIC_DECIMAL_BACKEND PROPERTY STRINGS
+             int128 double wide)
+
 if(NOT BUILD_TESTING AND NOT HERMENEUTIC_ALLOW_TESTLESS_BUILDS)
   message(STATUS
           "BUILD_TESTING was OFF; forcing it ON so ctest metadata is generated."
@@ -32,6 +37,21 @@ if(NOT BUILD_TESTING AND NOT HERMENEUTIC_ALLOW_TESTLESS_BUILDS)
 endif()
 
 include(cmake/deps/FetchDependencies.cmake)
+
+set(_hermeneutic_decimal_define HERMENEUTIC_DECIMAL_BACKEND_INT128)
+if(HERMENEUTIC_DECIMAL_BACKEND STREQUAL "double")
+  set(_hermeneutic_decimal_define HERMENEUTIC_DECIMAL_BACKEND_DOUBLE)
+elseif(HERMENEUTIC_DECIMAL_BACKEND STREQUAL "wide")
+  set(_hermeneutic_decimal_define HERMENEUTIC_DECIMAL_BACKEND_WIDE)
+elseif(NOT HERMENEUTIC_DECIMAL_BACKEND STREQUAL "int128")
+  message(FATAL_ERROR
+          "Unknown HERMENEUTIC_DECIMAL_BACKEND='${HERMENEUTIC_DECIMAL_BACKEND}'. "
+          "Use int128, double, or wide.")
+endif()
+target_compile_definitions(project_options
+  INTERFACE
+    ${_hermeneutic_decimal_define}=1
+)
 
 add_subdirectory(proto)
 add_subdirectory(src)

@@ -7,7 +7,11 @@ target_sources(common
   PRIVATE
     common/decimal.cpp
 )
-target_include_directories(common PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/common/include)
+target_include_directories(common
+  PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/common/include
+    ${CMAKE_SOURCE_DIR}/third_party/wide_integer
+)
 target_link_libraries(common PUBLIC project_options project_warnings spdlog::spdlog)
 
 add_subdirectory(lob)

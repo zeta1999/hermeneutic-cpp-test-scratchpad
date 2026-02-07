@@ -91,6 +91,28 @@ if(grpc_POPULATED)
            "${_hermeneutic_basic_seq_patched}")
     endif()
   endif()
+
+  set(_hermeneutic_absl_extension_header
+      "${grpc_SOURCE_DIR}/third_party/abseil-cpp/absl/strings/internal/str_format/extension.h")
+  if(EXISTS "${_hermeneutic_absl_extension_header}")
+    file(READ "${_hermeneutic_absl_extension_header}" _hermeneutic_absl_extension)
+    if(_hermeneutic_absl_extension MATCHES "#include <cstdint>")
+      # Header already includes <cstdint>; no action required.
+    else()
+      string(REPLACE "#include <limits.h>"
+                     "#include <cstdint>\n#include <limits.h>"
+                     _hermeneutic_absl_extension_patched
+                     "${_hermeneutic_absl_extension}")
+      if(NOT _hermeneutic_absl_extension_patched STREQUAL
+             _hermeneutic_absl_extension)
+        # GCC 13+ requires <cstdint> for the FormatConversionChar forward
+        # declarations. Inject the missing header until we can upgrade gRPC's
+        # Abseil snapshot.
+        file(WRITE "${_hermeneutic_absl_extension_header}"
+             "${_hermeneutic_absl_extension_patched}")
+      endif()
+    endif()
+  endif()
 endif()
 
 if(APPLE AND CMAKE_SYSTEM_PROCESSOR MATCHES "arm64|aarch64")

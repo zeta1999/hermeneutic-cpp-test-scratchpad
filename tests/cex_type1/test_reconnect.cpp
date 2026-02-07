@@ -14,6 +14,7 @@
 
 #include <atomic>
 #include <chrono>
+#include <condition_variable>
 #include <csignal>
 #include <mutex>
 #include <string>

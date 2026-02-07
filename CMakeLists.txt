@@ -20,6 +20,16 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 option(BUILD_TESTING "Build the unit test suite" ON)
+option(HERMENEUTIC_ALLOW_TESTLESS_BUILDS
+       "Permit configuring without the project's tests"
+       OFF)
+
+if(NOT BUILD_TESTING AND NOT HERMENEUTIC_ALLOW_TESTLESS_BUILDS)
+  message(STATUS
+          "BUILD_TESTING was OFF; forcing it ON so ctest metadata is generated."
+          " Set HERMENEUTIC_ALLOW_TESTLESS_BUILDS=ON to bypass this guard.")
+  set(BUILD_TESTING ON CACHE BOOL "" FORCE)
+endif()
 
 include(cmake/deps/FetchDependencies.cmake)
 

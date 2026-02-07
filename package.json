@@ -1,0 +1,24 @@
+{
+  "name": "hermeneutic-cpp-test-scratchpad",
+  "version": "1.0.0",
+  "description": "This repository models the assignment brief with a CMake-driven C++ workspace. Three mock Central Exchanges stream BTC/USDT order book deltas over authenticated WebSockets (POCO), the aggregator consumes those feeds, maintains per-exchange books, and exposes an authenticated gRPC stream of consolidated best bid/ask data. Client services (BBO, volume bands, price bands) subscribe to that stream and publish derived metrics.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zeta1999/hermeneutic-cpp-test-scratchpad.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zeta1999/hermeneutic-cpp-test-scratchpad/issues"
+  },
+  "homepage": "https://github.com/zeta1999/hermeneutic-cpp-test-scratchpad#readme"
+}

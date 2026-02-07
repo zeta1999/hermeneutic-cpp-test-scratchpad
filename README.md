@@ -38,6 +38,13 @@ are disabled by default via `RE2_BUILD_TESTING=OFF` so `cmake --build` only
 produces the libraries our binaries need. If you really need to exercise those
 vendored test suites, reconfigure with `-DRE2_BUILD_TESTING=ON`.
 
+Project tests are mandatory for normal builds: even if a stale `CMakeCache.txt`
+flipped `BUILD_TESTING=OFF`, the top-level `CMakeLists.txt` forces it back on so
+`ctest --test-dir build-linux` (or `build`) always finds configuration data. If
+you truly need to skip tests (for example when packaging), pass both
+`-DHERMENEUTIC_ALLOW_TESTLESS_BUILDS=ON` and `-DBUILD_TESTING=OFF` when running
+`cmake -S . -B <builddir>`.
+
 Executables land at `build/services/<name>/<name>`. Run three mock exchanges, then the aggregator, then the gRPC clients:
 
 ```bash

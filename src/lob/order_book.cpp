@@ -129,6 +129,30 @@ common::PriceLevel LimitOrderBook::bestAsk() const {
   return PriceLevel{level.first, level.second};
 }
 
+LimitOrderBook::BidLevelIterator LimitOrderBook::bidLevelsBegin() const {
+  return bids_.cbegin();
+}
+
+LimitOrderBook::BidLevelIterator LimitOrderBook::bidLevelsEnd() const {
+  return bids_.cend();
+}
+
+LimitOrderBook::AskLevelIterator LimitOrderBook::askLevelsBegin() const {
+  return asks_.cbegin();
+}
+
+LimitOrderBook::AskLevelIterator LimitOrderBook::askLevelsEnd() const {
+  return asks_.cend();
+}
+
+LimitOrderBook::OrderIterator LimitOrderBook::limitOrdersBegin() const {
+  return orders_.cbegin();
+}
+
+LimitOrderBook::OrderIterator LimitOrderBook::limitOrdersEnd() const {
+  return orders_.cend();
+}
+
 common::OrderBookSnapshot LimitOrderBook::snapshot(std::size_t depth) const {
   common::OrderBookSnapshot snap;
   snap.bids.reserve(depth);

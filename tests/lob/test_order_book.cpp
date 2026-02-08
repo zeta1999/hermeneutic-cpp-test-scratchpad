@@ -1,7 +1,9 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include <doctest/doctest.h>
 
+#include <algorithm>
 #include <cstdint>
+#include <vector>
 
 #include "hermeneutic/common/events.hpp"
 #include "hermeneutic/lob/order_book.hpp"
@@ -58,4 +60,37 @@ TEST_CASE("limit order book removes zero quantity levels") {
   book.apply(makeNewOrder(1, Side::Bid, "100.00", "2", 1));
   book.apply(makeCancel(1, 2));
   CHECK(book.bestBid().quantity == Decimal::fromRaw(0));
+}
+
+TEST_CASE("limit order book exposes level iterators without limit-order details") {
+  hermeneutic::lob::LimitOrderBook book;
+  book.apply(makeNewOrder(1, Side::Bid, "100.00", "2", 1));
+  book.apply(makeNewOrder(2, Side::Bid, "101.00", "3", 2));
+  book.apply(makeNewOrder(3, Side::Ask, "105.00", "1", 3));
+  book.apply(makeNewOrder(4, Side::Ask, "106.00", "4", 4));
+
+  std::vector<std::string> bid_prices;
+  for (auto it = book.bidLevelsBegin(); it != book.bidLevelsEnd(); ++it) {
+    bid_prices.push_back(it->first.toString(2));
+  }
+  CHECK(bid_prices == std::vector<std::string>({"101.00", "100.00"}));
+
+  std::vector<std::string> ask_prices;
+  for (auto it = book.askLevelsBegin(); it != book.askLevelsEnd(); ++it) {
+    ask_prices.push_back(it->first.toString(2));
+  }
+  CHECK(ask_prices == std::vector<std::string>({"105.00", "106.00"}));
+}
+
+TEST_CASE("limit order book iterates limit orders when needed") {
+  hermeneutic::lob::LimitOrderBook book;
+  book.apply(makeNewOrder(1, Side::Bid, "100.00", "2", 1));
+  book.apply(makeNewOrder(2, Side::Ask, "105.00", "5", 2));
+
+  std::vector<std::uint64_t> ids;
+  for (auto it = book.limitOrdersBegin(); it != book.limitOrdersEnd(); ++it) {
+    ids.push_back(it->first);
+  }
+  std::sort(ids.begin(), ids.end());
+  CHECK(ids == std::vector<std::uint64_t>({1, 2}));
 }

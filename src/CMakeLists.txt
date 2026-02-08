@@ -6,6 +6,8 @@ target_sources(common
     common/include/hermeneutic/common/concurrent_queue.hpp
   PRIVATE
     common/decimal.cpp
+    common/enum.cpp
+    common/events.cpp
 )
 target_include_directories(common
   PUBLIC

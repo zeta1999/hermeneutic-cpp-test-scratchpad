@@ -11,6 +11,7 @@ function(add_project_test target)
 endfunction()
 
 add_project_test(test_decimal SOURCES common/test_decimal.cpp LIBS common)
+add_project_test(test_enum SOURCES common/test_enum.cpp LIBS common)
 add_project_test(test_order_book SOURCES lob/test_order_book.cpp LIBS lob)
 add_project_test(test_aggregator SOURCES aggregator/test_aggregator.cpp LIBS aggregator)
 add_project_test(test_cex_loopback SOURCES cex_type1/test_loopback.cpp LIBS cex_type1)

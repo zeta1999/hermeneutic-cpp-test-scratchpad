@@ -8,13 +8,20 @@
 #include <vector>
 
 #include "hermeneutic/common/decimal.hpp"
+#include "hermeneutic/common/enum.hpp"
 
 namespace hermeneutic::common {
 
-enum class Side { Bid, Ask };
+HERMENEUTIC_ENUM(Side, Bid, Ask);
 
 inline std::string_view toString(Side side) {
-  return side == Side::Bid ? "bid" : "ask";
+  return SideToString(side);
+}
+
+inline Side parseSide(const std::string& text) { return StringToSide(text); }
+
+inline Side parseSide(std::string_view text) {
+  return parseSide(std::string(text));
 }
 
 inline Side invert(Side side) {
@@ -31,7 +38,19 @@ struct OrderBookSnapshot {
   std::vector<PriceLevel> asks;
 };
 
-enum class BookEventKind { NewOrder, CancelOrder, Snapshot };
+HERMENEUTIC_ENUM(BookEventKind, NewOrder, CancelOrder, Snapshot);
+
+inline std::string_view toString(BookEventKind kind) {
+  return BookEventKindToString(kind);
+}
+
+inline BookEventKind parseBookEventKind(const std::string& text) {
+  return StringToBookEventKind(text);
+}
+
+inline BookEventKind parseBookEventKind(std::string_view text) {
+  return parseBookEventKind(std::string(text));
+}
 
 struct MarketOrder {
   std::uint64_t order_id{0};

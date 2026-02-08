@@ -2,6 +2,7 @@
 #include "hermeneutic/aggregator/config.hpp"
 
 #include <algorithm>
+#include <map>
 #include <spdlog/spdlog.h>
 #include <simdjson.h>
 #include <stdexcept>
@@ -100,49 +101,45 @@ AggregatedBookView AggregationEngine::consolidate() const {
   view.exchange_count = books_.size();
   view.timestamp = std::chrono::system_clock::now();
 
-  bool has_bid = false;
-  bool has_ask = false;
-  Decimal best_bid_price = kZero;
-  Decimal best_ask_price = kZero;
-  Decimal best_bid_qty = kZero;
-  Decimal best_ask_qty = kZero;
+  std::map<Decimal, Decimal, std::greater<Decimal>> aggregated_bids;
+  std::map<Decimal, Decimal, std::less<Decimal>> aggregated_asks;
 
   for (const auto& [name, book] : books_) {
     (void)name;
-    auto bid = book.bestBid();
-    if (bid.quantity > kZero) {
-      if (!has_bid || bid.price > best_bid_price) {
-        best_bid_price = bid.price;
-        best_bid_qty = bid.quantity;
-        has_bid = true;
-      } else if (bid.price == best_bid_price) {
-        best_bid_qty += bid.quantity;
-      }
+    for (auto it = book.bidLevelsBegin(); it != book.bidLevelsEnd(); ++it) {
+      aggregated_bids[it->first] += it->second;
     }
-
-    auto ask = book.bestAsk();
-    if (ask.quantity > kZero) {
-      if (!has_ask || ask.price < best_ask_price) {
-        best_ask_price = ask.price;
-        best_ask_qty = ask.quantity;
-        has_ask = true;
-      } else if (ask.price == best_ask_price) {
-        best_ask_qty += ask.quantity;
-      }
+    for (auto it = book.askLevelsBegin(); it != book.askLevelsEnd(); ++it) {
+      aggregated_asks[it->first] += it->second;
     }
   }
 
-  if (!has_ask) {
-    best_ask_price = kZero;
-    best_ask_qty = kZero;
-  }
-  if (!has_bid) {
-    best_bid_price = kZero;
-    best_bid_qty = kZero;
+  view.bid_levels.reserve(aggregated_bids.size());
+  for (const auto& [price, qty] : aggregated_bids) {
+    if (qty > kZero) {
+      view.bid_levels.push_back({price, qty});
+    }
   }
 
-  view.best_bid = AggregatedQuote{best_bid_price, best_bid_qty};
-  view.best_ask = AggregatedQuote{best_ask_price, best_ask_qty};
+  view.ask_levels.reserve(aggregated_asks.size());
+  for (const auto& [price, qty] : aggregated_asks) {
+    if (qty > kZero) {
+      view.ask_levels.push_back({price, qty});
+    }
+  }
+
+  if (!view.bid_levels.empty()) {
+    view.best_bid = AggregatedQuote{view.bid_levels.front().price, view.bid_levels.front().quantity};
+  } else {
+    view.best_bid = AggregatedQuote{kZero, kZero};
+  }
+
+  if (!view.ask_levels.empty()) {
+    view.best_ask = AggregatedQuote{view.ask_levels.front().price, view.ask_levels.front().quantity};
+  } else {
+    view.best_ask = AggregatedQuote{kZero, kZero};
+  }
+
   return view;
 }
 

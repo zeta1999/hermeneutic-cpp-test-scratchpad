@@ -10,6 +10,7 @@
 #include "hermeneutic/common/decimal.hpp"
 #include "hermeneutic/common/enum.hpp"
 
+// TODO style: too much code/lines?
 namespace hermeneutic::common {
 
 HERMENEUTIC_ENUM(Side, Bid, Ask);
@@ -59,6 +60,7 @@ struct MarketOrder {
   Decimal quantity{};
 };
 
+// TODO: style ... 
 struct BookEvent {
   std::string exchange;
   BookEventKind kind{BookEventKind::NewOrder};
@@ -74,6 +76,8 @@ struct AggregatedQuote {
 };
 
 struct AggregatedBookView {
+  std::vector<PriceLevel> bid_levels;
+  std::vector<PriceLevel> ask_levels;
   AggregatedQuote best_bid;
   AggregatedQuote best_ask;
   std::chrono::system_clock::time_point timestamp{};

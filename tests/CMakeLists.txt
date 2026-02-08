@@ -17,3 +17,5 @@ add_project_test(test_aggregator SOURCES aggregator/test_aggregator.cpp LIBS agg
 add_project_test(test_cex_loopback SOURCES cex_type1/test_loopback.cpp LIBS cex_type1)
 add_project_test(test_cex_type1_service SOURCES cex_type1/test_cex_type1_service.cpp LIBS cex_type1)
 add_project_test(test_cex_reconnect SOURCES cex_type1/test_reconnect.cpp LIBS cex_type1)
+add_project_test(test_grpc_helpers SOURCES services/test_grpc_helpers.cpp LIBS aggregator_proto common)
+target_include_directories(test_grpc_helpers PRIVATE ${CMAKE_SOURCE_DIR})

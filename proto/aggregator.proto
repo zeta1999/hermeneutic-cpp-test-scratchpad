@@ -16,6 +16,8 @@ message AggregatedBook {
   AggregatedQuote best_ask = 2;
   uint32 exchange_count = 3;
   int64 timestamp_unix_millis = 4;
+  repeated AggregatedQuote bid_levels = 5;
+  repeated AggregatedQuote ask_levels = 6;
 }
 
 service AggregatorService {

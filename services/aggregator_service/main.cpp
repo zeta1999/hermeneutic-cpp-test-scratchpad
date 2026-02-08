@@ -19,29 +19,13 @@
 #include "hermeneutic/aggregator/config.hpp"
 #include "hermeneutic/cex_type1/feed.hpp"
 #include "hermeneutic/common/events.hpp"
+#include "services/common/grpc_helpers.hpp"
 
 namespace {
 std::atomic<bool> g_running{true};
 
 void handleSignal(int) {
   g_running = false;
-}
-
-hermeneutic::grpc::AggregatedBook encodeBook(const hermeneutic::common::AggregatedBookView& view) {
-  hermeneutic::grpc::AggregatedBook book;
-  auto* bid = book.mutable_best_bid();
-  bid->set_price(view.best_bid.price.toString(8));
-  bid->set_quantity(view.best_bid.quantity.toString(8));
-
-  auto* ask = book.mutable_best_ask();
-  ask->set_price(view.best_ask.price.toString(8));
-  ask->set_quantity(view.best_ask.quantity.toString(8));
-
-  book.set_exchange_count(static_cast<std::uint32_t>(view.exchange_count));
-  auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(
-      view.timestamp.time_since_epoch());
-  book.set_timestamp_unix_millis(static_cast<std::int64_t>(millis.count()));
-  return book;
 }
 
 class SubscriptionGuard {
@@ -97,7 +81,7 @@ class AggregatorGrpcService final : public hermeneutic::grpc::AggregatorService:
         view = queue.front();
         queue.pop_front();
       }
-      if (!writer->Write(encodeBook(view))) {
+      if (!writer->Write(hermeneutic::services::grpc_helpers::FromDomain(view))) {
         break;
       }
     }

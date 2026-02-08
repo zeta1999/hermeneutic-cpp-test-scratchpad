@@ -30,6 +30,12 @@ inline hermeneutic::common::AggregatedBookView ToDomain(
     view.ask_levels.push_back({hermeneutic::common::Decimal::fromString(level.price()),
                                hermeneutic::common::Decimal::fromString(level.quantity())});
   }
+  view.last_feed_timestamp_ns = message.last_feed_timestamp_ns();
+  view.last_local_timestamp_ns = message.last_local_timestamp_ns();
+  view.min_feed_timestamp_ns = message.min_feed_timestamp_ns();
+  view.max_feed_timestamp_ns = message.max_feed_timestamp_ns();
+  view.min_local_timestamp_ns = message.min_local_timestamp_ns();
+  view.max_local_timestamp_ns = message.max_local_timestamp_ns();
   return view;
 }
 
@@ -56,6 +62,12 @@ inline hermeneutic::grpc::AggregatedBook FromDomain(
     proto_level->set_price(level.price.toString(8));
     proto_level->set_quantity(level.quantity.toString(8));
   }
+  message.set_last_feed_timestamp_ns(view.last_feed_timestamp_ns);
+  message.set_last_local_timestamp_ns(view.last_local_timestamp_ns);
+  message.set_min_feed_timestamp_ns(view.min_feed_timestamp_ns);
+  message.set_max_feed_timestamp_ns(view.max_feed_timestamp_ns);
+  message.set_min_local_timestamp_ns(view.min_local_timestamp_ns);
+  message.set_max_local_timestamp_ns(view.max_local_timestamp_ns);
   return message;
 }
 

@@ -134,7 +134,16 @@ class WebSocketExchangeFeed : public ExchangeFeed {
         }
         common::BookEvent event;
         event.exchange = options_.exchange;
-        event.timestamp = std::chrono::system_clock::now();
+        auto now = std::chrono::system_clock::now();
+        event.timestamp = now;
+        event.local_timestamp_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(now.time_since_epoch()).count();
+        if (auto ts_ns = obj["timestamp_ns"].get_int64(); ts_ns.error() == simdjson::SUCCESS) {
+          event.feed_timestamp_ns = ts_ns.value();
+        } else if (auto ts_ms = obj["timestamp_ms"].get_int64(); ts_ms.error() == simdjson::SUCCESS) {
+          event.feed_timestamp_ns = ts_ms.value() * 1'000'000;
+        } else {
+          event.feed_timestamp_ns = event.local_timestamp_ns;
+        }
         if (auto seq = obj["sequence"].get_uint64(); seq.error() == simdjson::SUCCESS) {
           event.sequence = seq.value();
         }

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <chrono>
 #include <cstddef>
 #include <cstdint>
 #include <map>
@@ -35,6 +36,9 @@ class LimitOrderBook {
   OrderIterator limitOrdersBegin() const;
   OrderIterator limitOrdersEnd() const;
 
+  std::int64_t lastFeedTimestampNs() const { return last_feed_timestamp_ns_; }
+  std::int64_t lastLocalUpdateTimestampNs() const { return last_local_timestamp_ns_; }
+
   common::OrderBookSnapshot snapshot(std::size_t depth) const;
   bool empty() const;
   const std::string& exchange() const { return exchange_name_; }
@@ -46,6 +50,8 @@ class LimitOrderBook {
   OrderMap orders_;
   std::uint64_t last_sequence_{0};
   std::string exchange_name_;
+  std::int64_t last_feed_timestamp_ns_{0};
+  std::int64_t last_local_timestamp_ns_{0};
 };
 
 }  // namespace hermeneutic::lob

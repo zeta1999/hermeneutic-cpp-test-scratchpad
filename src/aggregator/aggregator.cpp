@@ -2,6 +2,7 @@
 #include "hermeneutic/aggregator/config.hpp"
 
 #include <algorithm>
+#include <limits>
 #include <map>
 #include <spdlog/spdlog.h>
 #include <simdjson.h>
@@ -29,6 +30,7 @@ void AggregationEngine::start() {
   if (running_.exchange(true)) {
     return;
   }
+  publisher_ = std::thread(&AggregationEngine::publisherLoop, this);
   worker_ = std::thread(&AggregationEngine::run, this);
 }
 
@@ -37,6 +39,10 @@ void AggregationEngine::stop() {
   queue_.close();
   if (worker_.joinable()) {
     worker_.join();
+  }
+  publish_queue_.close();
+  if (publisher_.joinable()) {
+    publisher_.join();
   }
 }
 
@@ -61,6 +67,16 @@ common::AggregatedBookView AggregationEngine::latest() const {
   return view_;
 }
 
+void AggregationEngine::setExpectedExchanges(std::vector<std::string> exchanges) {
+  std::lock_guard<std::mutex> lock(mutex_);
+  expected_exchanges_.clear();
+  ready_exchanges_.clear();
+  for (auto& ex : exchanges) {
+    expected_exchanges_.insert(ex);
+  }
+  require_all_ready_ = !expected_exchanges_.empty();
+}
+
 void AggregationEngine::run() {
   BookEvent update;
   while (running_.load()) {
@@ -69,15 +85,33 @@ void AggregationEngine::run() {
     }
 
     AggregatedBookView snapshot;
+    bool can_publish = true;
     {
       std::lock_guard<std::mutex> lock(mutex_);
       auto& book = books_[update.exchange];
       book.apply(update);
+      if (require_all_ready_ && expected_exchanges_.count(update.exchange)) {
+        ready_exchanges_.insert(update.exchange);
+      }
       view_ = consolidate();
       snapshot = view_;
+      can_publish = !require_all_ready_ || ready_exchanges_.size() == expected_exchanges_.size();
     }
+    if (can_publish) {
+      enqueueSnapshot(std::move(snapshot));
+    }
+  }
+}
+
+void AggregationEngine::publisherLoop() {
+  AggregatedBookView snapshot;
+  while (publish_queue_.wait_pop(snapshot)) {
     publish(snapshot);
   }
+}
+
+void AggregationEngine::enqueueSnapshot(AggregatedBookView view) {
+  publish_queue_.push(std::move(view));
 }
 
 void AggregationEngine::publish(const AggregatedBookView& view) {
@@ -104,6 +138,13 @@ AggregatedBookView AggregationEngine::consolidate() const {
   std::map<Decimal, Decimal, std::greater<Decimal>> aggregated_bids;
   std::map<Decimal, Decimal, std::less<Decimal>> aggregated_asks;
 
+  std::int64_t latest_feed_ns = 0;
+  std::int64_t latest_local_ns = 0;
+  std::int64_t min_feed_ns = std::numeric_limits<std::int64_t>::max();
+  std::int64_t max_feed_ns = 0;
+  std::int64_t min_local_ns = std::numeric_limits<std::int64_t>::max();
+  std::int64_t max_local_ns = 0;
+
   for (const auto& [name, book] : books_) {
     (void)name;
     for (auto it = book.bidLevelsBegin(); it != book.bidLevelsEnd(); ++it) {
@@ -111,6 +152,20 @@ AggregatedBookView AggregationEngine::consolidate() const {
     }
     for (auto it = book.askLevelsBegin(); it != book.askLevelsEnd(); ++it) {
       aggregated_asks[it->first] += it->second;
+    }
+
+    const auto feed_ns = book.lastFeedTimestampNs();
+    if (feed_ns > 0) {
+      latest_feed_ns = std::max(latest_feed_ns, feed_ns);
+      min_feed_ns = std::min(min_feed_ns, feed_ns);
+      max_feed_ns = std::max(max_feed_ns, feed_ns);
+    }
+
+    const auto local_ns = book.lastLocalUpdateTimestampNs();
+    if (local_ns > 0) {
+      latest_local_ns = std::max(latest_local_ns, local_ns);
+      min_local_ns = std::min(min_local_ns, local_ns);
+      max_local_ns = std::max(max_local_ns, local_ns);
     }
   }
 
@@ -139,6 +194,13 @@ AggregatedBookView AggregationEngine::consolidate() const {
   } else {
     view.best_ask = AggregatedQuote{kZero, kZero};
   }
+
+  view.last_feed_timestamp_ns = latest_feed_ns;
+  view.last_local_timestamp_ns = latest_local_ns;
+  view.min_feed_timestamp_ns = (min_feed_ns == std::numeric_limits<std::int64_t>::max()) ? 0 : min_feed_ns;
+  view.max_feed_timestamp_ns = max_feed_ns;
+  view.min_local_timestamp_ns = (min_local_ns == std::numeric_limits<std::int64_t>::max()) ? 0 : min_local_ns;
+  view.max_local_timestamp_ns = max_local_ns;
 
   return view;
 }

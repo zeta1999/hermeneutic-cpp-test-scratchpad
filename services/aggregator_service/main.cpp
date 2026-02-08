@@ -123,6 +123,12 @@ int main(int argc, char** argv) {
     auto config = hermeneutic::aggregator::loadAggregatorConfig(config_path);
 
     hermeneutic::aggregator::AggregationEngine engine;
+    std::vector<std::string> expected;
+    expected.reserve(config.feeds.size());
+    for (const auto& feed : config.feeds) {
+      expected.push_back(feed.name);
+    }
+    engine.setExpectedExchanges(expected);
     engine.start();
 
     AggregatorGrpcService service(engine, config.grpc.auth_token, config.symbol);

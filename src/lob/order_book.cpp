@@ -58,6 +58,22 @@ void LimitOrderBook::apply(const BookEvent& event) {
     exchange_name_ = event.exchange;
   }
 
+  auto now = std::chrono::system_clock::now();
+  auto toNs = [](std::chrono::system_clock::time_point tp) {
+    return std::chrono::duration_cast<std::chrono::nanoseconds>(tp.time_since_epoch()).count();
+  };
+  std::int64_t feed_ns = event.feed_timestamp_ns;
+  if (feed_ns == 0) {
+    auto feed_tp = event.timestamp.time_since_epoch().count() == 0 ? now : event.timestamp;
+    feed_ns = toNs(feed_tp);
+  }
+  std::int64_t local_ns = event.local_timestamp_ns;
+  if (local_ns == 0) {
+    local_ns = toNs(now);
+  }
+  last_feed_timestamp_ns_ = feed_ns;
+  last_local_timestamp_ns_ = local_ns;
+
   if (event.sequence != 0 && event.sequence <= last_sequence_) {
     return;
   }

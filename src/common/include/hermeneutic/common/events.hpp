@@ -68,6 +68,8 @@ struct BookEvent {
   MarketOrder order;
   OrderBookSnapshot snapshot;
   std::chrono::system_clock::time_point timestamp{};
+  std::int64_t feed_timestamp_ns{0};
+  std::int64_t local_timestamp_ns{0};
 };
 
 struct AggregatedQuote {
@@ -82,6 +84,13 @@ struct AggregatedBookView {
   AggregatedQuote best_ask;
   std::chrono::system_clock::time_point timestamp{};
   std::size_t exchange_count{};
+  // Feed timestamps (nanoseconds since epoch, UTC) aggregated across exchanges.
+  std::int64_t last_feed_timestamp_ns{0};
+  std::int64_t last_local_timestamp_ns{0};
+  std::int64_t min_feed_timestamp_ns{0};
+  std::int64_t max_feed_timestamp_ns{0};
+  std::int64_t min_local_timestamp_ns{0};
+  std::int64_t max_local_timestamp_ns{0};
 };
 
 struct VolumeBandQuote {

@@ -6,6 +6,7 @@
 #include <mutex>
 #include <thread>
 #include <unordered_map>
+#include <unordered_set>
 
 #include "hermeneutic/common/concurrent_queue.hpp"
 #include "hermeneutic/common/events.hpp"
@@ -29,18 +30,26 @@ class AggregationEngine {
   void unsubscribe(SubscriberId id);
 
   common::AggregatedBookView latest() const;
+  void setExpectedExchanges(std::vector<std::string> exchanges);
 
  private:
-  void run();
+ void run();
+  void publisherLoop();
+  void enqueueSnapshot(common::AggregatedBookView view);
   void publish(const common::AggregatedBookView& view);
   common::AggregatedBookView consolidate() const;
 
   mutable std::mutex mutex_;
   std::unordered_map<std::string, lob::LimitOrderBook> books_;
   common::AggregatedBookView view_{};
+  std::unordered_set<std::string> expected_exchanges_;
+  std::unordered_set<std::string> ready_exchanges_;
+  bool require_all_ready_{false};
 
   common::ConcurrentQueue<common::BookEvent> queue_;
+  common::ConcurrentQueue<common::AggregatedBookView> publish_queue_;
   std::thread worker_;
+  std::thread publisher_;
   std::atomic<bool> running_{false};
 
   std::unordered_map<SubscriberId, Subscriber> subscribers_;

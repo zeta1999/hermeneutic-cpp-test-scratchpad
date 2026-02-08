@@ -81,4 +81,11 @@ Souhaitez-vous les instructions spécifiques pour appliquer ce patch via un fich
 => more decimal tests ~
 => smart enums 
 
+=> fast replay mode, with timestamps checks and "false timestamps"
+=> alerts, Stan style [not too much repeat]
 
+chekc : make sure the aggregator sends update at every source update, with a startup time [i.e. only start diffusing updates if all sources are updated],
+▌ make sure updates can be pushed asynchronously and concurrently *** propagate to test suite
+
+then look at aggregation clients/subscribers
+and iterate design ( => lockless, some waitfree if possible etc.)

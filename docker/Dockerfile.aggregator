@@ -5,9 +5,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     cmake \
     git \
     pkg-config \
+    python3 \
+    python3-pip \
+    sqlite3 libsqlite3-dev zlib1g-dev libpcre2-dev libpcre2-posix3 \
     libssl-dev && update-ca-certificates && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y libexpat1-dev
 WORKDIR /src
 COPY . .
+RUN cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
+    && cmake --build build --parallel 4
 RUN cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
     && cmake --build build --target aggregator_service
 
@@ -17,5 +23,7 @@ WORKDIR /app
 COPY --from=build /src/build/services/aggregator_service/aggregator_service /usr/local/bin/aggregator_service
 COPY config/ config/
 COPY data/ data/
+COPY docker/entrypoint_aggregator.sh /usr/local/bin/entrypoint_aggregator.sh
+RUN chmod +x /usr/local/bin/entrypoint_aggregator.sh
 USER app
-ENTRYPOINT ["/usr/local/bin/aggregator_service", "config/aggregator.docker.json"]
+ENTRYPOINT ["/usr/local/bin/entrypoint_aggregator.sh", "config/aggregator.docker.json"]

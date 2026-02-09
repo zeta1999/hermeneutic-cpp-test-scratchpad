@@ -18,8 +18,8 @@ RUN cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
     && cmake --build build --target bbo_service
 
 FROM debian:bookworm-slim
-RUN useradd -m app
+RUN useradd -m app && mkdir -p /app && chown app:app /app
 WORKDIR /app
 COPY --from=build /src/build/services/bbo_service/bbo_service /usr/local/bin/bbo_service
 USER app
-ENTRYPOINT ["/usr/local/bin/bbo_service", "/shared/aggregator_feed.jsonl"]
+ENTRYPOINT ["/usr/local/bin/bbo_service"]

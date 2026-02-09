@@ -5,19 +5,19 @@ services:
       context: ..
       dockerfile: docker/Dockerfile.cex
     image: hermeneutic/cex
-    command: ["/usr/local/bin/cex_type1_service", "notbinance", "/app/data/notbinance.ndjson", "9001", "notbinance-token", "150"]
+    command: ["notbinance", "/app/data/notbinance.ndjson", "9001", "notbinance-token", "150"]
   cex-notcoinbase:
     build:
       context: ..
       dockerfile: docker/Dockerfile.cex
     image: hermeneutic/cex
-    command: ["/usr/local/bin/cex_type1_service", "notcoinbase", "/app/data/notcoinbase.ndjson", "9002", "notcoinbase-token", "200"]
+    command: ["notcoinbase", "/app/data/notcoinbase.ndjson", "9002", "notcoinbase-token", "200"]
   cex-notkraken:
     build:
       context: ..
       dockerfile: docker/Dockerfile.cex
     image: hermeneutic/cex
-    command: ["/usr/local/bin/cex_type1_service", "notkraken", "/app/data/notkraken.ndjson", "9003", "notkraken-token", "220"]
+    command: ["notkraken", "/app/data/notkraken.ndjson", "9003", "notkraken-token", "220"]
   aggregator:
     build:
       context: ..
@@ -36,7 +36,7 @@ services:
     image: hermeneutic/bbo
     depends_on:
       - aggregator
-    command: ["/usr/local/bin/bbo_service", "aggregator:50051", "agg-docker-token", "BTCUSDT"]
+    command: ["aggregator:50051", "agg-docker-token", "BTCUSDT"]
   volume_bands:
     build:
       context: ..
@@ -44,7 +44,7 @@ services:
     image: hermeneutic/volume
     depends_on:
       - aggregator
-    command: ["/usr/local/bin/volume_bands_service", "aggregator:50051", "agg-docker-token", "BTCUSDT"]
+    command: ["aggregator:50051", "agg-docker-token", "BTCUSDT"]
   price_bands:
     build:
       context: ..
@@ -52,4 +52,4 @@ services:
     image: hermeneutic/price
     depends_on:
       - aggregator
-    command: ["/usr/local/bin/price_bands_service", "aggregator:50051", "agg-docker-token", "BTCUSDT"]
+    command: ["aggregator:50051", "agg-docker-token", "BTCUSDT"]

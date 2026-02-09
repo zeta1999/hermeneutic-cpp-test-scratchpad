@@ -199,12 +199,38 @@ TEST_CASE("aggregator_service streams aggregated books from cex executables") {
 
   REQUIRE(received);
   auto view = hermeneutic::services::grpc_helpers::ToDomain(message);
-  CHECK(view.exchange_count == 2);
-  CHECK(view.best_bid.price >= hermeneutic::common::Decimal::fromString("100.00"));
-  CHECK(view.best_ask.price >= hermeneutic::common::Decimal::fromString("101.00"));
+  auto dec = [](const std::string& text) { return hermeneutic::common::Decimal::fromString(text); };
+
+  CHECK(message.exchange_count() == feeds.size());
+  CHECK(view.exchange_count == feeds.size());
+  CHECK(view.bid_levels.size() == feeds.size());
+  CHECK(view.ask_levels.size() == feeds.size());
+  CHECK(view.best_bid.price == dec("101.00"));
+  CHECK(view.best_bid.quantity == dec("1"));
+  CHECK(view.best_ask.price == dec("101.00"));
+  CHECK(view.best_ask.quantity == dec("2"));
+  CHECK(view.bid_levels.front().price == view.best_bid.price);
+  CHECK(view.bid_levels.back().price == dec("100.00"));
+  CHECK(view.bid_levels.back().quantity == dec("1"));
+  CHECK(view.ask_levels.front().price == view.best_ask.price);
+  CHECK(view.ask_levels.back().price == dec("102.00"));
+  CHECK(view.ask_levels.front().quantity == dec("2"));
+  CHECK(view.ask_levels.back().quantity == dec("2"));
   CHECK(view.last_feed_timestamp_ns > 0);
   CHECK(view.last_local_timestamp_ns > 0);
   CHECK(view.min_feed_timestamp_ns > 0);
   CHECK(view.min_local_timestamp_ns > 0);
+  CHECK(view.last_feed_timestamp_ns >= view.min_feed_timestamp_ns);
+  CHECK(view.last_local_timestamp_ns >= view.min_local_timestamp_ns);
   CHECK(view.timestamp.time_since_epoch().count() > 0);
+  CHECK(message.last_feed_timestamp_ns() >= message.min_feed_timestamp_ns());
+  CHECK(message.max_feed_timestamp_ns() >= message.last_feed_timestamp_ns());
+  CHECK(message.last_local_timestamp_ns() >= message.min_local_timestamp_ns());
+  CHECK(message.max_local_timestamp_ns() >= message.last_local_timestamp_ns());
+  CHECK(message.publish_timestamp_ns() > 0);
+  CHECK(message.timestamp_unix_millis() > 0);
+  auto publish_ns = message.publish_timestamp_ns();
+  auto millis = message.timestamp_unix_millis();
+  CHECK(publish_ns >= millis * 1'000'000);
+  CHECK((publish_ns - millis * 1'000'000) < 1'000'000);
 }

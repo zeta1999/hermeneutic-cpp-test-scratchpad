@@ -10,20 +10,17 @@
     {
       "name": "notbinance",
       "url": "ws://127.0.0.1:9001/notbinance",
-      "auth_token": "notbinance-token",
-      "interval_ms": 150
+      "auth_token": "notbinance-token"
     },
     {
       "name": "notcoinbase",
       "url": "ws://127.0.0.1:9002/notcoinbase",
-      "auth_token": "notcoinbase-token",
-      "interval_ms": 200
+      "auth_token": "notcoinbase-token"
     },
     {
       "name": "notkraken",
       "url": "ws://127.0.0.1:9003/notkraken",
-      "auth_token": "notkraken-token",
-      "interval_ms": 220
+      "auth_token": "notkraken-token"
     }
   ]
 }

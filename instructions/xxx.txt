@@ -13,3 +13,4 @@ grafana + influxdb? / postgres ?
 sanitizers, options for building clang und gcc
 go lockless/waitfree
 
+code coverage 

@@ -1,3 +1,4 @@
+add_subdirectory(common)
 add_subdirectory(aggregator_service)
 add_subdirectory(bbo_service)
 add_subdirectory(volume_bands_service)

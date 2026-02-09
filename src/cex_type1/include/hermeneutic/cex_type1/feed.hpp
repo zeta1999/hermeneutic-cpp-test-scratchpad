@@ -13,7 +13,7 @@ struct FeedOptions {
   std::string exchange;
   std::string url;
   std::string auth_token;
-  std::chrono::milliseconds interval{50};
+  std::chrono::milliseconds interval{0};
 };
 
 class ExchangeFeed {

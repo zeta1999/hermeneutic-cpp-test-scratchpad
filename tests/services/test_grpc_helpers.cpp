@@ -19,7 +19,12 @@ TEST_CASE("grpc helpers round-trip depth levels") {
   view.ask_levels.push_back({Decimal::fromString("101.00"), Decimal::fromString("3")});
   view.ask_levels.push_back({Decimal::fromString("101.50"), Decimal::fromString("4")});
   view.exchange_count = 2;
-  view.timestamp = std::chrono::system_clock::now();
+  auto timePointFromNs = [](std::int64_t ns) {
+    auto duration = std::chrono::nanoseconds(ns);
+    return std::chrono::time_point<std::chrono::system_clock>(
+        std::chrono::duration_cast<std::chrono::system_clock::duration>(duration));
+  };
+  view.timestamp = timePointFromNs(123456789);
   view.last_feed_timestamp_ns = 12345;
   view.last_local_timestamp_ns = 23456;
   view.min_feed_timestamp_ns = 10000;
@@ -34,6 +39,7 @@ TEST_CASE("grpc helpers round-trip depth levels") {
   CHECK(round_trip.bid_levels[1].price.toString(2) == "99.50");
   CHECK(round_trip.ask_levels[1].quantity.toString(0) == "4");
   CHECK(round_trip.last_feed_timestamp_ns == view.last_feed_timestamp_ns);
+  CHECK(round_trip.timestamp == view.timestamp);
   CHECK(round_trip.min_feed_timestamp_ns == view.min_feed_timestamp_ns);
   CHECK(round_trip.max_local_timestamp_ns == view.max_local_timestamp_ns);
 }

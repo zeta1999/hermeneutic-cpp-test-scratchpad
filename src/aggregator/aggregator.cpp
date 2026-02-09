@@ -248,9 +248,6 @@ AggregatorConfig loadAggregatorConfig(const std::string& path) {
     if (auto token = feed_obj["auth_token"].get_string(); token.error() == simdjson::SUCCESS) {
       feed.auth_token = std::string(token.value());
     }
-    if (auto interval = feed_obj["interval_ms"].get_uint64(); interval.error() == simdjson::SUCCESS) {
-      feed.interval = std::chrono::milliseconds(interval.value());
-    }
     config.feeds.push_back(std::move(feed));
   }
   return config;

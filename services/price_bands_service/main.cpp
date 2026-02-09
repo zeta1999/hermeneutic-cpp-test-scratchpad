@@ -1,11 +1,21 @@
-#include <grpcpp/grpcpp.h>
 #include <spdlog/spdlog.h>
 
+#include <atomic>
+#include <csignal>
+#include <chrono>
 #include <string>
+#include <thread>
 
-#include "aggregator.grpc.pb.h"
 #include "hermeneutic/price_bands/price_bands_publisher.hpp"
-#include "common/grpc_helpers.hpp"
+#include "common/book_stream_client.hpp"
+
+namespace {
+std::atomic<bool> g_running{true};
+
+void handleSignal(int) {
+  g_running = false;
+}
+}  // namespace
 
 int main(int argc, char** argv) {
   std::string endpoint = "127.0.0.1:50051";
@@ -21,35 +31,29 @@ int main(int argc, char** argv) {
     symbol = argv[3];
   }
 
-  auto channel = grpc::CreateChannel(endpoint, grpc::InsecureChannelCredentials());
-  auto stub = hermeneutic::grpc::AggregatorService::NewStub(channel);
-
-  grpc::ClientContext context;
-  hermeneutic::services::grpc_helpers::AttachAuth(context, token);
-  hermeneutic::grpc::SubscribeRequest request;
-  request.set_symbol(symbol);
-
-  auto reader = stub->StreamBooks(&context, request);
-  hermeneutic::grpc::AggregatedBook message;
   auto calculator = hermeneutic::price_bands::PriceBandsCalculator(
       hermeneutic::price_bands::defaultOffsets());
-  spdlog::info("Price bands client connected to {}", endpoint);
+  hermeneutic::services::BookStreamClient client(
+      endpoint,
+      token,
+      symbol,
+      [&](const hermeneutic::common::AggregatedBookView& view) {
+        auto quotes = calculator.compute(view);
+        for (const auto& quote : quotes) {
+          spdlog::info("Offset {} bps -> bid {} ask {}",
+                       quote.offset_bps.toString(0),
+                       quote.bid_price.toString(2),
+                       quote.ask_price.toString(2));
+        }
+      });
 
-  while (reader->Read(&message)) {
-    auto view = hermeneutic::services::grpc_helpers::ToDomain(message);
-    auto quotes = calculator.compute(view);
-    for (const auto& quote : quotes) {
-      spdlog::info("Offset {} bps -> bid {} ask {}",
-                   quote.offset_bps.toString(0),
-                   quote.bid_price.toString(2),
-                   quote.ask_price.toString(2));
-    }
+  client.start();
+  spdlog::info("Price bands client streaming from {}", endpoint);
+  std::signal(SIGINT, handleSignal);
+  std::signal(SIGTERM, handleSignal);
+  while (g_running.load()) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(200));
   }
-
-  auto status = reader->Finish();
-  if (!status.ok()) {
-    spdlog::error("Price bands stream closed: {}", status.error_message());
-    return 1;
-  }
+  client.stop();
   return 0;
 }

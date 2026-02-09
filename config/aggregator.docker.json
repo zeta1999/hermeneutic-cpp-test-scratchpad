@@ -10,20 +10,17 @@
     {
       "name": "notbinance",
       "url": "ws://cex-notbinance:9001/notbinance",
-      "auth_token": "notbinance-token",
-      "interval_ms": 150
+      "auth_token": "notbinance-token"
     },
     {
       "name": "notcoinbase",
       "url": "ws://cex-notcoinbase:9002/notcoinbase",
-      "auth_token": "notcoinbase-token",
-      "interval_ms": 200
+      "auth_token": "notcoinbase-token"
     },
     {
       "name": "notkraken",
       "url": "ws://cex-notkraken:9003/notkraken",
-      "auth_token": "notkraken-token",
-      "interval_ms": 220
+      "auth_token": "notkraken-token"
     }
   ]
 }

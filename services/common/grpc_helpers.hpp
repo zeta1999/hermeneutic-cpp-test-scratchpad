@@ -18,8 +18,15 @@ inline hermeneutic::common::AggregatedBookView ToDomain(
   view.best_ask.price = hermeneutic::common::Decimal::fromString(message.best_ask().price());
   view.best_ask.quantity = hermeneutic::common::Decimal::fromString(message.best_ask().quantity());
   view.exchange_count = message.exchange_count();
-  view.timestamp = std::chrono::system_clock::time_point(std::chrono::milliseconds(
-      message.timestamp_unix_millis()));
+  auto to_time_point = [](auto duration) {
+    return std::chrono::system_clock::time_point(
+        std::chrono::duration_cast<std::chrono::system_clock::duration>(duration));
+  };
+  if (message.publish_timestamp_ns() > 0) {
+    view.timestamp = to_time_point(std::chrono::nanoseconds(message.publish_timestamp_ns()));
+  } else {
+    view.timestamp = to_time_point(std::chrono::milliseconds(message.timestamp_unix_millis()));
+  }
   view.bid_levels.reserve(message.bid_levels_size());
   for (const auto& level : message.bid_levels()) {
     view.bid_levels.push_back({hermeneutic::common::Decimal::fromString(level.price()),
@@ -49,9 +56,11 @@ inline hermeneutic::grpc::AggregatedBook FromDomain(
   ask->set_price(view.best_ask.price.toString(8));
   ask->set_quantity(view.best_ask.quantity.toString(8));
   message.set_exchange_count(static_cast<std::uint32_t>(view.exchange_count));
-  auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(
-      view.timestamp.time_since_epoch());
+  auto duration = view.timestamp.time_since_epoch();
+  auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(duration);
   message.set_timestamp_unix_millis(ms.count());
+  auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(duration);
+  message.set_publish_timestamp_ns(ns.count());
   for (const auto& level : view.bid_levels) {
     auto* proto_level = message.add_bid_levels();
     proto_level->set_price(level.price.toString(8));

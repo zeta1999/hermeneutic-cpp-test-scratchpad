@@ -1,11 +1,21 @@
-#include <grpcpp/grpcpp.h>
 #include <spdlog/spdlog.h>
 
+#include <atomic>
+#include <csignal>
+#include <chrono>
 #include <string>
+#include <thread>
 
-#include "aggregator.grpc.pb.h"
 #include "hermeneutic/bbo/bbo_publisher.hpp"
-#include "common/grpc_helpers.hpp"
+#include "common/book_stream_client.hpp"
+
+namespace {
+std::atomic<bool> g_running{true};
+
+void handleSignal(int) {
+  g_running = false;
+}
+}  // namespace
 
 int main(int argc, char** argv) {
   std::string endpoint = "127.0.0.1:50051";
@@ -21,28 +31,21 @@ int main(int argc, char** argv) {
     symbol = argv[3];
   }
 
-  auto channel = grpc::CreateChannel(endpoint, grpc::InsecureChannelCredentials());
-  auto stub = hermeneutic::grpc::AggregatorService::NewStub(channel);
-
-  grpc::ClientContext context;
-  hermeneutic::services::grpc_helpers::AttachAuth(context, token);
-  hermeneutic::grpc::SubscribeRequest request;
-  request.set_symbol(symbol);
-  auto reader = stub->StreamBooks(&context, request);
-
-  hermeneutic::grpc::AggregatedBook message;
   hermeneutic::bbo::BboPublisher publisher;
-  spdlog::info("BBO client connected to {}", endpoint);
+  hermeneutic::services::BookStreamClient client(
+      endpoint,
+      token,
+      symbol,
+      [&](const hermeneutic::common::AggregatedBookView& view) { spdlog::info(publisher.format(view)); });
+  client.start();
+  spdlog::info("BBO client streaming from {}", endpoint);
 
-  while (reader->Read(&message)) {
-    auto view = hermeneutic::services::grpc_helpers::ToDomain(message);
-    spdlog::info(publisher.format(view));
-  }
+  std::signal(SIGINT, handleSignal);
+  std::signal(SIGTERM, handleSignal);
 
-  auto status = reader->Finish();
-  if (!status.ok()) {
-    spdlog::error("BBO stream closed: {}", status.error_message());
-    return 1;
+  while (g_running.load()) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(200));
   }
+  client.stop();
   return 0;
 }

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <chrono>
 #include <condition_variable>
 #include <mutex>
 #include <queue>
@@ -34,6 +35,20 @@ class ConcurrentQueue {
   bool wait_pop(T& value) {
     std::unique_lock<std::mutex> lock(mutex_);
     cond_var_.wait(lock, [this] { return closed_ || !queue_.empty(); });
+    if (queue_.empty()) {
+      return false;
+    }
+    value = std::move(queue_.front());
+    queue_.pop();
+    return true;
+  }
+
+  template <typename Rep, typename Period>
+  bool wait_pop_for(T& value, const std::chrono::duration<Rep, Period>& timeout) {
+    std::unique_lock<std::mutex> lock(mutex_);
+    if (!cond_var_.wait_for(lock, timeout, [this] { return closed_ || !queue_.empty(); })) {
+      return false;
+    }
     if (queue_.empty()) {
       return false;
     }

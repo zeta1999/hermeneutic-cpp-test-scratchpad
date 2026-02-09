@@ -10,7 +10,6 @@ struct FeedConfig {
   std::string name;
   std::string url;
   std::string auth_token;
-  std::chrono::milliseconds interval{100};
 };
 
 struct GrpcConfig {

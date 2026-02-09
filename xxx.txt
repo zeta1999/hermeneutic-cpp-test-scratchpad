@@ -89,3 +89,11 @@ chekc : make sure the aggregator sends update at every source update, with a sta
 
 then look at aggregation clients/subscribers
 and iterate design ( => lockless, some waitfree if possible etc.)
+
+check compliance with specs again before doing someting more interesting ~
+security: use a non-trivial pwd ...
+
+? build/ folder "collision" ?
+? docker image sizes (multistage right?)
+? follow specs for price/volume bands 
+? accelerated virtual time mode ...

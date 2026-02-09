@@ -3,6 +3,8 @@
 #include <atomic>
 #include <csignal>
 #include <chrono>
+#include <filesystem>
+#include <fstream>
 #include <string>
 #include <thread>
 
@@ -21,6 +23,7 @@ int main(int argc, char** argv) {
   std::string endpoint = "127.0.0.1:50051";
   std::string token = "";
   std::string symbol = "BTCUSDT";
+  std::string csv_path = "price_bands.csv";
   if (argc > 1) {
     endpoint = argv[1];
   }
@@ -30,6 +33,23 @@ int main(int argc, char** argv) {
   if (argc > 3) {
     symbol = argv[3];
   }
+  if (argc > 4) {
+    csv_path = argv[4];
+  }
+
+  bool need_header = true;
+  if (std::filesystem::exists(csv_path) && std::filesystem::file_size(csv_path) > 0) {
+    need_header = false;
+  }
+  std::ofstream csv(csv_path, std::ios::app);
+  if (!csv.is_open()) {
+    spdlog::error("Failed to open {} for writing", csv_path);
+    return 1;
+  }
+  if (need_header) {
+    csv << "timestamp_ns,symbol,offset_bps,bid_price,ask_price\n";
+    csv.flush();
+  }
 
   auto calculator = hermeneutic::price_bands::PriceBandsCalculator(
       hermeneutic::price_bands::defaultOffsets());
@@ -38,13 +58,21 @@ int main(int argc, char** argv) {
       token,
       symbol,
       [&](const hermeneutic::common::AggregatedBookView& view) {
+        auto timestamp_ns =
+            std::chrono::duration_cast<std::chrono::nanoseconds>(view.timestamp.time_since_epoch()).count();
         auto quotes = calculator.compute(view);
         for (const auto& quote : quotes) {
+          csv << timestamp_ns << ','
+              << symbol << ','
+              << quote.offset_bps.toString(0) << ','
+              << quote.bid_price.toString(8) << ','
+              << quote.ask_price.toString(8) << '\n';
           spdlog::info("Offset {} bps -> bid {} ask {}",
                        quote.offset_bps.toString(0),
                        quote.bid_price.toString(2),
                        quote.ask_price.toString(2));
         }
+        csv.flush();
       });
 
   client.start();

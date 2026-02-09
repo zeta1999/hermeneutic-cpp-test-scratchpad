@@ -73,7 +73,13 @@ cd docker
 docker compose up --build
 ```
 
-Expose the aggregator gRPC endpoint on `localhost:50051` and watch client logs roll through the container output.
+The compose file (`docker/compose.yml`) launches:
+
+- `cex-notbinance|notcoinbase|notkraken` — websocket mocks serving the NDJSON fixtures under `data/` with unique tokens/ports.
+- `aggregator` — runs `aggregator_service` against `config/aggregator.json`, binding gRPC on `localhost:50051`.
+- `bbo`, `volume_bands`, `price_bands` — each container starts its respective client service pointing at `aggregator:50051` with the docker token `agg-docker-token`.
+
+Client stdout is streamed to the compose logs, and each container now appends its derived data to CSV files inside the container filesystem (`/app/bbo_quotes.csv`, `/app/volume_bands.csv`, `/app/price_bands.csv`). Use `docker cp <container>:<path> <dest>` to retrieve those artifacts if you want to analyze them outside the running containers.
 
 ## Mock CEX protocol
 

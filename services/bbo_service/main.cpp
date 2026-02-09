@@ -3,6 +3,8 @@
 #include <atomic>
 #include <csignal>
 #include <chrono>
+#include <filesystem>
+#include <fstream>
 #include <string>
 #include <thread>
 
@@ -21,6 +23,7 @@ int main(int argc, char** argv) {
   std::string endpoint = "127.0.0.1:50051";
   std::string token = "";
   std::string symbol = "BTCUSDT";
+  std::string csv_path = "bbo_quotes.csv";
   if (argc > 1) {
     endpoint = argv[1];
   }
@@ -30,13 +33,41 @@ int main(int argc, char** argv) {
   if (argc > 3) {
     symbol = argv[3];
   }
+  if (argc > 4) {
+    csv_path = argv[4];
+  }
+
+  bool need_header = true;
+  if (std::filesystem::exists(csv_path) && std::filesystem::file_size(csv_path) > 0) {
+    need_header = false;
+  }
+  std::ofstream csv(csv_path, std::ios::app);
+  if (!csv.is_open()) {
+    spdlog::error("Failed to open {} for writing", csv_path);
+    return 1;
+  }
+  if (need_header) {
+    csv << "timestamp_ns,symbol,best_bid_price,best_bid_quantity,best_ask_price,best_ask_quantity,exchange_count\n";
+    csv.flush();
+  }
 
   hermeneutic::bbo::BboPublisher publisher;
   hermeneutic::services::BookStreamClient client(
       endpoint,
       token,
       symbol,
-      [&](const hermeneutic::common::AggregatedBookView& view) { spdlog::info(publisher.format(view)); });
+      [&](const hermeneutic::common::AggregatedBookView& view) {
+        auto timestamp_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(view.timestamp.time_since_epoch()).count();
+        csv << timestamp_ns << ','
+            << symbol << ','
+            << view.best_bid.price.toString(8) << ','
+            << view.best_bid.quantity.toString(8) << ','
+            << view.best_ask.price.toString(8) << ','
+            << view.best_ask.quantity.toString(8) << ','
+            << view.exchange_count << '\n';
+        csv.flush();
+        spdlog::info(publisher.format(view));
+      });
   client.start();
   spdlog::info("BBO client streaming from {}", endpoint);
 

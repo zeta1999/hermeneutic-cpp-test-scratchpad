@@ -37,6 +37,8 @@ docker buildx use "$BUILDER_NAME" >/dev/null
 build_image() {
   image_tag=$1
   dockerfile=$2
+  shift 2
+  extra_args=("$@")
   echo "[buildx] building $image_tag from $dockerfile for $PLATFORMS"
   docker buildx build \
     --platform "$PLATFORMS" \
@@ -44,13 +46,30 @@ build_image() {
     -t "$image_tag" \
     -f "$dockerfile" \
     $OUTPUT_FLAG \
+    "${extra_args[@]}" \
     .
 }
 
-build_image hermeneutic/cex docker/Dockerfile.cex
-build_image hermeneutic/aggregator docker/Dockerfile.aggregator
-build_image hermeneutic/bbo docker/Dockerfile.bbo
-build_image hermeneutic/volume docker/Dockerfile.volume
-build_image hermeneutic/price docker/Dockerfile.price
+CACHE_PRIME_IMAGE=${CACHE_PRIME_IMAGE:-"hermeneutic/aggregator"}
+
+# Build aggregator first to populate caches other images can reuse.
+build_image "$CACHE_PRIME_IMAGE" docker/Dockerfile.aggregator \
+  --buildkit-inline-cache \
+  --cache-from "$CACHE_PRIME_IMAGE"
+
+# Remaining services reuse the aggregator build stage cache so the heavy
+# `cmake --build` layer only runs once per platform.
+build_image hermeneutic/cex docker/Dockerfile.cex \
+  --cache-from "$CACHE_PRIME_IMAGE" \
+  --cache-from hermeneutic/cex
+build_image hermeneutic/bbo docker/Dockerfile.bbo \
+  --cache-from "$CACHE_PRIME_IMAGE" \
+  --cache-from hermeneutic/bbo
+build_image hermeneutic/volume docker/Dockerfile.volume \
+  --cache-from "$CACHE_PRIME_IMAGE" \
+  --cache-from hermeneutic/volume
+build_image hermeneutic/price docker/Dockerfile.price \
+  --cache-from "$CACHE_PRIME_IMAGE" \
+  --cache-from hermeneutic/price
 
 echo "[buildx] done"

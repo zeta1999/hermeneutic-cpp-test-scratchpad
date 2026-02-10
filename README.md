@@ -57,6 +57,16 @@ Executables land at `build/services/<name>/<name>`. Run three mock exchanges, th
 ./build/services/price_bands_service/price_bands_service 127.0.0.1:50051 agg-local-token BTCUSDT &
 ```
 
+Prefer a one-liner? `scripts/run_local_stack.sh` builds the same binaries and launches them for you, mirroring the compose topology but without Docker. Override knobs via environment variables:
+
+```
+# Reuse an existing build directory and adjust concurrency/output paths.
+BUILD_DIR=build-release BUILD_PARALLEL=12 OUTPUT_DIR=./output \
+  scripts/run_local_stack.sh
+```
+
+The script watches all services and tears them down when one of them exits or you press `Ctrl-C`.
+
 - WebSocket clients attach a `Bearer <token>` header, and the mock CEX server validates it before streaming NDJSON lines.
 - The aggregator gRPC server validates the same style of `Authorization` metadata before emitting server-streamed `AggregatedBook` updates.
 - `cex_type1_service` accepts optional `[start_sequence]` (after `[interval_ms]`) to skip replaying any NDJSON

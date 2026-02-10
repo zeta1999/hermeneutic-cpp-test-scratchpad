@@ -45,6 +45,16 @@ you truly need to skip tests (for example when packaging), pass both
 `-DHERMENEUTIC_ALLOW_TESTLESS_BUILDS=ON` and `-DBUILD_TESTING=OFF` when running
 `cmake -S . -B <builddir>`.
 
+The test suite synthesizes its own NDJSON fixtures on the fly (see
+`tests/cex_type1` and `tests/aggregator`), so regenerating the sample files
+under `data/` never changes `ctest` behaviour or forces new expectations.
+
+Helper runners keep common permutations at hand:
+
+- `scripts/run_ctest_debug.sh` hits the `build.debug` tree with debug asserts enabled.
+- `scripts/run_ctest_debug_asan.sh` / `_tsan.sh` configure `build.debug-asan` / `build.debug-tsan`, export the right sanitizer options, build, and run `ctest`.
+- `scripts/run_ctest_coverage.sh` configures `build.coverage` with either clang (`-fprofile-instr-generate -fcoverage-mapping`) or GCC (`--coverage`) instrumentation, runs `ctest` with the right environment (`LLVM_PROFILE_FILE` for clang), and produces a text summary via `llvm-cov` or `gcovr` when those tools are available.
+
 ### Platform/architecture notes
 
 - macOS/arm64 (Apple silicon) presets target the native toolchain. Create a Linux cross-build tree when needed:
@@ -91,6 +101,14 @@ RUN_DURATION=20 STACK_LOG=/tmp/local_stack.log \
 ```
 
 It propagates the same `BUILD_DIR`/`OUTPUT_DIR` overrides you pass to `run_local_stack.sh`, so you can reuse artifacts while still getting a single command that builds, runs, and checks the CSVs.
+
+Want richer instrumentation? Dedicated wrappers preconfigure separate build trees so you can run the stack (or the one-shot variant) under debug assertions, sanitizers, or coverage without touching your default tree:
+
+- `scripts/run_local_stack_debug.sh` / `scripts/run_local_stack_once_debug.sh` → `build.debug`
+- `scripts/run_local_stack_debug_asan.sh` / `_tsan.sh` → `build.debug-asan` / `build.debug-tsan`
+- `scripts/run_local_stack_coverage.sh` / `_once_coverage.sh` → `build.coverage` (clang and GCC coverage flags supported)
+
+Each wrapper auto-configures the matching build directory (with `HERMENEUTIC_ENABLE_DEBUG_ASSERTS=ON`) and then delegates to the base script.
 
 Prefer to exercise the Docker compose demo instead? `scripts/run_docker_stack_once.sh` accepts the same arguments you would pass to `scripts/docker_run.sh` (defaults to `up`), runs it for `RUN_DURATION` seconds, tears the stack down via `docker compose down`, then reuses `scripts/validate_csv.py`:
 

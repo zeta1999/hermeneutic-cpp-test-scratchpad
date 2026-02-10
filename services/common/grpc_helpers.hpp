@@ -23,9 +23,13 @@ inline hermeneutic::common::AggregatedBookView ToDomain(
         std::chrono::duration_cast<std::chrono::system_clock::duration>(duration));
   };
   if (message.publish_timestamp_ns() > 0) {
-    view.timestamp = to_time_point(std::chrono::nanoseconds(message.publish_timestamp_ns()));
+    auto publish = std::chrono::nanoseconds(message.publish_timestamp_ns());
+    view.timestamp = to_time_point(publish);
+    view.publish_timestamp_ns = message.publish_timestamp_ns();
   } else {
-    view.timestamp = to_time_point(std::chrono::milliseconds(message.timestamp_unix_millis()));
+    auto ms = std::chrono::milliseconds(message.timestamp_unix_millis());
+    view.timestamp = to_time_point(ms);
+    view.publish_timestamp_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(ms).count();
   }
   view.bid_levels.reserve(message.bid_levels_size());
   for (const auto& level : message.bid_levels()) {
@@ -60,7 +64,8 @@ inline hermeneutic::grpc::AggregatedBook FromDomain(
   auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(duration);
   message.set_timestamp_unix_millis(ms.count());
   auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(duration);
-  message.set_publish_timestamp_ns(ns.count());
+  const auto publish_ns = view.publish_timestamp_ns != 0 ? view.publish_timestamp_ns : ns.count();
+  message.set_publish_timestamp_ns(publish_ns);
   for (const auto& level : view.bid_levels) {
     auto* proto_level = message.add_bid_levels();
     proto_level->set_price(level.price.toString(8));

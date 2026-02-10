@@ -47,7 +47,8 @@ int main(int argc, char** argv) {
     return 1;
   }
   if (need_header) {
-    csv << "timestamp_ns,symbol,notional,bid_price,ask_price\n";
+    csv << "timestamp_ns,symbol,notional,bid_price,ask_price,last_feed_timestamp_ns,last_local_timestamp_ns,"
+        << "min_feed_timestamp_ns,max_feed_timestamp_ns,min_local_timestamp_ns,max_local_timestamp_ns,publish_timestamp_ns\n";
     csv.flush();
   }
 
@@ -58,15 +59,25 @@ int main(int argc, char** argv) {
       token,
       symbol,
       [&](const hermeneutic::common::AggregatedBookView& view) {
-        auto timestamp_ns =
-            std::chrono::duration_cast<std::chrono::nanoseconds>(view.timestamp.time_since_epoch()).count();
+        auto timestamp_ns = view.publish_timestamp_ns;
+        if (timestamp_ns == 0) {
+          timestamp_ns =
+              std::chrono::duration_cast<std::chrono::nanoseconds>(view.timestamp.time_since_epoch()).count();
+        }
         auto quotes = calculator.compute(view);
         for (const auto& quote : quotes) {
           csv << timestamp_ns << ','
               << symbol << ','
               << quote.notional.toString(0) << ','
               << quote.bid_price.toString(8) << ','
-              << quote.ask_price.toString(8) << '\n';
+              << quote.ask_price.toString(8) << ','
+              << view.last_feed_timestamp_ns << ','
+              << view.last_local_timestamp_ns << ','
+              << view.min_feed_timestamp_ns << ','
+              << view.max_feed_timestamp_ns << ','
+              << view.min_local_timestamp_ns << ','
+              << view.max_local_timestamp_ns << ','
+              << timestamp_ns << '\n';
           spdlog::info(hermeneutic::volume_bands::formatQuote(quote));
         }
         csv.flush();

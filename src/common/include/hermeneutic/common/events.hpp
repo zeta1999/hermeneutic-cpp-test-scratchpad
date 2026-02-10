@@ -91,6 +91,7 @@ struct AggregatedBookView {
   std::int64_t max_feed_timestamp_ns{0};
   std::int64_t min_local_timestamp_ns{0};
   std::int64_t max_local_timestamp_ns{0};
+  std::int64_t publish_timestamp_ns{0};
 };
 
 struct VolumeBandQuote {

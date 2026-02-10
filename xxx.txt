@@ -116,3 +116,4 @@ about the run it all in one go mode: run the tests in the end
 semi magic all in one run script, even without the "fast replay mode"
 no socket test stuff
 fix run local stck one/linux: 15s but why include build time ...
+docker in codespace?

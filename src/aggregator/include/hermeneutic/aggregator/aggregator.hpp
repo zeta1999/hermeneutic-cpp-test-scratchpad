@@ -1,6 +1,7 @@
 #pragma once
 
 #include <atomic>
+#include <chrono>
 #include <cstddef>
 #include <functional>
 #include <mutex>
@@ -38,6 +39,10 @@ class AggregationEngine {
   void enqueueSnapshot(common::AggregatedBookView view);
   void publish(const common::AggregatedBookView& view);
   common::AggregatedBookView consolidate() const;
+  void validateAggregatedView(const common::AggregatedBookView& view) const;
+  void maybeWarnOnStaleness(std::int64_t feed_span,
+                            std::int64_t local_span,
+                            std::int64_t publish_delay) const;
 
   mutable std::mutex mutex_;
   std::unordered_map<std::string, lob::LimitOrderBook> books_;
@@ -53,6 +58,7 @@ class AggregationEngine {
   std::thread worker_;
   std::thread publisher_;
   std::atomic<bool> running_{false};
+  mutable std::chrono::steady_clock::time_point last_staleness_warning_{};
 
   std::unordered_map<SubscriberId, Subscriber> subscribers_;
   std::atomic<SubscriberId> next_subscriber_id_{1};

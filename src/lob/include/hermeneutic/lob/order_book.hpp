@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "hermeneutic/common/assert.hpp"
 #include "hermeneutic/common/events.hpp"
 
 namespace hermeneutic::lob {
@@ -45,6 +46,8 @@ class LimitOrderBook {
   void setExchange(std::string name) { exchange_name_ = std::move(name); }
 
  private:
+  void validateInvariants() const;
+
   BidMap bids_;
   AskMap asks_;
   OrderMap orders_;

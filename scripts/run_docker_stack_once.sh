@@ -35,14 +35,39 @@ else
   "${CMD[@]}" &
 fi
 stack_pid=$!
-
 sleep "$RUN_DURATION" &
 sleeper=$!
 wait "$sleeper" || true
 
+signal_group() {
+  local sig=$1
+  kill -"$sig" "$stack_pid" >/dev/null 2>&1 || true
+}
+
+wait_for_exit() {
+  local timeout=$1
+  local waited=0
+  while kill -0 "$stack_pid" >/dev/null 2>&1; do
+    if [ "$waited" -ge "$timeout" ]; then
+      return 1
+    fi
+    sleep 1
+    waited=$((waited + 1))
+  done
+  return 0
+}
+
 if kill -0 "$stack_pid" >/dev/null 2>&1; then
   echo "[docker-stack-once] stopping compose after ${RUN_DURATION}s"
-  kill -INT "$stack_pid" >/dev/null 2>&1 || kill "$stack_pid" >/dev/null 2>&1 || true
+  signal_group INT
+  if ! wait_for_exit 5; then
+    echo "[docker-stack-once] compose still running, sending SIGTERM"
+    signal_group TERM
+    if ! wait_for_exit 5; then
+      echo "[docker-stack-once] compose unresponsive, sending SIGKILL"
+      signal_group KILL
+    fi
+  fi
 fi
 wait "$stack_pid" >/dev/null 2>&1 || true
 

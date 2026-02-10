@@ -7,15 +7,28 @@ namespace hermeneutic::volume_bands {
 VolumeBandsCalculator::VolumeBandsCalculator(std::vector<common::Decimal> thresholds)
     : thresholds_(std::move(thresholds)) {}
 
+namespace {
+inline common::DecimalWide widen(const common::Decimal& value) {
+  return common::DecimalWide::fromRaw(value.raw());
+}
+
+bool exceedsThreshold(const common::Decimal& price,
+                      const common::Decimal& quantity,
+                      const common::Decimal& threshold) {
+  auto notional = widen(price) * widen(quantity);
+  return notional >= widen(threshold);
+}
+}  // namespace
+
 std::vector<common::VolumeBandQuote> VolumeBandsCalculator::compute(
     const common::AggregatedBookView& view) const {
   std::vector<common::VolumeBandQuote> quotes;
   quotes.reserve(thresholds_.size());
   for (const auto& threshold : thresholds_) {
-    auto bid_notional = view.best_bid.price * view.best_bid.quantity;
-    auto ask_notional = view.best_ask.price * view.best_ask.quantity;
-    common::Decimal bid_price = bid_notional >= threshold ? view.best_bid.price : common::Decimal::fromRaw(0);
-    common::Decimal ask_price = ask_notional >= threshold ? view.best_ask.price : common::Decimal::fromRaw(0);
+    const bool bid_ok = exceedsThreshold(view.best_bid.price, view.best_bid.quantity, threshold);
+    const bool ask_ok = exceedsThreshold(view.best_ask.price, view.best_ask.quantity, threshold);
+    const auto bid_price = bid_ok ? view.best_bid.price : common::Decimal::fromRaw(0);
+    const auto ask_price = ask_ok ? view.best_ask.price : common::Decimal::fromRaw(0);
     quotes.push_back(common::VolumeBandQuote{threshold, bid_price, ask_price});
   }
   return quotes;

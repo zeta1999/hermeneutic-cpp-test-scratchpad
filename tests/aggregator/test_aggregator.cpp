@@ -11,46 +11,19 @@
 
 #include "hermeneutic/aggregator/aggregator.hpp"
 #include "hermeneutic/common/events.hpp"
+#include "tests/support/test_data_factory.hpp"
 
-using hermeneutic::common::BookEvent;
-using hermeneutic::common::BookEventKind;
 using hermeneutic::common::Decimal;
 using hermeneutic::common::Side;
 
-namespace {
-
-std::chrono::system_clock::time_point tpFromNs(std::int64_t ns) {
-  return std::chrono::system_clock::time_point(
-      std::chrono::duration_cast<std::chrono::system_clock::duration>(
-          std::chrono::nanoseconds(ns)));
-}
-
-BookEvent makeNewOrder(std::string exchange,
-                       std::uint64_t id,
-                       Side side,
-                       std::string price,
-                       std::string quantity,
-                       std::uint64_t sequence,
-                       std::chrono::system_clock::time_point timestamp = std::chrono::system_clock::time_point{}) {
-  BookEvent event;
-  event.exchange = std::move(exchange);
-  event.kind = BookEventKind::NewOrder;
-  event.sequence = sequence;
-  event.order.order_id = id;
-  event.order.side = side;
-  event.order.price = Decimal::fromString(price);
-  event.order.quantity = Decimal::fromString(quantity);
-  event.timestamp = timestamp;
-  return event;
-}
-
-}  // namespace
+using hermeneutic::tests::support::makeNewOrder;
+using hermeneutic::tests::support::timeFromNanoseconds;
 
 TEST_CASE("aggregator consolidates best bid and ask") {
   hermeneutic::aggregator::AggregationEngine engine;
   engine.start();
-  engine.push(makeNewOrder("notbinance", 1, Side::Bid, "100.00", "1", 1, tpFromNs(100)));
-  engine.push(makeNewOrder("notcoinbase", 2, Side::Bid, "101.00", "2", 2, tpFromNs(200)));
+  engine.push(makeNewOrder("notbinance", 1, Side::Bid, "100.00", "1", 1, timeFromNanoseconds(100)));
+  engine.push(makeNewOrder("notcoinbase", 2, Side::Bid, "101.00", "2", 2, timeFromNanoseconds(200)));
   std::this_thread::sleep_for(std::chrono::milliseconds(10));
   auto view = engine.latest();
   CHECK(view.best_bid.price.toString(2) == "101.00");
@@ -65,11 +38,11 @@ TEST_CASE("aggregator consolidates best bid and ask") {
 TEST_CASE("aggregator exposes aggregated depth levels") {
   hermeneutic::aggregator::AggregationEngine engine;
   engine.start();
-  engine.push(makeNewOrder("ex1", 1, Side::Bid, "100.00", "1", 1, tpFromNs(1000)));
-  engine.push(makeNewOrder("ex1", 2, Side::Bid, "101.00", "2", 2, tpFromNs(2000)));
-  engine.push(makeNewOrder("ex2", 3, Side::Bid, "100.00", "3", 3, tpFromNs(3000)));
-  engine.push(makeNewOrder("ex2", 4, Side::Ask, "105.00", "4", 4, tpFromNs(4000)));
-  engine.push(makeNewOrder("ex3", 5, Side::Ask, "106.00", "5", 5, tpFromNs(5000)));
+  engine.push(makeNewOrder("ex1", 1, Side::Bid, "100.00", "1", 1, timeFromNanoseconds(1000)));
+  engine.push(makeNewOrder("ex1", 2, Side::Bid, "101.00", "2", 2, timeFromNanoseconds(2000)));
+  engine.push(makeNewOrder("ex2", 3, Side::Bid, "100.00", "3", 3, timeFromNanoseconds(3000)));
+  engine.push(makeNewOrder("ex2", 4, Side::Ask, "105.00", "4", 4, timeFromNanoseconds(4000)));
+  engine.push(makeNewOrder("ex3", 5, Side::Ask, "106.00", "5", 5, timeFromNanoseconds(5000)));
   std::this_thread::sleep_for(std::chrono::milliseconds(10));
   auto view = engine.latest();
   CHECK(view.bid_levels.size() >= 2);

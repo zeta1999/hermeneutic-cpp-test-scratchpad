@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Launch the same topology as docker compose, but using locally built binaries.
 # Builds the needed service targets (if missing) and streams logs to the
-# current terminal. Stop with Ctrl-C.
+# current terminal. Stop with Ctrl-C. Export HERMENEUTIC_WAIT_FOR_FEEDS=0 if you
+# want the aggregator to skip hostname waits.
 
 set -euo pipefail
 
@@ -58,7 +59,7 @@ for binary in "$cex_bin" "$agg_bin" "$bbo_bin" "$volume_bin" "$price_bin"; do
     echo "[local-stack] expected binary not found: $binary" >&2
     exit 1
   fi
-fi
+done
 
 declare -a PIDS=()
 declare -a LABELS=()

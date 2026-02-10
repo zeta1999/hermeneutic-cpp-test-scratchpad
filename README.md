@@ -45,6 +45,19 @@ you truly need to skip tests (for example when packaging), pass both
 `-DHERMENEUTIC_ALLOW_TESTLESS_BUILDS=ON` and `-DBUILD_TESTING=OFF` when running
 `cmake -S . -B <builddir>`.
 
+### Platform/architecture notes
+
+- macOS/arm64 (Apple silicon) presets target the native toolchain. Create a Linux cross-build tree when needed:
+
+  ```bash
+  cmake -S . -B build-linux -DCMAKE_SYSTEM_NAME=Linux -DCMAKE_OSX_ARCHITECTURES=arm64
+  cmake --build build-linux
+  ```
+
+- Linux/amd64 or Linux/arm64 hosts can stick to the default presets. If you build for both architectures, configure separate directories (for example `build-amd64` and `build-arm64`) and run `cmake --build <dir>` for each.
+- Keep host-native and cross-build directories separate so you can flip targets without reconfiguring.
+- When building locally on macOS or non-Debian distros, prefer out-of-tree directories that sit **outside** the repo root (for example `cmake -S . -B ../build-macos && cmake --build ../build-macos`). Docker images copy the workspace into `/src`; if you drop a `build/` directory inside the repo, its cached `CMakeCache.txt` will conflict with the container build step. Keeping host builds elsewhere (and the new `.dockerignore`) avoids multi-gigabyte contexts and cache collisions.
+
 Executables land at `build/services/<name>/<name>`. Run three mock exchanges, then the aggregator, then the gRPC clients:
 
 ```bash
@@ -56,6 +69,8 @@ Executables land at `build/services/<name>/<name>`. Run three mock exchanges, th
 ./build/services/volume_bands_service/volume_bands_service 127.0.0.1:50051 agg-local-token BTCUSDT &
 ./build/services/price_bands_service/price_bands_service 127.0.0.1:50051 agg-local-token BTCUSDT &
 ```
+
+`aggregator_service` now waits for feed hostnames in the config to resolve before dialing their WebSockets, so the Docker image no longer needs a shim entrypoint. Set `HERMENEUTIC_WAIT_FOR_FEEDS=0` to skip that wait loop during local experiments.
 
 Prefer a one-liner? `scripts/run_local_stack.sh` builds the same binaries and launches them for you, mirroring the compose topology but without Docker. Override knobs via environment variables:
 
@@ -89,6 +104,12 @@ PLATFORMS=linux/amd64,linux/arm64 OUTPUT=push scripts/docker_build.sh
 
 The script ensures a buildx builder exists, then builds `hermeneutic/{cex,aggregator,bbo,volume,price}` using the Dockerfiles in `docker/`. When `OUTPUT=load` (the default) you must stick to a single platform because Docker can only load one architecture into the local daemon; switch to `OUTPUT=push` or an explicit `--output` target when building a manifest list.
 
+Inspect image sizes with:
+
+```
+docker images hermeneutic/* --format "{{.Repository}}:{{.Tag}}\t{{.Size}}"
+```
+
 ### Run the demo stack
 
 ```
@@ -104,6 +125,8 @@ The helper script creates `output/{bbo,volume_bands,price_bands}` under the repo
 - `output/bbo/bbo_quotes.csv`
 - `output/volume_bands/volume_bands.csv`
 - `output/price_bands/price_bands.csv`
+
+The aggregator container inherits `HERMENEUTIC_WAIT_FOR_FEEDS` from your shell (defaults to `1`), so set `HERMENEUTIC_WAIT_FOR_FEEDS=0 scripts/docker_run.sh up` if you want it to skip hostname waits inside Compose.
 
 The compose file (`docker/compose.yml`) still launches the same services as before (three mock CEX feeds, the aggregator, and the three gRPC clients) and binds the aggregator gRPC endpoint to `localhost:50051`.
 

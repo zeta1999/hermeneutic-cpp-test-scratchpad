@@ -108,4 +108,6 @@ doc debug sessions
 ...
 the waitfree list/queue ~ 22'
 run the whole stuff without docker with hints at how to dedug that
- 
+sanitizers & maybe valgrind runs + code coverage 
+vendorizing/devendorizing exercise 
+docker stuff ~> reduce logs optionally 

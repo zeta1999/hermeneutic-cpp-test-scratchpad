@@ -1,0 +1,16 @@
+# Ignore local build artifacts and editor clutter so docker build contexts stay small.
+build/
+build-*/
+build_*/
+build-linux/
+build-linux*/
+build-release/
+build-release*/
+Testing/
+Testing/**
+output/
+output/**
+.vscode/
+.idea/
+.DS_Store
+*.swp

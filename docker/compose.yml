@@ -1,4 +1,3 @@
-version: "3.9"
 services:
   cex-notbinance:
     build:
@@ -27,6 +26,8 @@ services:
       - cex-notbinance
       - cex-notcoinbase
       - cex-notkraken
+    environment:
+      HERMENEUTIC_WAIT_FOR_FEEDS: ${HERMENEUTIC_WAIT_FOR_FEEDS:-1}
     ports:
       - "50051:50051"
   bbo:

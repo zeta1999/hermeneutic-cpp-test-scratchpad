@@ -23,7 +23,5 @@ WORKDIR /app
 COPY --from=build /src/build/services/aggregator_service/aggregator_service /usr/local/bin/aggregator_service
 COPY config/ config/
 COPY data/ data/
-COPY docker/entrypoint_aggregator.sh /usr/local/bin/entrypoint_aggregator.sh
-RUN chmod +x /usr/local/bin/entrypoint_aggregator.sh
 USER app
-ENTRYPOINT ["/usr/local/bin/entrypoint_aggregator.sh", "config/aggregator.docker.json"]
+ENTRYPOINT ["/usr/local/bin/aggregator_service", "config/aggregator.docker.json"]

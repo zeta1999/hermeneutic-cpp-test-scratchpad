@@ -152,9 +152,15 @@ scripts/generate_demo_data.py --exchange notkraken --output data/notkraken.ndjso
   --events 1000 --seed 44 --base-price 29980
 ```
 
+Key options:
+
+- `--quantity`: Base BTC per snapshot level (defaults to 2500 so the 1M–50M thresholds all fire). Lower this if you want leaner books (for example `--quantity 200`).
+- `--depth`: Snapshot depth per side (defaults to 8). Reduce for smaller books or raise for deeper ones.
+- `--drift` / `--volatility`: Parameters for the synthetic GBM mid-price; the generator clamps prices within ±20% of `--base-price` so asks never collapse below bids.
+
 Because `scripts/docker_run.sh` binds the `output/` directory into the client containers, you always have a local copy of the CSV output without running `docker cp`. Delete the files between runs if you want a clean capture.
 
-The generator now uses ~250 BTC per level across eight depth levels (with random jitter and a simple GBM mid-price), so cumulative notionals reach the 1M–50M thresholds the volume-band client emits. Lower `--quantity` or `--depth` if you want leaner books for experimentation.
+The generator now uses ~2500 BTC per level across eight depth levels (with random jitter and a simple GBM mid-price), so cumulative notionals reach the 1M–50M thresholds the volume-band client emits.
 
 After any demo run, lint the generated CSVs with:
 

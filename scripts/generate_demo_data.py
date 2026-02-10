@@ -100,7 +100,7 @@ def main():
     parser.add_argument("--seed", type=int, default=1, help="Random seed for deterministic output.")
     parser.add_argument("--base-price", type=float, default=30000.0, help="Starting price used for snapshot generation.")
     parser.add_argument("--depth", type=int, default=8, help="Depth of snapshot bids/asks.")
-    parser.add_argument("--quantity", type=float, default=250.0, help="Base quantity for snapshot levels.")
+    parser.add_argument("--quantity", type=float, default=2500.0, help="Base quantity for snapshot levels.")
     parser.add_argument("--drift", type=float, default=0.0, help="Drift term for the synthetic GBM mid-price.")
     parser.add_argument("--volatility", type=float, default=0.01, help="Volatility term for the synthetic GBM mid-price.")
     args = parser.parse_args()

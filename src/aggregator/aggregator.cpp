@@ -193,28 +193,37 @@ AggregatedBookView AggregationEngine::consolidate() const {
   } else {
     view.best_bid = AggregatedQuote{kZero, kZero};
   }
-  view.ask_levels.reserve(raw_ask_levels.size());
+  std::vector<common::PriceLevel> filtered_asks;
+  filtered_asks.reserve(raw_ask_levels.size());
   for (const auto& level : raw_ask_levels) {
     if (best_bid_price > kZero && level.price <= best_bid_price) {
       continue;
     }
-    view.ask_levels.push_back(level);
+    filtered_asks.push_back(level);
   }
 
   const auto default_quantity = (best_bid_quantity > kZero) ? best_bid_quantity : common::Decimal::fromInteger(1);
-  const auto placeholder_price = best_bid_price > kZero
-                                     ? best_bid_price * common::Decimal::fromDouble(1.0001)
-                                     : common::Decimal::fromInteger(1);
-
-  if (view.ask_levels.empty()) {
-    view.ask_levels.push_back({placeholder_price, default_quantity});
-    view.best_ask = AggregatedQuote{placeholder_price, default_quantity};
-  } else {
+  if (!filtered_asks.empty()) {
+    view.ask_levels = std::move(filtered_asks);
     view.best_ask = AggregatedQuote{view.ask_levels.front().price, view.ask_levels.front().quantity};
-    if (view.best_bid.price > kZero && view.best_ask.price <= view.best_bid.price) {
-      view.ask_levels.front().price = placeholder_price;
-      view.ask_levels.front().quantity = default_quantity;
-      view.best_ask = AggregatedQuote{placeholder_price, default_quantity};
+    last_best_ask_valid_ = true;
+    last_best_ask_ = view.best_ask;
+  } else {
+    view.ask_levels.clear();
+    if (last_best_ask_valid_) {
+      view.best_ask = last_best_ask_;
+      view.ask_levels.push_back({last_best_ask_.price, last_best_ask_.quantity});
+    } else if (!raw_ask_levels.empty()) {
+      view.best_ask = AggregatedQuote{raw_ask_levels.front().price, raw_ask_levels.front().quantity};
+      view.ask_levels.push_back(raw_ask_levels.front());
+      last_best_ask_valid_ = true;
+      last_best_ask_ = view.best_ask;
+    } else if (best_bid_price > kZero) {
+      const auto placeholder = AggregatedQuote{best_bid_price, default_quantity};
+      view.best_ask = placeholder;
+      view.ask_levels.push_back({placeholder.price, placeholder.quantity});
+    } else {
+      view.best_ask = AggregatedQuote{kZero, kZero};
     }
   }
 

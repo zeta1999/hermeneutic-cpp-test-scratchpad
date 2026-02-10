@@ -42,6 +42,8 @@ class AggregationEngine {
   mutable std::mutex mutex_;
   std::unordered_map<std::string, lob::LimitOrderBook> books_;
   common::AggregatedBookView view_{};
+  mutable common::AggregatedQuote last_best_ask_{};
+  mutable bool last_best_ask_valid_{false};
   std::unordered_set<std::string> expected_exchanges_;
   std::unordered_set<std::string> ready_exchanges_;
   bool require_all_ready_{false};

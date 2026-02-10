@@ -1,401 +1,401 @@
-{"type": "snapshot", "sequence": 1, "bids": [{"price": "29981.80", "quantity": "250.00"}, {"price": "29968.62", "quantity": "300.00"}, {"price": "29951.32", "quantity": "350.00"}, {"price": "29935.54", "quantity": "400.00"}, {"price": "29922.89", "quantity": "450.00"}, {"price": "29908.91", "quantity": "500.00"}, {"price": "29894.87", "quantity": "550.00"}, {"price": "29876.75", "quantity": "600.00"}], "asks": [{"price": "30015.13", "quantity": "200.00"}, {"price": "30031.12", "quantity": "240.00"}, {"price": "30048.38", "quantity": "280.00"}, {"price": "30060.43", "quantity": "320.00"}, {"price": "30075.15", "quantity": "360.00"}, {"price": "30092.53", "quantity": "400.00"}, {"price": "30105.99", "quantity": "440.00"}, {"price": "30122.72", "quantity": "480.00"}]}
-{"type": "new_order", "sequence": 2, "order_id": 215, "side": "ask", "price": "29952.16", "quantity": "230.65"}
-{"type": "new_order", "sequence": 3, "order_id": 314, "side": "ask", "price": "29919.51", "quantity": "387.40"}
-{"type": "new_order", "sequence": 4, "order_id": 403, "side": "ask", "price": "29893.34", "quantity": "536.10"}
-{"type": "new_order", "sequence": 5, "order_id": 524, "side": "bid", "price": "29762.26", "quantity": "226.95"}
+{"type": "snapshot", "sequence": 1, "bids": [{"price": "29981.80", "quantity": "2500.00"}, {"price": "29968.62", "quantity": "3000.00"}, {"price": "29951.32", "quantity": "3500.00"}, {"price": "29935.54", "quantity": "4000.00"}, {"price": "29922.89", "quantity": "4500.00"}, {"price": "29908.91", "quantity": "5000.00"}, {"price": "29894.87", "quantity": "5500.00"}, {"price": "29876.75", "quantity": "6000.00"}], "asks": [{"price": "30015.13", "quantity": "2000.00"}, {"price": "30031.12", "quantity": "2400.00"}, {"price": "30048.38", "quantity": "2800.00"}, {"price": "30060.43", "quantity": "3200.00"}, {"price": "30075.15", "quantity": "3600.00"}, {"price": "30092.53", "quantity": "4000.00"}, {"price": "30105.99", "quantity": "4400.00"}, {"price": "30122.72", "quantity": "4800.00"}]}
+{"type": "new_order", "sequence": 2, "order_id": 215, "side": "ask", "price": "29952.16", "quantity": "2306.54"}
+{"type": "new_order", "sequence": 3, "order_id": 314, "side": "ask", "price": "29919.51", "quantity": "3874.05"}
+{"type": "new_order", "sequence": 4, "order_id": 403, "side": "ask", "price": "29893.34", "quantity": "5361.04"}
+{"type": "new_order", "sequence": 5, "order_id": 524, "side": "bid", "price": "29762.26", "quantity": "2269.49"}
 {"type": "cancel_order", "sequence": 6, "order_id": 314}
-{"type": "new_order", "sequence": 7, "order_id": 725, "side": "ask", "price": "29744.64", "quantity": "249.27"}
-{"type": "new_order", "sequence": 8, "order_id": 842, "side": "bid", "price": "29691.36", "quantity": "312.73"}
-{"type": "new_order", "sequence": 9, "order_id": 941, "side": "bid", "price": "29696.77", "quantity": "203.86"}
-{"type": "new_order", "sequence": 10, "order_id": 1014, "side": "ask", "price": "29688.04", "quantity": "512.77"}
-{"type": "new_order", "sequence": 11, "order_id": 1117, "side": "bid", "price": "29562.09", "quantity": "433.41"}
-{"type": "new_order", "sequence": 12, "order_id": 1209, "side": "ask", "price": "29711.47", "quantity": "187.69"}
+{"type": "new_order", "sequence": 7, "order_id": 725, "side": "ask", "price": "29744.64", "quantity": "2492.68"}
+{"type": "new_order", "sequence": 8, "order_id": 842, "side": "bid", "price": "29691.36", "quantity": "3127.35"}
+{"type": "new_order", "sequence": 9, "order_id": 941, "side": "bid", "price": "29696.77", "quantity": "2038.63"}
+{"type": "new_order", "sequence": 10, "order_id": 1014, "side": "ask", "price": "29688.04", "quantity": "5127.74"}
+{"type": "new_order", "sequence": 11, "order_id": 1117, "side": "bid", "price": "29562.09", "quantity": "4334.13"}
+{"type": "new_order", "sequence": 12, "order_id": 1209, "side": "ask", "price": "29711.47", "quantity": "1876.92"}
 {"type": "cancel_order", "sequence": 13, "order_id": 1014}
-{"type": "new_order", "sequence": 14, "order_id": 1425, "side": "ask", "price": "29723.62", "quantity": "204.59"}
-{"type": "new_order", "sequence": 15, "order_id": 1544, "side": "ask", "price": "29699.98", "quantity": "417.25"}
-{"type": "new_order", "sequence": 16, "order_id": 1647, "side": "ask", "price": "29715.46", "quantity": "327.45"}
-{"type": "new_order", "sequence": 17, "order_id": 1710, "side": "ask", "price": "29715.38", "quantity": "334.86"}
+{"type": "new_order", "sequence": 14, "order_id": 1425, "side": "ask", "price": "29723.62", "quantity": "2045.92"}
+{"type": "new_order", "sequence": 15, "order_id": 1544, "side": "ask", "price": "29699.98", "quantity": "4172.54"}
+{"type": "new_order", "sequence": 16, "order_id": 1647, "side": "ask", "price": "29715.46", "quantity": "3274.48"}
+{"type": "new_order", "sequence": 17, "order_id": 1710, "side": "ask", "price": "29715.38", "quantity": "3348.65"}
 {"type": "cancel_order", "sequence": 18, "order_id": 941}
-{"type": "new_order", "sequence": 19, "order_id": 1908, "side": "ask", "price": "29791.44", "quantity": "426.94"}
+{"type": "new_order", "sequence": 19, "order_id": 1908, "side": "ask", "price": "29791.44", "quantity": "4269.43"}
 {"type": "cancel_order", "sequence": 20, "order_id": 1908}
-{"type": "new_order", "sequence": 21, "order_id": 2105, "side": "bid", "price": "29635.40", "quantity": "216.17"}
-{"type": "new_order", "sequence": 22, "order_id": 2239, "side": "ask", "price": "29820.16", "quantity": "424.74"}
-{"type": "new_order", "sequence": 23, "order_id": 2334, "side": "ask", "price": "29762.82", "quantity": "149.80"}
-{"type": "new_order", "sequence": 24, "order_id": 2438, "side": "bid", "price": "29798.16", "quantity": "339.91"}
+{"type": "new_order", "sequence": 21, "order_id": 2105, "side": "bid", "price": "29635.40", "quantity": "2161.66"}
+{"type": "new_order", "sequence": 22, "order_id": 2239, "side": "ask", "price": "29820.16", "quantity": "4247.37"}
+{"type": "new_order", "sequence": 23, "order_id": 2334, "side": "ask", "price": "29762.82", "quantity": "1497.97"}
+{"type": "new_order", "sequence": 24, "order_id": 2438, "side": "bid", "price": "29798.16", "quantity": "3399.09"}
 {"type": "cancel_order", "sequence": 25, "order_id": 725}
-{"type": "new_order", "sequence": 26, "order_id": 2632, "side": "bid", "price": "29763.75", "quantity": "349.77"}
+{"type": "new_order", "sequence": 26, "order_id": 2632, "side": "bid", "price": "29763.75", "quantity": "3497.69"}
 {"type": "cancel_order", "sequence": 27, "order_id": 1544}
-{"type": "new_order", "sequence": 28, "order_id": 2813, "side": "bid", "price": "29742.25", "quantity": "263.23"}
-{"type": "new_order", "sequence": 29, "order_id": 2942, "side": "bid", "price": "29856.86", "quantity": "340.42"}
+{"type": "new_order", "sequence": 28, "order_id": 2813, "side": "bid", "price": "29742.25", "quantity": "2632.31"}
+{"type": "new_order", "sequence": 29, "order_id": 2942, "side": "bid", "price": "29856.86", "quantity": "3404.18"}
 {"type": "cancel_order", "sequence": 30, "order_id": 1425}
-{"type": "new_order", "sequence": 31, "order_id": 3109, "side": "ask", "price": "29905.45", "quantity": "301.97"}
+{"type": "new_order", "sequence": 31, "order_id": 3109, "side": "ask", "price": "29905.45", "quantity": "3019.69"}
 {"type": "cancel_order", "sequence": 32, "order_id": 215}
-{"type": "new_order", "sequence": 33, "order_id": 3349, "side": "bid", "price": "29883.16", "quantity": "443.51"}
-{"type": "new_order", "sequence": 34, "order_id": 3411, "side": "ask", "price": "30070.25", "quantity": "630.63"}
-{"type": "new_order", "sequence": 35, "order_id": 3543, "side": "ask", "price": "29992.99", "quantity": "181.51"}
-{"type": "new_order", "sequence": 36, "order_id": 3604, "side": "ask", "price": "30039.90", "quantity": "439.19"}
+{"type": "new_order", "sequence": 33, "order_id": 3349, "side": "bid", "price": "29883.16", "quantity": "4435.11"}
+{"type": "new_order", "sequence": 34, "order_id": 3411, "side": "ask", "price": "30070.25", "quantity": "6306.34"}
+{"type": "new_order", "sequence": 35, "order_id": 3543, "side": "ask", "price": "29992.99", "quantity": "1815.07"}
+{"type": "new_order", "sequence": 36, "order_id": 3604, "side": "ask", "price": "30039.90", "quantity": "4391.86"}
 {"type": "cancel_order", "sequence": 37, "order_id": 842}
-{"type": "new_order", "sequence": 38, "order_id": 3816, "side": "ask", "price": "30056.39", "quantity": "310.19"}
+{"type": "new_order", "sequence": 38, "order_id": 3816, "side": "ask", "price": "30056.39", "quantity": "3101.89"}
 {"type": "cancel_order", "sequence": 39, "order_id": 1117}
-{"type": "new_order", "sequence": 40, "order_id": 4038, "side": "ask", "price": "30129.44", "quantity": "512.61"}
-{"type": "new_order", "sequence": 41, "order_id": 4121, "side": "bid", "price": "30029.18", "quantity": "374.02"}
+{"type": "new_order", "sequence": 40, "order_id": 4038, "side": "ask", "price": "30129.44", "quantity": "5126.14"}
+{"type": "new_order", "sequence": 41, "order_id": 4121, "side": "bid", "price": "30029.18", "quantity": "3740.24"}
 {"type": "cancel_order", "sequence": 42, "order_id": 2239}
-{"type": "new_order", "sequence": 43, "order_id": 4309, "side": "ask", "price": "30178.37", "quantity": "456.41"}
-{"type": "new_order", "sequence": 44, "order_id": 4442, "side": "bid", "price": "29968.77", "quantity": "551.25"}
-{"type": "new_order", "sequence": 45, "order_id": 4507, "side": "bid", "price": "29955.70", "quantity": "334.24"}
-{"type": "new_order", "sequence": 46, "order_id": 4604, "side": "bid", "price": "29985.21", "quantity": "395.94"}
+{"type": "new_order", "sequence": 43, "order_id": 4309, "side": "ask", "price": "30178.37", "quantity": "4564.08"}
+{"type": "new_order", "sequence": 44, "order_id": 4442, "side": "bid", "price": "29968.77", "quantity": "5512.51"}
+{"type": "new_order", "sequence": 45, "order_id": 4507, "side": "bid", "price": "29955.70", "quantity": "3342.43"}
+{"type": "new_order", "sequence": 46, "order_id": 4604, "side": "bid", "price": "29985.21", "quantity": "3959.39"}
 {"type": "cancel_order", "sequence": 47, "order_id": 2632}
 {"type": "cancel_order", "sequence": 48, "order_id": 3604}
-{"type": "new_order", "sequence": 49, "order_id": 4928, "side": "bid", "price": "30118.64", "quantity": "351.82"}
+{"type": "new_order", "sequence": 49, "order_id": 4928, "side": "bid", "price": "30118.64", "quantity": "3518.16"}
 {"type": "cancel_order", "sequence": 50, "order_id": 1710}
 {"type": "cancel_order", "sequence": 51, "order_id": 3411}
-{"type": "new_order", "sequence": 52, "order_id": 5203, "side": "ask", "price": "30277.84", "quantity": "309.46"}
-{"type": "new_order", "sequence": 53, "order_id": 5327, "side": "bid", "price": "30198.36", "quantity": "448.96"}
+{"type": "new_order", "sequence": 52, "order_id": 5203, "side": "ask", "price": "30277.84", "quantity": "3094.59"}
+{"type": "new_order", "sequence": 53, "order_id": 5327, "side": "bid", "price": "30198.36", "quantity": "4489.60"}
 {"type": "cancel_order", "sequence": 54, "order_id": 3349}
-{"type": "new_order", "sequence": 55, "order_id": 5527, "side": "bid", "price": "30167.90", "quantity": "353.02"}
+{"type": "new_order", "sequence": 55, "order_id": 5527, "side": "bid", "price": "30167.90", "quantity": "3530.17"}
 {"type": "cancel_order", "sequence": 56, "order_id": 4442}
 {"type": "cancel_order", "sequence": 57, "order_id": 4309}
-{"type": "new_order", "sequence": 58, "order_id": 5815, "side": "bid", "price": "30178.08", "quantity": "557.08"}
-{"type": "new_order", "sequence": 59, "order_id": 5933, "side": "ask", "price": "30352.12", "quantity": "643.30"}
+{"type": "new_order", "sequence": 58, "order_id": 5815, "side": "bid", "price": "30178.08", "quantity": "5570.80"}
+{"type": "new_order", "sequence": 59, "order_id": 5933, "side": "ask", "price": "30352.12", "quantity": "6433.00"}
 {"type": "cancel_order", "sequence": 60, "order_id": 2942}
 {"type": "cancel_order", "sequence": 61, "order_id": 5815}
-{"type": "new_order", "sequence": 62, "order_id": 6247, "side": "ask", "price": "30181.00", "quantity": "216.98"}
-{"type": "new_order", "sequence": 63, "order_id": 6301, "side": "bid", "price": "30117.16", "quantity": "621.59"}
-{"type": "new_order", "sequence": 64, "order_id": 6443, "side": "bid", "price": "30124.34", "quantity": "478.88"}
-{"type": "new_order", "sequence": 65, "order_id": 6513, "side": "ask", "price": "30266.83", "quantity": "529.87"}
-{"type": "new_order", "sequence": 66, "order_id": 6636, "side": "bid", "price": "30070.79", "quantity": "312.24"}
-{"type": "new_order", "sequence": 67, "order_id": 6748, "side": "bid", "price": "30158.36", "quantity": "321.79"}
+{"type": "new_order", "sequence": 62, "order_id": 6247, "side": "ask", "price": "30181.00", "quantity": "2169.83"}
+{"type": "new_order", "sequence": 63, "order_id": 6301, "side": "bid", "price": "30117.16", "quantity": "6215.87"}
+{"type": "new_order", "sequence": 64, "order_id": 6443, "side": "bid", "price": "30124.34", "quantity": "4788.83"}
+{"type": "new_order", "sequence": 65, "order_id": 6513, "side": "ask", "price": "30266.83", "quantity": "5298.70"}
+{"type": "new_order", "sequence": 66, "order_id": 6636, "side": "bid", "price": "30070.79", "quantity": "3122.44"}
+{"type": "new_order", "sequence": 67, "order_id": 6748, "side": "bid", "price": "30158.36", "quantity": "3217.87"}
 {"type": "cancel_order", "sequence": 68, "order_id": 6636}
 {"type": "cancel_order", "sequence": 69, "order_id": 3543}
 {"type": "cancel_order", "sequence": 70, "order_id": 2438}
 {"type": "cancel_order", "sequence": 71, "order_id": 524}
 {"type": "cancel_order", "sequence": 72, "order_id": 5527}
-{"type": "new_order", "sequence": 73, "order_id": 7350, "side": "bid", "price": "30044.63", "quantity": "326.12"}
+{"type": "new_order", "sequence": 73, "order_id": 7350, "side": "bid", "price": "30044.63", "quantity": "3261.24"}
 {"type": "cancel_order", "sequence": 74, "order_id": 403}
-{"type": "new_order", "sequence": 75, "order_id": 7550, "side": "bid", "price": "30028.04", "quantity": "568.06"}
-{"type": "new_order", "sequence": 76, "order_id": 7636, "side": "bid", "price": "30097.07", "quantity": "483.57"}
-{"type": "new_order", "sequence": 77, "order_id": 7749, "side": "ask", "price": "30236.00", "quantity": "663.67"}
-{"type": "new_order", "sequence": 78, "order_id": 7831, "side": "ask", "price": "30203.10", "quantity": "450.70"}
-{"type": "new_order", "sequence": 79, "order_id": 7905, "side": "ask", "price": "30209.29", "quantity": "377.06"}
+{"type": "new_order", "sequence": 75, "order_id": 7550, "side": "bid", "price": "30028.04", "quantity": "5680.58"}
+{"type": "new_order", "sequence": 76, "order_id": 7636, "side": "bid", "price": "30097.07", "quantity": "4835.65"}
+{"type": "new_order", "sequence": 77, "order_id": 7749, "side": "ask", "price": "30236.00", "quantity": "6636.74"}
+{"type": "new_order", "sequence": 78, "order_id": 7831, "side": "ask", "price": "30203.10", "quantity": "4506.99"}
+{"type": "new_order", "sequence": 79, "order_id": 7905, "side": "ask", "price": "30209.29", "quantity": "3770.55"}
 {"type": "cancel_order", "sequence": 80, "order_id": 4038}
-{"type": "new_order", "sequence": 81, "order_id": 8110, "side": "bid", "price": "30083.05", "quantity": "471.57"}
-{"type": "new_order", "sequence": 82, "order_id": 8238, "side": "bid", "price": "30110.61", "quantity": "379.34"}
-{"type": "new_order", "sequence": 83, "order_id": 8327, "side": "bid", "price": "30073.13", "quantity": "604.31"}
-{"type": "new_order", "sequence": 84, "order_id": 8411, "side": "ask", "price": "30229.07", "quantity": "457.25"}
-{"type": "new_order", "sequence": 85, "order_id": 8543, "side": "bid", "price": "30108.81", "quantity": "424.02"}
-{"type": "new_order", "sequence": 86, "order_id": 8622, "side": "ask", "price": "30313.20", "quantity": "300.91"}
+{"type": "new_order", "sequence": 81, "order_id": 8110, "side": "bid", "price": "30083.05", "quantity": "4715.74"}
+{"type": "new_order", "sequence": 82, "order_id": 8238, "side": "bid", "price": "30110.61", "quantity": "3793.41"}
+{"type": "new_order", "sequence": 83, "order_id": 8327, "side": "bid", "price": "30073.13", "quantity": "6043.10"}
+{"type": "new_order", "sequence": 84, "order_id": 8411, "side": "ask", "price": "30229.07", "quantity": "4572.52"}
+{"type": "new_order", "sequence": 85, "order_id": 8543, "side": "bid", "price": "30108.81", "quantity": "4240.18"}
+{"type": "new_order", "sequence": 86, "order_id": 8622, "side": "ask", "price": "30313.20", "quantity": "3009.09"}
 {"type": "cancel_order", "sequence": 87, "order_id": 1209}
-{"type": "new_order", "sequence": 88, "order_id": 8804, "side": "ask", "price": "30255.46", "quantity": "174.84"}
+{"type": "new_order", "sequence": 88, "order_id": 8804, "side": "ask", "price": "30255.46", "quantity": "1748.40"}
 {"type": "cancel_order", "sequence": 89, "order_id": 3109}
 {"type": "cancel_order", "sequence": 90, "order_id": 6513}
-{"type": "new_order", "sequence": 91, "order_id": 9137, "side": "bid", "price": "30136.94", "quantity": "342.24"}
-{"type": "new_order", "sequence": 92, "order_id": 9248, "side": "bid", "price": "30197.52", "quantity": "324.78"}
-{"type": "new_order", "sequence": 93, "order_id": 9325, "side": "ask", "price": "30285.30", "quantity": "408.63"}
+{"type": "new_order", "sequence": 91, "order_id": 9137, "side": "bid", "price": "30136.94", "quantity": "3422.42"}
+{"type": "new_order", "sequence": 92, "order_id": 9248, "side": "bid", "price": "30197.52", "quantity": "3247.83"}
+{"type": "new_order", "sequence": 93, "order_id": 9325, "side": "ask", "price": "30285.30", "quantity": "4086.25"}
 {"type": "cancel_order", "sequence": 94, "order_id": 7749}
-{"type": "new_order", "sequence": 95, "order_id": 9539, "side": "bid", "price": "30244.61", "quantity": "217.64"}
-{"type": "new_order", "sequence": 96, "order_id": 9622, "side": "bid", "price": "30099.47", "quantity": "693.87"}
-{"type": "new_order", "sequence": 97, "order_id": 9730, "side": "bid", "price": "30072.22", "quantity": "509.86"}
-{"type": "new_order", "sequence": 98, "order_id": 9847, "side": "ask", "price": "30260.27", "quantity": "256.67"}
-{"type": "new_order", "sequence": 99, "order_id": 9916, "side": "ask", "price": "30195.43", "quantity": "298.30"}
+{"type": "new_order", "sequence": 95, "order_id": 9539, "side": "bid", "price": "30244.61", "quantity": "2176.43"}
+{"type": "new_order", "sequence": 96, "order_id": 9622, "side": "bid", "price": "30099.47", "quantity": "6938.74"}
+{"type": "new_order", "sequence": 97, "order_id": 9730, "side": "bid", "price": "30072.22", "quantity": "5098.57"}
+{"type": "new_order", "sequence": 98, "order_id": 9847, "side": "ask", "price": "30260.27", "quantity": "2566.65"}
+{"type": "new_order", "sequence": 99, "order_id": 9916, "side": "ask", "price": "30195.43", "quantity": "2983.05"}
 {"type": "cancel_order", "sequence": 100, "order_id": 7350}
-{"type": "new_order", "sequence": 101, "order_id": 10139, "side": "ask", "price": "30100.94", "quantity": "185.34"}
-{"type": "new_order", "sequence": 102, "order_id": 10236, "side": "bid", "price": "29960.13", "quantity": "407.05"}
-{"type": "new_order", "sequence": 103, "order_id": 10316, "side": "ask", "price": "30103.84", "quantity": "404.91"}
-{"type": "new_order", "sequence": 104, "order_id": 10422, "side": "ask", "price": "30076.72", "quantity": "326.22"}
-{"type": "new_order", "sequence": 105, "order_id": 10549, "side": "bid", "price": "29931.94", "quantity": "443.91"}
-{"type": "new_order", "sequence": 106, "order_id": 10634, "side": "ask", "price": "30118.38", "quantity": "205.66"}
-{"type": "new_order", "sequence": 107, "order_id": 10718, "side": "bid", "price": "30034.92", "quantity": "156.57"}
-{"type": "new_order", "sequence": 108, "order_id": 10832, "side": "bid", "price": "29967.13", "quantity": "751.07"}
-{"type": "new_order", "sequence": 109, "order_id": 10931, "side": "bid", "price": "30022.99", "quantity": "324.72"}
+{"type": "new_order", "sequence": 101, "order_id": 10139, "side": "ask", "price": "30100.94", "quantity": "1853.39"}
+{"type": "new_order", "sequence": 102, "order_id": 10236, "side": "bid", "price": "29960.13", "quantity": "4070.46"}
+{"type": "new_order", "sequence": 103, "order_id": 10316, "side": "ask", "price": "30103.84", "quantity": "4049.08"}
+{"type": "new_order", "sequence": 104, "order_id": 10422, "side": "ask", "price": "30076.72", "quantity": "3262.19"}
+{"type": "new_order", "sequence": 105, "order_id": 10549, "side": "bid", "price": "29931.94", "quantity": "4439.12"}
+{"type": "new_order", "sequence": 106, "order_id": 10634, "side": "ask", "price": "30118.38", "quantity": "2056.59"}
+{"type": "new_order", "sequence": 107, "order_id": 10718, "side": "bid", "price": "30034.92", "quantity": "1565.70"}
+{"type": "new_order", "sequence": 108, "order_id": 10832, "side": "bid", "price": "29967.13", "quantity": "7510.68"}
+{"type": "new_order", "sequence": 109, "order_id": 10931, "side": "bid", "price": "30022.99", "quantity": "3247.16"}
 {"type": "cancel_order", "sequence": 110, "order_id": 5203}
-{"type": "new_order", "sequence": 111, "order_id": 11120, "side": "bid", "price": "29962.02", "quantity": "344.70"}
-{"type": "new_order", "sequence": 112, "order_id": 11229, "side": "ask", "price": "30138.95", "quantity": "322.15"}
-{"type": "new_order", "sequence": 113, "order_id": 11340, "side": "bid", "price": "30038.62", "quantity": "268.20"}
-{"type": "new_order", "sequence": 114, "order_id": 11411, "side": "bid", "price": "29980.58", "quantity": "375.85"}
+{"type": "new_order", "sequence": 111, "order_id": 11120, "side": "bid", "price": "29962.02", "quantity": "3447.01"}
+{"type": "new_order", "sequence": 112, "order_id": 11229, "side": "ask", "price": "30138.95", "quantity": "3221.52"}
+{"type": "new_order", "sequence": 113, "order_id": 11340, "side": "bid", "price": "30038.62", "quantity": "2682.01"}
+{"type": "new_order", "sequence": 114, "order_id": 11411, "side": "bid", "price": "29980.58", "quantity": "3758.48"}
 {"type": "cancel_order", "sequence": 115, "order_id": 11340}
-{"type": "new_order", "sequence": 116, "order_id": 11630, "side": "bid", "price": "29992.49", "quantity": "416.02"}
-{"type": "new_order", "sequence": 117, "order_id": 11710, "side": "bid", "price": "29960.95", "quantity": "312.24"}
-{"type": "new_order", "sequence": 118, "order_id": 11819, "side": "ask", "price": "30111.98", "quantity": "472.05"}
+{"type": "new_order", "sequence": 116, "order_id": 11630, "side": "bid", "price": "29992.49", "quantity": "4160.18"}
+{"type": "new_order", "sequence": 117, "order_id": 11710, "side": "bid", "price": "29960.95", "quantity": "3122.39"}
+{"type": "new_order", "sequence": 118, "order_id": 11819, "side": "ask", "price": "30111.98", "quantity": "4720.53"}
 {"type": "cancel_order", "sequence": 119, "order_id": 2334}
-{"type": "new_order", "sequence": 120, "order_id": 12048, "side": "ask", "price": "30109.17", "quantity": "469.72"}
-{"type": "new_order", "sequence": 121, "order_id": 12138, "side": "bid", "price": "30034.80", "quantity": "270.08"}
-{"type": "new_order", "sequence": 122, "order_id": 12229, "side": "ask", "price": "30152.21", "quantity": "427.13"}
-{"type": "new_order", "sequence": 123, "order_id": 12331, "side": "ask", "price": "30106.02", "quantity": "343.18"}
-{"type": "new_order", "sequence": 124, "order_id": 12426, "side": "bid", "price": "29988.26", "quantity": "315.66"}
-{"type": "new_order", "sequence": 125, "order_id": 12533, "side": "bid", "price": "29976.45", "quantity": "533.25"}
-{"type": "new_order", "sequence": 126, "order_id": 12629, "side": "bid", "price": "29978.98", "quantity": "285.66"}
-{"type": "new_order", "sequence": 127, "order_id": 12732, "side": "bid", "price": "30025.49", "quantity": "186.21"}
-{"type": "new_order", "sequence": 128, "order_id": 12815, "side": "bid", "price": "29970.56", "quantity": "335.16"}
-{"type": "new_order", "sequence": 129, "order_id": 12919, "side": "ask", "price": "30164.13", "quantity": "452.84"}
-{"type": "new_order", "sequence": 130, "order_id": 13033, "side": "bid", "price": "30054.59", "quantity": "263.05"}
-{"type": "new_order", "sequence": 131, "order_id": 13133, "side": "ask", "price": "30164.23", "quantity": "463.98"}
-{"type": "new_order", "sequence": 132, "order_id": 13229, "side": "ask", "price": "30143.53", "quantity": "383.78"}
-{"type": "new_order", "sequence": 133, "order_id": 13313, "side": "bid", "price": "29942.60", "quantity": "572.48"}
-{"type": "new_order", "sequence": 134, "order_id": 13425, "side": "bid", "price": "29903.30", "quantity": "750.99"}
-{"type": "new_order", "sequence": 135, "order_id": 13507, "side": "ask", "price": "30104.38", "quantity": "288.70"}
+{"type": "new_order", "sequence": 120, "order_id": 12048, "side": "ask", "price": "30109.17", "quantity": "4697.19"}
+{"type": "new_order", "sequence": 121, "order_id": 12138, "side": "bid", "price": "30034.80", "quantity": "2700.76"}
+{"type": "new_order", "sequence": 122, "order_id": 12229, "side": "ask", "price": "30152.21", "quantity": "4271.30"}
+{"type": "new_order", "sequence": 123, "order_id": 12331, "side": "ask", "price": "30106.02", "quantity": "3431.81"}
+{"type": "new_order", "sequence": 124, "order_id": 12426, "side": "bid", "price": "29988.26", "quantity": "3156.60"}
+{"type": "new_order", "sequence": 125, "order_id": 12533, "side": "bid", "price": "29976.45", "quantity": "5332.51"}
+{"type": "new_order", "sequence": 126, "order_id": 12629, "side": "bid", "price": "29978.98", "quantity": "2856.61"}
+{"type": "new_order", "sequence": 127, "order_id": 12732, "side": "bid", "price": "30025.49", "quantity": "1862.07"}
+{"type": "new_order", "sequence": 128, "order_id": 12815, "side": "bid", "price": "29970.56", "quantity": "3351.60"}
+{"type": "new_order", "sequence": 129, "order_id": 12919, "side": "ask", "price": "30164.13", "quantity": "4528.38"}
+{"type": "new_order", "sequence": 130, "order_id": 13033, "side": "bid", "price": "30054.59", "quantity": "2630.46"}
+{"type": "new_order", "sequence": 131, "order_id": 13133, "side": "ask", "price": "30164.23", "quantity": "4639.76"}
+{"type": "new_order", "sequence": 132, "order_id": 13229, "side": "ask", "price": "30143.53", "quantity": "3837.79"}
+{"type": "new_order", "sequence": 133, "order_id": 13313, "side": "bid", "price": "29942.60", "quantity": "5724.83"}
+{"type": "new_order", "sequence": 134, "order_id": 13425, "side": "bid", "price": "29903.30", "quantity": "7509.94"}
+{"type": "new_order", "sequence": 135, "order_id": 13507, "side": "ask", "price": "30104.38", "quantity": "2886.95"}
 {"type": "cancel_order", "sequence": 136, "order_id": 13229}
-{"type": "new_order", "sequence": 137, "order_id": 13717, "side": "ask", "price": "30245.11", "quantity": "642.36"}
-{"type": "new_order", "sequence": 138, "order_id": 13825, "side": "ask", "price": "30204.03", "quantity": "291.32"}
-{"type": "new_order", "sequence": 139, "order_id": 13919, "side": "bid", "price": "30005.66", "quantity": "325.95"}
-{"type": "new_order", "sequence": 140, "order_id": 14029, "side": "bid", "price": "29993.55", "quantity": "214.62"}
-{"type": "new_order", "sequence": 141, "order_id": 14116, "side": "ask", "price": "29952.76", "quantity": "445.52"}
-{"type": "new_order", "sequence": 142, "order_id": 14216, "side": "ask", "price": "30054.08", "quantity": "598.01"}
-{"type": "new_order", "sequence": 143, "order_id": 14330, "side": "ask", "price": "29961.03", "quantity": "483.49"}
-{"type": "new_order", "sequence": 144, "order_id": 14428, "side": "ask", "price": "29998.34", "quantity": "418.65"}
-{"type": "new_order", "sequence": 145, "order_id": 14519, "side": "ask", "price": "29920.92", "quantity": "193.62"}
-{"type": "new_order", "sequence": 146, "order_id": 14644, "side": "bid", "price": "29886.15", "quantity": "520.77"}
+{"type": "new_order", "sequence": 137, "order_id": 13717, "side": "ask", "price": "30245.11", "quantity": "6423.62"}
+{"type": "new_order", "sequence": 138, "order_id": 13825, "side": "ask", "price": "30204.03", "quantity": "2913.16"}
+{"type": "new_order", "sequence": 139, "order_id": 13919, "side": "bid", "price": "30005.66", "quantity": "3259.53"}
+{"type": "new_order", "sequence": 140, "order_id": 14029, "side": "bid", "price": "29993.55", "quantity": "2146.16"}
+{"type": "new_order", "sequence": 141, "order_id": 14116, "side": "ask", "price": "29952.76", "quantity": "4455.23"}
+{"type": "new_order", "sequence": 142, "order_id": 14216, "side": "ask", "price": "30054.08", "quantity": "5980.06"}
+{"type": "new_order", "sequence": 143, "order_id": 14330, "side": "ask", "price": "29961.03", "quantity": "4834.87"}
+{"type": "new_order", "sequence": 144, "order_id": 14428, "side": "ask", "price": "29998.34", "quantity": "4186.48"}
+{"type": "new_order", "sequence": 145, "order_id": 14519, "side": "ask", "price": "29920.92", "quantity": "1936.20"}
+{"type": "new_order", "sequence": 146, "order_id": 14644, "side": "bid", "price": "29886.15", "quantity": "5207.73"}
 {"type": "cancel_order", "sequence": 147, "order_id": 8804}
-{"type": "new_order", "sequence": 148, "order_id": 14844, "side": "bid", "price": "29893.90", "quantity": "232.57"}
-{"type": "new_order", "sequence": 149, "order_id": 14938, "side": "ask", "price": "29988.41", "quantity": "280.32"}
-{"type": "new_order", "sequence": 150, "order_id": 15024, "side": "ask", "price": "29941.95", "quantity": "319.10"}
-{"type": "new_order", "sequence": 151, "order_id": 15148, "side": "ask", "price": "29940.17", "quantity": "391.04"}
-{"type": "new_order", "sequence": 152, "order_id": 15226, "side": "ask", "price": "29906.08", "quantity": "298.01"}
-{"type": "new_order", "sequence": 153, "order_id": 15344, "side": "ask", "price": "29894.36", "quantity": "229.70"}
-{"type": "new_order", "sequence": 154, "order_id": 15436, "side": "ask", "price": "29837.46", "quantity": "349.55"}
-{"type": "new_order", "sequence": 155, "order_id": 15542, "side": "ask", "price": "29795.93", "quantity": "149.30"}
-{"type": "new_order", "sequence": 156, "order_id": 15609, "side": "ask", "price": "29910.40", "quantity": "613.20"}
-{"type": "new_order", "sequence": 157, "order_id": 15738, "side": "bid", "price": "29723.48", "quantity": "399.62"}
-{"type": "new_order", "sequence": 158, "order_id": 15814, "side": "ask", "price": "29923.91", "quantity": "307.17"}
-{"type": "new_order", "sequence": 159, "order_id": 15935, "side": "ask", "price": "29863.11", "quantity": "170.11"}
+{"type": "new_order", "sequence": 148, "order_id": 14844, "side": "bid", "price": "29893.90", "quantity": "2325.68"}
+{"type": "new_order", "sequence": 149, "order_id": 14938, "side": "ask", "price": "29988.41", "quantity": "2803.18"}
+{"type": "new_order", "sequence": 150, "order_id": 15024, "side": "ask", "price": "29941.95", "quantity": "3191.01"}
+{"type": "new_order", "sequence": 151, "order_id": 15148, "side": "ask", "price": "29940.17", "quantity": "3910.40"}
+{"type": "new_order", "sequence": 152, "order_id": 15226, "side": "ask", "price": "29906.08", "quantity": "2980.15"}
+{"type": "new_order", "sequence": 153, "order_id": 15344, "side": "ask", "price": "29894.36", "quantity": "2296.98"}
+{"type": "new_order", "sequence": 154, "order_id": 15436, "side": "ask", "price": "29837.46", "quantity": "3495.47"}
+{"type": "new_order", "sequence": 155, "order_id": 15542, "side": "ask", "price": "29795.93", "quantity": "1492.98"}
+{"type": "new_order", "sequence": 156, "order_id": 15609, "side": "ask", "price": "29910.40", "quantity": "6131.98"}
+{"type": "new_order", "sequence": 157, "order_id": 15738, "side": "bid", "price": "29723.48", "quantity": "3996.17"}
+{"type": "new_order", "sequence": 158, "order_id": 15814, "side": "ask", "price": "29923.91", "quantity": "3071.69"}
+{"type": "new_order", "sequence": 159, "order_id": 15935, "side": "ask", "price": "29863.11", "quantity": "1701.06"}
 {"type": "cancel_order", "sequence": 160, "order_id": 15738}
-{"type": "new_order", "sequence": 161, "order_id": 16102, "side": "bid", "price": "29764.41", "quantity": "465.75"}
+{"type": "new_order", "sequence": 161, "order_id": 16102, "side": "bid", "price": "29764.41", "quantity": "4657.53"}
 {"type": "cancel_order", "sequence": 162, "order_id": 14519}
 {"type": "cancel_order", "sequence": 163, "order_id": 9539}
-{"type": "new_order", "sequence": 164, "order_id": 16415, "side": "ask", "price": "29860.46", "quantity": "371.88"}
-{"type": "new_order", "sequence": 165, "order_id": 16512, "side": "bid", "price": "29783.23", "quantity": "322.11"}
-{"type": "new_order", "sequence": 166, "order_id": 16602, "side": "bid", "price": "29684.89", "quantity": "463.72"}
-{"type": "new_order", "sequence": 167, "order_id": 16733, "side": "bid", "price": "29689.56", "quantity": "278.47"}
-{"type": "new_order", "sequence": 168, "order_id": 16843, "side": "ask", "price": "29725.93", "quantity": "231.57"}
+{"type": "new_order", "sequence": 164, "order_id": 16415, "side": "ask", "price": "29860.46", "quantity": "3718.82"}
+{"type": "new_order", "sequence": 165, "order_id": 16512, "side": "bid", "price": "29783.23", "quantity": "3221.08"}
+{"type": "new_order", "sequence": 166, "order_id": 16602, "side": "bid", "price": "29684.89", "quantity": "4637.17"}
+{"type": "new_order", "sequence": 167, "order_id": 16733, "side": "bid", "price": "29689.56", "quantity": "2784.75"}
+{"type": "new_order", "sequence": 168, "order_id": 16843, "side": "ask", "price": "29725.93", "quantity": "2315.68"}
 {"type": "cancel_order", "sequence": 169, "order_id": 13033}
 {"type": "cancel_order", "sequence": 170, "order_id": 6247}
-{"type": "new_order", "sequence": 171, "order_id": 17110, "side": "bid", "price": "29698.59", "quantity": "340.72"}
-{"type": "new_order", "sequence": 172, "order_id": 17239, "side": "ask", "price": "29711.13", "quantity": "331.98"}
-{"type": "new_order", "sequence": 173, "order_id": 17336, "side": "bid", "price": "29602.65", "quantity": "398.49"}
-{"type": "new_order", "sequence": 174, "order_id": 17427, "side": "bid", "price": "29621.02", "quantity": "569.19"}
+{"type": "new_order", "sequence": 171, "order_id": 17110, "side": "bid", "price": "29698.59", "quantity": "3407.16"}
+{"type": "new_order", "sequence": 172, "order_id": 17239, "side": "ask", "price": "29711.13", "quantity": "3319.80"}
+{"type": "new_order", "sequence": 173, "order_id": 17336, "side": "bid", "price": "29602.65", "quantity": "3984.93"}
+{"type": "new_order", "sequence": 174, "order_id": 17427, "side": "bid", "price": "29621.02", "quantity": "5691.94"}
 {"type": "cancel_order", "sequence": 175, "order_id": 6301}
 {"type": "cancel_order", "sequence": 176, "order_id": 7550}
-{"type": "new_order", "sequence": 177, "order_id": 17724, "side": "bid", "price": "29706.65", "quantity": "207.41"}
+{"type": "new_order", "sequence": 177, "order_id": 17724, "side": "bid", "price": "29706.65", "quantity": "2074.11"}
 {"type": "cancel_order", "sequence": 178, "order_id": 12229}
-{"type": "new_order", "sequence": 179, "order_id": 17949, "side": "ask", "price": "29827.99", "quantity": "431.17"}
+{"type": "new_order", "sequence": 179, "order_id": 17949, "side": "ask", "price": "29827.99", "quantity": "4311.67"}
 {"type": "cancel_order", "sequence": 180, "order_id": 17336}
-{"type": "new_order", "sequence": 181, "order_id": 18107, "side": "ask", "price": "29790.06", "quantity": "317.69"}
-{"type": "new_order", "sequence": 182, "order_id": 18236, "side": "bid", "price": "29609.14", "quantity": "504.96"}
-{"type": "new_order", "sequence": 183, "order_id": 18323, "side": "bid", "price": "29590.02", "quantity": "292.75"}
+{"type": "new_order", "sequence": 181, "order_id": 18107, "side": "ask", "price": "29790.06", "quantity": "3176.95"}
+{"type": "new_order", "sequence": 182, "order_id": 18236, "side": "bid", "price": "29609.14", "quantity": "5049.64"}
+{"type": "new_order", "sequence": 183, "order_id": 18323, "side": "bid", "price": "29590.02", "quantity": "2927.55"}
 {"type": "cancel_order", "sequence": 184, "order_id": 16843}
-{"type": "new_order", "sequence": 185, "order_id": 18506, "side": "bid", "price": "29567.02", "quantity": "414.97"}
-{"type": "new_order", "sequence": 186, "order_id": 18606, "side": "bid", "price": "29599.93", "quantity": "381.54"}
-{"type": "new_order", "sequence": 187, "order_id": 18743, "side": "ask", "price": "29656.50", "quantity": "338.07"}
+{"type": "new_order", "sequence": 185, "order_id": 18506, "side": "bid", "price": "29567.02", "quantity": "4149.72"}
+{"type": "new_order", "sequence": 186, "order_id": 18606, "side": "bid", "price": "29599.93", "quantity": "3815.40"}
+{"type": "new_order", "sequence": 187, "order_id": 18743, "side": "ask", "price": "29656.50", "quantity": "3380.69"}
 {"type": "cancel_order", "sequence": 188, "order_id": 18107}
-{"type": "new_order", "sequence": 189, "order_id": 18932, "side": "ask", "price": "29602.50", "quantity": "138.70"}
+{"type": "new_order", "sequence": 189, "order_id": 18932, "side": "ask", "price": "29602.50", "quantity": "1386.95"}
 {"type": "cancel_order", "sequence": 190, "order_id": 9916}
-{"type": "new_order", "sequence": 191, "order_id": 19149, "side": "ask", "price": "29706.67", "quantity": "451.11"}
-{"type": "new_order", "sequence": 192, "order_id": 19233, "side": "ask", "price": "29633.13", "quantity": "269.16"}
-{"type": "new_order", "sequence": 193, "order_id": 19305, "side": "ask", "price": "29660.07", "quantity": "696.44"}
+{"type": "new_order", "sequence": 191, "order_id": 19149, "side": "ask", "price": "29706.67", "quantity": "4511.06"}
+{"type": "new_order", "sequence": 192, "order_id": 19233, "side": "ask", "price": "29633.13", "quantity": "2691.63"}
+{"type": "new_order", "sequence": 193, "order_id": 19305, "side": "ask", "price": "29660.07", "quantity": "6964.45"}
 {"type": "cancel_order", "sequence": 194, "order_id": 16733}
-{"type": "new_order", "sequence": 195, "order_id": 19545, "side": "ask", "price": "29564.58", "quantity": "269.01"}
-{"type": "new_order", "sequence": 196, "order_id": 19606, "side": "ask", "price": "29636.22", "quantity": "366.30"}
+{"type": "new_order", "sequence": 195, "order_id": 19545, "side": "ask", "price": "29564.58", "quantity": "2690.07"}
+{"type": "new_order", "sequence": 196, "order_id": 19606, "side": "ask", "price": "29636.22", "quantity": "3663.00"}
 {"type": "cancel_order", "sequence": 197, "order_id": 14938}
 {"type": "cancel_order", "sequence": 198, "order_id": 12331}
-{"type": "new_order", "sequence": 199, "order_id": 19942, "side": "bid", "price": "29493.88", "quantity": "244.14"}
+{"type": "new_order", "sequence": 199, "order_id": 19942, "side": "bid", "price": "29493.88", "quantity": "2441.43"}
 {"type": "cancel_order", "sequence": 200, "order_id": 18323}
 {"type": "cancel_order", "sequence": 201, "order_id": 17724}
-{"type": "new_order", "sequence": 202, "order_id": 20249, "side": "ask", "price": "29595.81", "quantity": "284.79"}
+{"type": "new_order", "sequence": 202, "order_id": 20249, "side": "ask", "price": "29595.81", "quantity": "2847.94"}
 {"type": "cancel_order", "sequence": 203, "order_id": 13919}
-{"type": "new_order", "sequence": 204, "order_id": 20418, "side": "bid", "price": "29353.98", "quantity": "416.46"}
+{"type": "new_order", "sequence": 204, "order_id": 20418, "side": "bid", "price": "29353.98", "quantity": "4164.62"}
 {"type": "cancel_order", "sequence": 205, "order_id": 11120}
 {"type": "cancel_order", "sequence": 206, "order_id": 6748}
-{"type": "new_order", "sequence": 207, "order_id": 20733, "side": "ask", "price": "29398.02", "quantity": "287.96"}
-{"type": "new_order", "sequence": 208, "order_id": 20831, "side": "bid", "price": "29391.10", "quantity": "334.34"}
-{"type": "new_order", "sequence": 209, "order_id": 20906, "side": "bid", "price": "29345.27", "quantity": "442.75"}
-{"type": "new_order", "sequence": 210, "order_id": 21025, "side": "ask", "price": "29556.27", "quantity": "494.76"}
-{"type": "new_order", "sequence": 211, "order_id": 21122, "side": "bid", "price": "29365.78", "quantity": "562.54"}
-{"type": "new_order", "sequence": 212, "order_id": 21222, "side": "bid", "price": "29380.03", "quantity": "375.72"}
-{"type": "new_order", "sequence": 213, "order_id": 21309, "side": "bid", "price": "29322.85", "quantity": "581.42"}
-{"type": "new_order", "sequence": 214, "order_id": 21444, "side": "bid", "price": "29348.82", "quantity": "384.21"}
-{"type": "new_order", "sequence": 215, "order_id": 21522, "side": "ask", "price": "29540.48", "quantity": "195.37"}
-{"type": "new_order", "sequence": 216, "order_id": 21648, "side": "bid", "price": "29583.07", "quantity": "480.05"}
+{"type": "new_order", "sequence": 207, "order_id": 20733, "side": "ask", "price": "29398.02", "quantity": "2879.59"}
+{"type": "new_order", "sequence": 208, "order_id": 20831, "side": "bid", "price": "29391.10", "quantity": "3343.44"}
+{"type": "new_order", "sequence": 209, "order_id": 20906, "side": "bid", "price": "29345.27", "quantity": "4427.48"}
+{"type": "new_order", "sequence": 210, "order_id": 21025, "side": "ask", "price": "29556.27", "quantity": "4947.63"}
+{"type": "new_order", "sequence": 211, "order_id": 21122, "side": "bid", "price": "29365.78", "quantity": "5625.37"}
+{"type": "new_order", "sequence": 212, "order_id": 21222, "side": "bid", "price": "29380.03", "quantity": "3757.18"}
+{"type": "new_order", "sequence": 213, "order_id": 21309, "side": "bid", "price": "29322.85", "quantity": "5814.20"}
+{"type": "new_order", "sequence": 214, "order_id": 21444, "side": "bid", "price": "29348.82", "quantity": "3842.11"}
+{"type": "new_order", "sequence": 215, "order_id": 21522, "side": "ask", "price": "29540.48", "quantity": "1953.71"}
+{"type": "new_order", "sequence": 216, "order_id": 21648, "side": "bid", "price": "29583.07", "quantity": "4800.45"}
 {"type": "cancel_order", "sequence": 217, "order_id": 9622}
-{"type": "new_order", "sequence": 218, "order_id": 21850, "side": "bid", "price": "29585.10", "quantity": "413.09"}
-{"type": "new_order", "sequence": 219, "order_id": 21948, "side": "ask", "price": "29712.07", "quantity": "474.38"}
-{"type": "new_order", "sequence": 220, "order_id": 22013, "side": "ask", "price": "29748.46", "quantity": "451.96"}
-{"type": "new_order", "sequence": 221, "order_id": 22111, "side": "bid", "price": "29549.61", "quantity": "318.69"}
-{"type": "new_order", "sequence": 222, "order_id": 22207, "side": "bid", "price": "29510.75", "quantity": "532.42"}
+{"type": "new_order", "sequence": 218, "order_id": 21850, "side": "bid", "price": "29585.10", "quantity": "4130.87"}
+{"type": "new_order", "sequence": 219, "order_id": 21948, "side": "ask", "price": "29712.07", "quantity": "4743.76"}
+{"type": "new_order", "sequence": 220, "order_id": 22013, "side": "ask", "price": "29748.46", "quantity": "4519.60"}
+{"type": "new_order", "sequence": 221, "order_id": 22111, "side": "bid", "price": "29549.61", "quantity": "3186.92"}
+{"type": "new_order", "sequence": 222, "order_id": 22207, "side": "bid", "price": "29510.75", "quantity": "5324.19"}
 {"type": "cancel_order", "sequence": 223, "order_id": 10422}
-{"type": "new_order", "sequence": 224, "order_id": 22423, "side": "bid", "price": "29550.15", "quantity": "349.49"}
-{"type": "new_order", "sequence": 225, "order_id": 22524, "side": "bid", "price": "29642.04", "quantity": "344.26"}
-{"type": "new_order", "sequence": 226, "order_id": 22645, "side": "bid", "price": "29633.36", "quantity": "296.85"}
-{"type": "new_order", "sequence": 227, "order_id": 22710, "side": "ask", "price": "29830.44", "quantity": "455.58"}
-{"type": "new_order", "sequence": 228, "order_id": 22805, "side": "bid", "price": "29675.54", "quantity": "520.38"}
+{"type": "new_order", "sequence": 224, "order_id": 22423, "side": "bid", "price": "29550.15", "quantity": "3494.95"}
+{"type": "new_order", "sequence": 225, "order_id": 22524, "side": "bid", "price": "29642.04", "quantity": "3442.60"}
+{"type": "new_order", "sequence": 226, "order_id": 22645, "side": "bid", "price": "29633.36", "quantity": "2968.53"}
+{"type": "new_order", "sequence": 227, "order_id": 22710, "side": "ask", "price": "29830.44", "quantity": "4555.81"}
+{"type": "new_order", "sequence": 228, "order_id": 22805, "side": "bid", "price": "29675.54", "quantity": "5203.80"}
 {"type": "cancel_order", "sequence": 229, "order_id": 8543}
-{"type": "new_order", "sequence": 230, "order_id": 23001, "side": "ask", "price": "29814.85", "quantity": "417.85"}
-{"type": "new_order", "sequence": 231, "order_id": 23133, "side": "bid", "price": "29728.28", "quantity": "421.27"}
-{"type": "new_order", "sequence": 232, "order_id": 23248, "side": "bid", "price": "29764.38", "quantity": "460.92"}
-{"type": "new_order", "sequence": 233, "order_id": 23322, "side": "bid", "price": "29826.90", "quantity": "285.70"}
-{"type": "new_order", "sequence": 234, "order_id": 23444, "side": "ask", "price": "29919.00", "quantity": "414.76"}
-{"type": "new_order", "sequence": 235, "order_id": 23519, "side": "bid", "price": "29857.02", "quantity": "203.90"}
-{"type": "new_order", "sequence": 236, "order_id": 23626, "side": "ask", "price": "29921.79", "quantity": "198.58"}
-{"type": "new_order", "sequence": 237, "order_id": 23718, "side": "bid", "price": "29852.09", "quantity": "411.13"}
-{"type": "new_order", "sequence": 238, "order_id": 23822, "side": "bid", "price": "29815.42", "quantity": "231.57"}
-{"type": "new_order", "sequence": 239, "order_id": 23912, "side": "ask", "price": "29967.65", "quantity": "348.09"}
-{"type": "new_order", "sequence": 240, "order_id": 24046, "side": "ask", "price": "30019.23", "quantity": "436.94"}
-{"type": "new_order", "sequence": 241, "order_id": 24118, "side": "bid", "price": "29921.28", "quantity": "291.26"}
-{"type": "new_order", "sequence": 242, "order_id": 24211, "side": "bid", "price": "29874.85", "quantity": "655.24"}
-{"type": "new_order", "sequence": 243, "order_id": 24325, "side": "bid", "price": "29978.82", "quantity": "283.40"}
-{"type": "new_order", "sequence": 244, "order_id": 24437, "side": "bid", "price": "29919.45", "quantity": "494.27"}
-{"type": "new_order", "sequence": 245, "order_id": 24525, "side": "bid", "price": "29902.62", "quantity": "285.83"}
-{"type": "new_order", "sequence": 246, "order_id": 24645, "side": "ask", "price": "30007.17", "quantity": "271.72"}
+{"type": "new_order", "sequence": 230, "order_id": 23001, "side": "ask", "price": "29814.85", "quantity": "4178.54"}
+{"type": "new_order", "sequence": 231, "order_id": 23133, "side": "bid", "price": "29728.28", "quantity": "4212.69"}
+{"type": "new_order", "sequence": 232, "order_id": 23248, "side": "bid", "price": "29764.38", "quantity": "4609.19"}
+{"type": "new_order", "sequence": 233, "order_id": 23322, "side": "bid", "price": "29826.90", "quantity": "2856.99"}
+{"type": "new_order", "sequence": 234, "order_id": 23444, "side": "ask", "price": "29919.00", "quantity": "4147.62"}
+{"type": "new_order", "sequence": 235, "order_id": 23519, "side": "bid", "price": "29857.02", "quantity": "2038.99"}
+{"type": "new_order", "sequence": 236, "order_id": 23626, "side": "ask", "price": "29921.79", "quantity": "1985.79"}
+{"type": "new_order", "sequence": 237, "order_id": 23718, "side": "bid", "price": "29852.09", "quantity": "4111.35"}
+{"type": "new_order", "sequence": 238, "order_id": 23822, "side": "bid", "price": "29815.42", "quantity": "2315.71"}
+{"type": "new_order", "sequence": 239, "order_id": 23912, "side": "ask", "price": "29967.65", "quantity": "3480.92"}
+{"type": "new_order", "sequence": 240, "order_id": 24046, "side": "ask", "price": "30019.23", "quantity": "4369.37"}
+{"type": "new_order", "sequence": 241, "order_id": 24118, "side": "bid", "price": "29921.28", "quantity": "2912.62"}
+{"type": "new_order", "sequence": 242, "order_id": 24211, "side": "bid", "price": "29874.85", "quantity": "6552.39"}
+{"type": "new_order", "sequence": 243, "order_id": 24325, "side": "bid", "price": "29978.82", "quantity": "2834.04"}
+{"type": "new_order", "sequence": 244, "order_id": 24437, "side": "bid", "price": "29919.45", "quantity": "4942.70"}
+{"type": "new_order", "sequence": 245, "order_id": 24525, "side": "bid", "price": "29902.62", "quantity": "2858.28"}
+{"type": "new_order", "sequence": 246, "order_id": 24645, "side": "ask", "price": "30007.17", "quantity": "2717.19"}
 {"type": "cancel_order", "sequence": 247, "order_id": 20418}
-{"type": "new_order", "sequence": 248, "order_id": 24821, "side": "ask", "price": "30026.71", "quantity": "229.99"}
+{"type": "new_order", "sequence": 248, "order_id": 24821, "side": "ask", "price": "30026.71", "quantity": "2299.88"}
 {"type": "cancel_order", "sequence": 249, "order_id": 21025}
-{"type": "new_order", "sequence": 250, "order_id": 25041, "side": "bid", "price": "29982.91", "quantity": "211.81"}
-{"type": "new_order", "sequence": 251, "order_id": 25124, "side": "ask", "price": "30089.21", "quantity": "569.87"}
+{"type": "new_order", "sequence": 250, "order_id": 25041, "side": "bid", "price": "29982.91", "quantity": "2118.12"}
+{"type": "new_order", "sequence": 251, "order_id": 25124, "side": "ask", "price": "30089.21", "quantity": "5698.74"}
 {"type": "cancel_order", "sequence": 252, "order_id": 12426}
-{"type": "new_order", "sequence": 253, "order_id": 25346, "side": "ask", "price": "29923.05", "quantity": "165.07"}
-{"type": "new_order", "sequence": 254, "order_id": 25434, "side": "ask", "price": "29939.98", "quantity": "370.43"}
+{"type": "new_order", "sequence": 253, "order_id": 25346, "side": "ask", "price": "29923.05", "quantity": "1650.72"}
+{"type": "new_order", "sequence": 254, "order_id": 25434, "side": "ask", "price": "29939.98", "quantity": "3704.33"}
 {"type": "cancel_order", "sequence": 255, "order_id": 25041}
 {"type": "cancel_order", "sequence": 256, "order_id": 15814}
-{"type": "new_order", "sequence": 257, "order_id": 25704, "side": "bid", "price": "29825.15", "quantity": "274.96"}
-{"type": "new_order", "sequence": 258, "order_id": 25819, "side": "bid", "price": "29792.70", "quantity": "309.78"}
-{"type": "new_order", "sequence": 259, "order_id": 25940, "side": "bid", "price": "29800.51", "quantity": "455.65"}
-{"type": "new_order", "sequence": 260, "order_id": 26037, "side": "bid", "price": "29830.31", "quantity": "317.76"}
-{"type": "new_order", "sequence": 261, "order_id": 26114, "side": "ask", "price": "29897.44", "quantity": "297.95"}
-{"type": "new_order", "sequence": 262, "order_id": 26226, "side": "ask", "price": "29926.47", "quantity": "481.55"}
-{"type": "new_order", "sequence": 263, "order_id": 26314, "side": "ask", "price": "29882.70", "quantity": "645.48"}
+{"type": "new_order", "sequence": 257, "order_id": 25704, "side": "bid", "price": "29825.15", "quantity": "2749.58"}
+{"type": "new_order", "sequence": 258, "order_id": 25819, "side": "bid", "price": "29792.70", "quantity": "3097.80"}
+{"type": "new_order", "sequence": 259, "order_id": 25940, "side": "bid", "price": "29800.51", "quantity": "4556.50"}
+{"type": "new_order", "sequence": 260, "order_id": 26037, "side": "bid", "price": "29830.31", "quantity": "3177.56"}
+{"type": "new_order", "sequence": 261, "order_id": 26114, "side": "ask", "price": "29897.44", "quantity": "2979.51"}
+{"type": "new_order", "sequence": 262, "order_id": 26226, "side": "ask", "price": "29926.47", "quantity": "4815.48"}
+{"type": "new_order", "sequence": 263, "order_id": 26314, "side": "ask", "price": "29882.70", "quantity": "6454.76"}
 {"type": "cancel_order", "sequence": 264, "order_id": 21850}
-{"type": "new_order", "sequence": 265, "order_id": 26507, "side": "ask", "price": "29826.39", "quantity": "271.12"}
+{"type": "new_order", "sequence": 265, "order_id": 26507, "side": "ask", "price": "29826.39", "quantity": "2711.21"}
 {"type": "cancel_order", "sequence": 266, "order_id": 18506}
-{"type": "new_order", "sequence": 267, "order_id": 26740, "side": "ask", "price": "29819.48", "quantity": "396.87"}
+{"type": "new_order", "sequence": 267, "order_id": 26740, "side": "ask", "price": "29819.48", "quantity": "3968.67"}
 {"type": "cancel_order", "sequence": 268, "order_id": 12629}
-{"type": "new_order", "sequence": 269, "order_id": 26933, "side": "ask", "price": "29970.93", "quantity": "302.40"}
-{"type": "new_order", "sequence": 270, "order_id": 27030, "side": "bid", "price": "29853.63", "quantity": "335.71"}
-{"type": "new_order", "sequence": 271, "order_id": 27119, "side": "bid", "price": "29870.69", "quantity": "352.91"}
-{"type": "new_order", "sequence": 272, "order_id": 27224, "side": "bid", "price": "29802.98", "quantity": "321.30"}
-{"type": "new_order", "sequence": 273, "order_id": 27336, "side": "ask", "price": "29900.48", "quantity": "251.04"}
-{"type": "new_order", "sequence": 274, "order_id": 27436, "side": "ask", "price": "29981.36", "quantity": "302.59"}
-{"type": "new_order", "sequence": 275, "order_id": 27531, "side": "ask", "price": "29898.85", "quantity": "269.09"}
-{"type": "new_order", "sequence": 276, "order_id": 27611, "side": "ask", "price": "29991.79", "quantity": "403.89"}
-{"type": "new_order", "sequence": 277, "order_id": 27737, "side": "ask", "price": "30035.80", "quantity": "601.58"}
-{"type": "new_order", "sequence": 278, "order_id": 27838, "side": "ask", "price": "29945.47", "quantity": "288.90"}
-{"type": "new_order", "sequence": 279, "order_id": 27938, "side": "bid", "price": "29867.08", "quantity": "282.26"}
-{"type": "new_order", "sequence": 280, "order_id": 28025, "side": "bid", "price": "29869.67", "quantity": "264.15"}
-{"type": "new_order", "sequence": 281, "order_id": 28114, "side": "ask", "price": "29982.66", "quantity": "288.17"}
+{"type": "new_order", "sequence": 269, "order_id": 26933, "side": "ask", "price": "29970.93", "quantity": "3024.00"}
+{"type": "new_order", "sequence": 270, "order_id": 27030, "side": "bid", "price": "29853.63", "quantity": "3357.12"}
+{"type": "new_order", "sequence": 271, "order_id": 27119, "side": "bid", "price": "29870.69", "quantity": "3529.09"}
+{"type": "new_order", "sequence": 272, "order_id": 27224, "side": "bid", "price": "29802.98", "quantity": "3213.01"}
+{"type": "new_order", "sequence": 273, "order_id": 27336, "side": "ask", "price": "29900.48", "quantity": "2510.45"}
+{"type": "new_order", "sequence": 274, "order_id": 27436, "side": "ask", "price": "29981.36", "quantity": "3025.92"}
+{"type": "new_order", "sequence": 275, "order_id": 27531, "side": "ask", "price": "29898.85", "quantity": "2690.89"}
+{"type": "new_order", "sequence": 276, "order_id": 27611, "side": "ask", "price": "29991.79", "quantity": "4038.86"}
+{"type": "new_order", "sequence": 277, "order_id": 27737, "side": "ask", "price": "30035.80", "quantity": "6015.76"}
+{"type": "new_order", "sequence": 278, "order_id": 27838, "side": "ask", "price": "29945.47", "quantity": "2888.98"}
+{"type": "new_order", "sequence": 279, "order_id": 27938, "side": "bid", "price": "29867.08", "quantity": "2822.56"}
+{"type": "new_order", "sequence": 280, "order_id": 28025, "side": "bid", "price": "29869.67", "quantity": "2641.49"}
+{"type": "new_order", "sequence": 281, "order_id": 28114, "side": "ask", "price": "29982.66", "quantity": "2881.69"}
 {"type": "cancel_order", "sequence": 282, "order_id": 14428}
-{"type": "new_order", "sequence": 283, "order_id": 28343, "side": "ask", "price": "29868.15", "quantity": "340.04"}
-{"type": "new_order", "sequence": 284, "order_id": 28447, "side": "ask", "price": "29932.51", "quantity": "542.27"}
+{"type": "new_order", "sequence": 283, "order_id": 28343, "side": "ask", "price": "29868.15", "quantity": "3400.39"}
+{"type": "new_order", "sequence": 284, "order_id": 28447, "side": "ask", "price": "29932.51", "quantity": "5422.69"}
 {"type": "cancel_order", "sequence": 285, "order_id": 19233}
-{"type": "new_order", "sequence": 286, "order_id": 28646, "side": "bid", "price": "29695.80", "quantity": "663.90"}
-{"type": "new_order", "sequence": 287, "order_id": 28708, "side": "ask", "price": "29871.00", "quantity": "619.69"}
-{"type": "new_order", "sequence": 288, "order_id": 28819, "side": "bid", "price": "29671.76", "quantity": "531.18"}
-{"type": "new_order", "sequence": 289, "order_id": 28936, "side": "ask", "price": "29810.74", "quantity": "240.27"}
+{"type": "new_order", "sequence": 286, "order_id": 28646, "side": "bid", "price": "29695.80", "quantity": "6638.95"}
+{"type": "new_order", "sequence": 287, "order_id": 28708, "side": "ask", "price": "29871.00", "quantity": "6196.93"}
+{"type": "new_order", "sequence": 288, "order_id": 28819, "side": "bid", "price": "29671.76", "quantity": "5311.81"}
+{"type": "new_order", "sequence": 289, "order_id": 28936, "side": "ask", "price": "29810.74", "quantity": "2402.67"}
 {"type": "cancel_order", "sequence": 290, "order_id": 27531}
 {"type": "cancel_order", "sequence": 291, "order_id": 15436}
 {"type": "cancel_order", "sequence": 292, "order_id": 23718}
-{"type": "new_order", "sequence": 293, "order_id": 29331, "side": "bid", "price": "29729.70", "quantity": "447.98"}
-{"type": "new_order", "sequence": 294, "order_id": 29413, "side": "ask", "price": "29828.13", "quantity": "555.07"}
-{"type": "new_order", "sequence": 295, "order_id": 29515, "side": "bid", "price": "29725.91", "quantity": "434.27"}
-{"type": "new_order", "sequence": 296, "order_id": 29612, "side": "ask", "price": "29759.15", "quantity": "151.83"}
-{"type": "new_order", "sequence": 297, "order_id": 29719, "side": "ask", "price": "29923.28", "quantity": "514.66"}
-{"type": "new_order", "sequence": 298, "order_id": 29808, "side": "ask", "price": "29844.62", "quantity": "396.04"}
+{"type": "new_order", "sequence": 293, "order_id": 29331, "side": "bid", "price": "29729.70", "quantity": "4479.80"}
+{"type": "new_order", "sequence": 294, "order_id": 29413, "side": "ask", "price": "29828.13", "quantity": "5550.67"}
+{"type": "new_order", "sequence": 295, "order_id": 29515, "side": "bid", "price": "29725.91", "quantity": "4342.66"}
+{"type": "new_order", "sequence": 296, "order_id": 29612, "side": "ask", "price": "29759.15", "quantity": "1518.25"}
+{"type": "new_order", "sequence": 297, "order_id": 29719, "side": "ask", "price": "29923.28", "quantity": "5146.59"}
+{"type": "new_order", "sequence": 298, "order_id": 29808, "side": "ask", "price": "29844.62", "quantity": "3960.44"}
 {"type": "cancel_order", "sequence": 299, "order_id": 21444}
-{"type": "new_order", "sequence": 300, "order_id": 30037, "side": "bid", "price": "29732.77", "quantity": "278.70"}
-{"type": "new_order", "sequence": 301, "order_id": 30112, "side": "bid", "price": "29793.66", "quantity": "389.90"}
+{"type": "new_order", "sequence": 300, "order_id": 30037, "side": "bid", "price": "29732.77", "quantity": "2787.00"}
+{"type": "new_order", "sequence": 301, "order_id": 30112, "side": "bid", "price": "29793.66", "quantity": "3899.02"}
 {"type": "cancel_order", "sequence": 302, "order_id": 17427}
-{"type": "new_order", "sequence": 303, "order_id": 30320, "side": "bid", "price": "29855.10", "quantity": "292.47"}
-{"type": "new_order", "sequence": 304, "order_id": 30433, "side": "ask", "price": "29964.93", "quantity": "249.42"}
+{"type": "new_order", "sequence": 303, "order_id": 30320, "side": "bid", "price": "29855.10", "quantity": "2924.67"}
+{"type": "new_order", "sequence": 304, "order_id": 30433, "side": "ask", "price": "29964.93", "quantity": "2494.19"}
 {"type": "cancel_order", "sequence": 305, "order_id": 11630}
-{"type": "new_order", "sequence": 306, "order_id": 30630, "side": "ask", "price": "30013.82", "quantity": "679.37"}
-{"type": "new_order", "sequence": 307, "order_id": 30744, "side": "bid", "price": "29806.31", "quantity": "726.34"}
+{"type": "new_order", "sequence": 306, "order_id": 30630, "side": "ask", "price": "30013.82", "quantity": "6793.72"}
+{"type": "new_order", "sequence": 307, "order_id": 30744, "side": "bid", "price": "29806.31", "quantity": "7263.38"}
 {"type": "cancel_order", "sequence": 308, "order_id": 28819}
-{"type": "new_order", "sequence": 309, "order_id": 30913, "side": "bid", "price": "29851.60", "quantity": "555.11"}
+{"type": "new_order", "sequence": 309, "order_id": 30913, "side": "bid", "price": "29851.60", "quantity": "5551.13"}
 {"type": "cancel_order", "sequence": 310, "order_id": 27611}
-{"type": "new_order", "sequence": 311, "order_id": 31104, "side": "ask", "price": "30063.21", "quantity": "181.26"}
-{"type": "new_order", "sequence": 312, "order_id": 31220, "side": "bid", "price": "29913.73", "quantity": "306.14"}
+{"type": "new_order", "sequence": 311, "order_id": 31104, "side": "ask", "price": "30063.21", "quantity": "1812.64"}
+{"type": "new_order", "sequence": 312, "order_id": 31220, "side": "bid", "price": "29913.73", "quantity": "3061.42"}
 {"type": "cancel_order", "sequence": 313, "order_id": 8238}
-{"type": "new_order", "sequence": 314, "order_id": 31405, "side": "ask", "price": "30015.67", "quantity": "158.86"}
-{"type": "new_order", "sequence": 315, "order_id": 31547, "side": "ask", "price": "30073.90", "quantity": "448.77"}
-{"type": "new_order", "sequence": 316, "order_id": 31643, "side": "bid", "price": "29931.37", "quantity": "390.71"}
+{"type": "new_order", "sequence": 314, "order_id": 31405, "side": "ask", "price": "30015.67", "quantity": "1588.57"}
+{"type": "new_order", "sequence": 315, "order_id": 31547, "side": "ask", "price": "30073.90", "quantity": "4487.68"}
+{"type": "new_order", "sequence": 316, "order_id": 31643, "side": "bid", "price": "29931.37", "quantity": "3907.13"}
 {"type": "cancel_order", "sequence": 317, "order_id": 15542}
-{"type": "new_order", "sequence": 318, "order_id": 31849, "side": "bid", "price": "29953.35", "quantity": "355.07"}
-{"type": "new_order", "sequence": 319, "order_id": 31918, "side": "bid", "price": "30030.63", "quantity": "320.54"}
-{"type": "new_order", "sequence": 320, "order_id": 32002, "side": "bid", "price": "30044.25", "quantity": "343.05"}
+{"type": "new_order", "sequence": 318, "order_id": 31849, "side": "bid", "price": "29953.35", "quantity": "3550.68"}
+{"type": "new_order", "sequence": 319, "order_id": 31918, "side": "bid", "price": "30030.63", "quantity": "3205.40"}
+{"type": "new_order", "sequence": 320, "order_id": 32002, "side": "bid", "price": "30044.25", "quantity": "3430.53"}
 {"type": "cancel_order", "sequence": 321, "order_id": 7636}
-{"type": "new_order", "sequence": 322, "order_id": 32215, "side": "bid", "price": "30065.08", "quantity": "183.54"}
-{"type": "new_order", "sequence": 323, "order_id": 32337, "side": "ask", "price": "30092.37", "quantity": "649.99"}
-{"type": "new_order", "sequence": 324, "order_id": 32427, "side": "ask", "price": "30043.68", "quantity": "551.89"}
-{"type": "new_order", "sequence": 325, "order_id": 32541, "side": "ask", "price": "30059.71", "quantity": "562.54"}
-{"type": "new_order", "sequence": 326, "order_id": 32627, "side": "ask", "price": "29999.53", "quantity": "337.33"}
+{"type": "new_order", "sequence": 322, "order_id": 32215, "side": "bid", "price": "30065.08", "quantity": "1835.40"}
+{"type": "new_order", "sequence": 323, "order_id": 32337, "side": "ask", "price": "30092.37", "quantity": "6499.92"}
+{"type": "new_order", "sequence": 324, "order_id": 32427, "side": "ask", "price": "30043.68", "quantity": "5518.86"}
+{"type": "new_order", "sequence": 325, "order_id": 32541, "side": "ask", "price": "30059.71", "quantity": "5625.40"}
+{"type": "new_order", "sequence": 326, "order_id": 32627, "side": "ask", "price": "29999.53", "quantity": "3373.27"}
 {"type": "cancel_order", "sequence": 327, "order_id": 15935}
-{"type": "new_order", "sequence": 328, "order_id": 32846, "side": "bid", "price": "29887.82", "quantity": "301.19"}
+{"type": "new_order", "sequence": 328, "order_id": 32846, "side": "bid", "price": "29887.82", "quantity": "3011.94"}
 {"type": "cancel_order", "sequence": 329, "order_id": 15024}
-{"type": "new_order", "sequence": 330, "order_id": 33006, "side": "ask", "price": "29991.71", "quantity": "302.09"}
-{"type": "new_order", "sequence": 331, "order_id": 33144, "side": "bid", "price": "29876.14", "quantity": "301.95"}
-{"type": "new_order", "sequence": 332, "order_id": 33201, "side": "bid", "price": "29853.40", "quantity": "543.59"}
-{"type": "new_order", "sequence": 333, "order_id": 33316, "side": "bid", "price": "29802.79", "quantity": "452.22"}
-{"type": "new_order", "sequence": 334, "order_id": 33417, "side": "ask", "price": "30021.54", "quantity": "626.49"}
-{"type": "new_order", "sequence": 335, "order_id": 33521, "side": "bid", "price": "29824.08", "quantity": "381.83"}
-{"type": "new_order", "sequence": 336, "order_id": 33647, "side": "ask", "price": "29972.05", "quantity": "351.94"}
-{"type": "new_order", "sequence": 337, "order_id": 33732, "side": "ask", "price": "30019.39", "quantity": "436.74"}
+{"type": "new_order", "sequence": 330, "order_id": 33006, "side": "ask", "price": "29991.71", "quantity": "3020.86"}
+{"type": "new_order", "sequence": 331, "order_id": 33144, "side": "bid", "price": "29876.14", "quantity": "3019.50"}
+{"type": "new_order", "sequence": 332, "order_id": 33201, "side": "bid", "price": "29853.40", "quantity": "5435.95"}
+{"type": "new_order", "sequence": 333, "order_id": 33316, "side": "bid", "price": "29802.79", "quantity": "4522.22"}
+{"type": "new_order", "sequence": 334, "order_id": 33417, "side": "ask", "price": "30021.54", "quantity": "6264.87"}
+{"type": "new_order", "sequence": 335, "order_id": 33521, "side": "bid", "price": "29824.08", "quantity": "3818.25"}
+{"type": "new_order", "sequence": 336, "order_id": 33647, "side": "ask", "price": "29972.05", "quantity": "3519.36"}
+{"type": "new_order", "sequence": 337, "order_id": 33732, "side": "ask", "price": "30019.39", "quantity": "4367.40"}
 {"type": "cancel_order", "sequence": 338, "order_id": 29719}
-{"type": "new_order", "sequence": 339, "order_id": 33935, "side": "bid", "price": "29964.50", "quantity": "329.50"}
+{"type": "new_order", "sequence": 339, "order_id": 33935, "side": "bid", "price": "29964.50", "quantity": "3294.99"}
 {"type": "cancel_order", "sequence": 340, "order_id": 2105}
-{"type": "new_order", "sequence": 341, "order_id": 34141, "side": "bid", "price": "29943.74", "quantity": "405.22"}
-{"type": "new_order", "sequence": 342, "order_id": 34240, "side": "ask", "price": "30113.45", "quantity": "467.06"}
+{"type": "new_order", "sequence": 341, "order_id": 34141, "side": "bid", "price": "29943.74", "quantity": "4052.15"}
+{"type": "new_order", "sequence": 342, "order_id": 34240, "side": "ask", "price": "30113.45", "quantity": "4670.61"}
 {"type": "cancel_order", "sequence": 343, "order_id": 19942}
-{"type": "new_order", "sequence": 344, "order_id": 34419, "side": "bid", "price": "29842.06", "quantity": "288.33"}
+{"type": "new_order", "sequence": 344, "order_id": 34419, "side": "bid", "price": "29842.06", "quantity": "2883.33"}
 {"type": "cancel_order", "sequence": 345, "order_id": 12919}
 {"type": "cancel_order", "sequence": 346, "order_id": 33006}
-{"type": "new_order", "sequence": 347, "order_id": 34723, "side": "ask", "price": "30039.75", "quantity": "455.52"}
+{"type": "new_order", "sequence": 347, "order_id": 34723, "side": "ask", "price": "30039.75", "quantity": "4555.24"}
 {"type": "cancel_order", "sequence": 348, "order_id": 16602}
-{"type": "new_order", "sequence": 349, "order_id": 34906, "side": "bid", "price": "29871.47", "quantity": "344.08"}
-{"type": "new_order", "sequence": 350, "order_id": 35028, "side": "ask", "price": "30029.37", "quantity": "209.81"}
-{"type": "new_order", "sequence": 351, "order_id": 35145, "side": "ask", "price": "30061.69", "quantity": "213.16"}
-{"type": "new_order", "sequence": 352, "order_id": 35221, "side": "bid", "price": "30017.60", "quantity": "439.61"}
-{"type": "new_order", "sequence": 353, "order_id": 35305, "side": "ask", "price": "30190.91", "quantity": "419.83"}
-{"type": "new_order", "sequence": 354, "order_id": 35445, "side": "bid", "price": "30035.97", "quantity": "585.67"}
-{"type": "new_order", "sequence": 355, "order_id": 35550, "side": "ask", "price": "30220.73", "quantity": "291.26"}
-{"type": "new_order", "sequence": 356, "order_id": 35625, "side": "ask", "price": "30182.90", "quantity": "190.35"}
-{"type": "new_order", "sequence": 357, "order_id": 35716, "side": "bid", "price": "30117.85", "quantity": "197.13"}
+{"type": "new_order", "sequence": 349, "order_id": 34906, "side": "bid", "price": "29871.47", "quantity": "3440.84"}
+{"type": "new_order", "sequence": 350, "order_id": 35028, "side": "ask", "price": "30029.37", "quantity": "2098.08"}
+{"type": "new_order", "sequence": 351, "order_id": 35145, "side": "ask", "price": "30061.69", "quantity": "2131.61"}
+{"type": "new_order", "sequence": 352, "order_id": 35221, "side": "bid", "price": "30017.60", "quantity": "4396.08"}
+{"type": "new_order", "sequence": 353, "order_id": 35305, "side": "ask", "price": "30190.91", "quantity": "4198.27"}
+{"type": "new_order", "sequence": 354, "order_id": 35445, "side": "bid", "price": "30035.97", "quantity": "5856.70"}
+{"type": "new_order", "sequence": 355, "order_id": 35550, "side": "ask", "price": "30220.73", "quantity": "2912.55"}
+{"type": "new_order", "sequence": 356, "order_id": 35625, "side": "ask", "price": "30182.90", "quantity": "1903.51"}
+{"type": "new_order", "sequence": 357, "order_id": 35716, "side": "bid", "price": "30117.85", "quantity": "1971.29"}
 {"type": "cancel_order", "sequence": 358, "order_id": 22013}
-{"type": "new_order", "sequence": 359, "order_id": 35949, "side": "ask", "price": "30188.84", "quantity": "272.79"}
-{"type": "new_order", "sequence": 360, "order_id": 36027, "side": "bid", "price": "30180.63", "quantity": "392.07"}
+{"type": "new_order", "sequence": 359, "order_id": 35949, "side": "ask", "price": "30188.84", "quantity": "2727.93"}
+{"type": "new_order", "sequence": 360, "order_id": 36027, "side": "bid", "price": "30180.63", "quantity": "3920.69"}
 {"type": "cancel_order", "sequence": 361, "order_id": 25704}
-{"type": "new_order", "sequence": 362, "order_id": 36206, "side": "bid", "price": "30171.99", "quantity": "249.90"}
-{"type": "new_order", "sequence": 363, "order_id": 36310, "side": "bid", "price": "30160.62", "quantity": "300.68"}
+{"type": "new_order", "sequence": 362, "order_id": 36206, "side": "bid", "price": "30171.99", "quantity": "2498.99"}
+{"type": "new_order", "sequence": 363, "order_id": 36310, "side": "bid", "price": "30160.62", "quantity": "3006.80"}
 {"type": "cancel_order", "sequence": 364, "order_id": 33647}
-{"type": "new_order", "sequence": 365, "order_id": 36540, "side": "bid", "price": "30147.40", "quantity": "742.52"}
-{"type": "new_order", "sequence": 366, "order_id": 36640, "side": "ask", "price": "30352.10", "quantity": "503.58"}
-{"type": "new_order", "sequence": 367, "order_id": 36720, "side": "ask", "price": "30287.62", "quantity": "325.61"}
-{"type": "new_order", "sequence": 368, "order_id": 36848, "side": "ask", "price": "30385.18", "quantity": "390.66"}
+{"type": "new_order", "sequence": 365, "order_id": 36540, "side": "bid", "price": "30147.40", "quantity": "7425.22"}
+{"type": "new_order", "sequence": 366, "order_id": 36640, "side": "ask", "price": "30352.10", "quantity": "5035.79"}
+{"type": "new_order", "sequence": 367, "order_id": 36720, "side": "ask", "price": "30287.62", "quantity": "3256.12"}
+{"type": "new_order", "sequence": 368, "order_id": 36848, "side": "ask", "price": "30385.18", "quantity": "3906.59"}
 {"type": "cancel_order", "sequence": 369, "order_id": 31547}
 {"type": "cancel_order", "sequence": 370, "order_id": 30744}
 {"type": "cancel_order", "sequence": 371, "order_id": 31104}
 {"type": "cancel_order", "sequence": 372, "order_id": 27436}
-{"type": "new_order", "sequence": 373, "order_id": 37314, "side": "ask", "price": "30360.89", "quantity": "539.12"}
-{"type": "new_order", "sequence": 374, "order_id": 37444, "side": "ask", "price": "30381.55", "quantity": "515.63"}
+{"type": "new_order", "sequence": 373, "order_id": 37314, "side": "ask", "price": "30360.89", "quantity": "5391.15"}
+{"type": "new_order", "sequence": 374, "order_id": 37444, "side": "ask", "price": "30381.55", "quantity": "5156.31"}
 {"type": "cancel_order", "sequence": 375, "order_id": 33316}
-{"type": "new_order", "sequence": 376, "order_id": 37626, "side": "ask", "price": "30347.36", "quantity": "348.88"}
-{"type": "new_order", "sequence": 377, "order_id": 37741, "side": "bid", "price": "30276.88", "quantity": "465.16"}
-{"type": "new_order", "sequence": 378, "order_id": 37842, "side": "ask", "price": "30467.80", "quantity": "223.36"}
-{"type": "new_order", "sequence": 379, "order_id": 37933, "side": "bid", "price": "30303.43", "quantity": "196.48"}
-{"type": "new_order", "sequence": 380, "order_id": 38006, "side": "bid", "price": "30315.43", "quantity": "417.39"}
-{"type": "new_order", "sequence": 381, "order_id": 38123, "side": "ask", "price": "30515.54", "quantity": "671.47"}
+{"type": "new_order", "sequence": 376, "order_id": 37626, "side": "ask", "price": "30347.36", "quantity": "3488.75"}
+{"type": "new_order", "sequence": 377, "order_id": 37741, "side": "bid", "price": "30276.88", "quantity": "4651.59"}
+{"type": "new_order", "sequence": 378, "order_id": 37842, "side": "ask", "price": "30467.80", "quantity": "2233.65"}
+{"type": "new_order", "sequence": 379, "order_id": 37933, "side": "bid", "price": "30303.43", "quantity": "1964.79"}
+{"type": "new_order", "sequence": 380, "order_id": 38006, "side": "bid", "price": "30315.43", "quantity": "4173.88"}
+{"type": "new_order", "sequence": 381, "order_id": 38123, "side": "ask", "price": "30515.54", "quantity": "6714.70"}
 {"type": "cancel_order", "sequence": 382, "order_id": 23248}
-{"type": "new_order", "sequence": 383, "order_id": 38344, "side": "bid", "price": "30384.36", "quantity": "301.23"}
-{"type": "new_order", "sequence": 384, "order_id": 38430, "side": "bid", "price": "30414.37", "quantity": "171.99"}
-{"type": "new_order", "sequence": 385, "order_id": 38513, "side": "ask", "price": "30502.18", "quantity": "335.25"}
-{"type": "new_order", "sequence": 386, "order_id": 38605, "side": "bid", "price": "30335.46", "quantity": "333.53"}
-{"type": "new_order", "sequence": 387, "order_id": 38734, "side": "ask", "price": "30473.62", "quantity": "402.76"}
-{"type": "new_order", "sequence": 388, "order_id": 38840, "side": "bid", "price": "30318.84", "quantity": "468.84"}
-{"type": "new_order", "sequence": 389, "order_id": 38916, "side": "ask", "price": "30358.87", "quantity": "290.61"}
-{"type": "new_order", "sequence": 390, "order_id": 39009, "side": "ask", "price": "30338.97", "quantity": "208.10"}
-{"type": "new_order", "sequence": 391, "order_id": 39129, "side": "bid", "price": "30228.10", "quantity": "304.12"}
-{"type": "new_order", "sequence": 392, "order_id": 39236, "side": "ask", "price": "30395.10", "quantity": "272.07"}
-{"type": "new_order", "sequence": 393, "order_id": 39319, "side": "bid", "price": "30241.15", "quantity": "512.30"}
-{"type": "new_order", "sequence": 394, "order_id": 39450, "side": "ask", "price": "30308.59", "quantity": "428.63"}
-{"type": "new_order", "sequence": 395, "order_id": 39549, "side": "bid", "price": "30164.62", "quantity": "308.74"}
-{"type": "new_order", "sequence": 396, "order_id": 39649, "side": "bid", "price": "30125.40", "quantity": "300.83"}
-{"type": "new_order", "sequence": 397, "order_id": 39708, "side": "bid", "price": "30320.79", "quantity": "308.35"}
-{"type": "new_order", "sequence": 398, "order_id": 39841, "side": "ask", "price": "30451.60", "quantity": "387.90"}
-{"type": "new_order", "sequence": 399, "order_id": 39939, "side": "bid", "price": "30317.99", "quantity": "469.32"}
-{"type": "new_order", "sequence": 400, "order_id": 40033, "side": "bid", "price": "30344.51", "quantity": "649.35"}
+{"type": "new_order", "sequence": 383, "order_id": 38344, "side": "bid", "price": "30384.36", "quantity": "3012.34"}
+{"type": "new_order", "sequence": 384, "order_id": 38430, "side": "bid", "price": "30414.37", "quantity": "1719.87"}
+{"type": "new_order", "sequence": 385, "order_id": 38513, "side": "ask", "price": "30502.18", "quantity": "3352.48"}
+{"type": "new_order", "sequence": 386, "order_id": 38605, "side": "bid", "price": "30335.46", "quantity": "3335.30"}
+{"type": "new_order", "sequence": 387, "order_id": 38734, "side": "ask", "price": "30473.62", "quantity": "4027.64"}
+{"type": "new_order", "sequence": 388, "order_id": 38840, "side": "bid", "price": "30318.84", "quantity": "4688.44"}
+{"type": "new_order", "sequence": 389, "order_id": 38916, "side": "ask", "price": "30358.87", "quantity": "2906.12"}
+{"type": "new_order", "sequence": 390, "order_id": 39009, "side": "ask", "price": "30338.97", "quantity": "2080.96"}
+{"type": "new_order", "sequence": 391, "order_id": 39129, "side": "bid", "price": "30228.10", "quantity": "3041.19"}
+{"type": "new_order", "sequence": 392, "order_id": 39236, "side": "ask", "price": "30395.10", "quantity": "2720.66"}
+{"type": "new_order", "sequence": 393, "order_id": 39319, "side": "bid", "price": "30241.15", "quantity": "5122.96"}
+{"type": "new_order", "sequence": 394, "order_id": 39450, "side": "ask", "price": "30308.59", "quantity": "4286.32"}
+{"type": "new_order", "sequence": 395, "order_id": 39549, "side": "bid", "price": "30164.62", "quantity": "3087.38"}
+{"type": "new_order", "sequence": 396, "order_id": 39649, "side": "bid", "price": "30125.40", "quantity": "3008.29"}
+{"type": "new_order", "sequence": 397, "order_id": 39708, "side": "bid", "price": "30320.79", "quantity": "3083.54"}
+{"type": "new_order", "sequence": 398, "order_id": 39841, "side": "ask", "price": "30451.60", "quantity": "3879.02"}
+{"type": "new_order", "sequence": 399, "order_id": 39939, "side": "bid", "price": "30317.99", "quantity": "4693.22"}
+{"type": "new_order", "sequence": 400, "order_id": 40033, "side": "bid", "price": "30344.51", "quantity": "6493.48"}
 {"type": "cancel_order", "sequence": 401, "order_id": 12048}

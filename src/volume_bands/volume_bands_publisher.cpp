@@ -8,6 +8,8 @@ VolumeBandsCalculator::VolumeBandsCalculator(std::vector<common::Decimal> thresh
     : thresholds_(std::move(thresholds)) {}
 
 namespace {
+const common::Decimal kZero = common::Decimal::fromRaw(0);
+
 inline common::DecimalWide widen(const common::Decimal& value) {
   return common::DecimalWide::fromRaw(value.raw());
 }
@@ -24,15 +26,33 @@ common::Decimal findPriceForThreshold(const std::vector<common::PriceLevel>& lev
   }
   return common::Decimal::fromRaw(0);
 }
+
+const std::vector<common::PriceLevel>& normalizeLevels(
+    const std::vector<common::PriceLevel>& levels,
+    const common::AggregatedQuote& quote,
+    std::vector<common::PriceLevel>& scratch) {
+  if (!levels.empty()) {
+    return levels;
+  }
+  scratch.clear();
+  if (quote.quantity > kZero) {
+    scratch.push_back({quote.price, quote.quantity});
+  }
+  return scratch;
+}
 }  // namespace
 
 std::vector<common::VolumeBandQuote> VolumeBandsCalculator::compute(
     const common::AggregatedBookView& view) const {
   std::vector<common::VolumeBandQuote> quotes;
   quotes.reserve(thresholds_.size());
+  std::vector<common::PriceLevel> bid_scratch;
+  std::vector<common::PriceLevel> ask_scratch;
+  const auto& bid_levels = normalizeLevels(view.bid_levels, view.best_bid, bid_scratch);
+  const auto& ask_levels = normalizeLevels(view.ask_levels, view.best_ask, ask_scratch);
   for (const auto& threshold : thresholds_) {
-    const auto bid_price = findPriceForThreshold(view.bid_levels, threshold);
-    const auto ask_price = findPriceForThreshold(view.ask_levels, threshold);
+    const auto bid_price = findPriceForThreshold(bid_levels, threshold);
+    const auto ask_price = findPriceForThreshold(ask_levels, threshold);
     quotes.push_back(common::VolumeBandQuote{threshold, bid_price, ask_price});
   }
   return quotes;

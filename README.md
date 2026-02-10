@@ -83,6 +83,24 @@ BUILD_DIR=build-release BUILD_PARALLEL=12 OUTPUT_DIR=./output \
 
 The script watches all services and tears them down when one of them exits or you press `Ctrl-C`.
 
+Need a quick smoke test that auto‑stops? `scripts/run_local_stack_once.sh` wraps the same workflow but kills the stack after `RUN_DURATION` seconds (default `15`) and immediately runs the CSV validator:
+
+```
+RUN_DURATION=20 STACK_LOG=/tmp/local_stack.log \
+  scripts/run_local_stack_once.sh
+```
+
+It propagates the same `BUILD_DIR`/`OUTPUT_DIR` overrides you pass to `run_local_stack.sh`, so you can reuse artifacts while still getting a single command that builds, runs, and checks the CSVs.
+
+Prefer to exercise the Docker compose demo instead? `scripts/run_docker_stack_once.sh` accepts the same arguments you would pass to `scripts/docker_run.sh` (defaults to `up`), runs it for `RUN_DURATION` seconds, tears the stack down via `docker compose down`, then reuses `scripts/validate_csv.py`:
+
+```
+RUN_DURATION=20 STACK_LOG=/tmp/compose.log \
+  scripts/run_docker_stack_once.sh --build up
+```
+
+That gives you a single “build + run + CSV check” command regardless of whether you want native binaries or the containerized stack.
+
 - WebSocket clients attach a `Bearer <token>` header, and the mock CEX server validates it before streaming NDJSON lines.
 - The aggregator gRPC server validates the same style of `Authorization` metadata before emitting server-streamed `AggregatedBook` updates.
 - `cex_type1_service` accepts optional `[start_sequence]` (after `[interval_ms]`) to skip replaying any NDJSON

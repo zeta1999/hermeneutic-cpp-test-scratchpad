@@ -33,7 +33,7 @@ class AggregationEngine {
   void setExpectedExchanges(std::vector<std::string> exchanges);
 
  private:
- void run();
+  void run();
   void publisherLoop();
   void enqueueSnapshot(common::AggregatedBookView view);
   void publish(const common::AggregatedBookView& view);

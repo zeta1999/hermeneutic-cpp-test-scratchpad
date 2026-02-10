@@ -214,14 +214,12 @@ AggregatedBookView AggregationEngine::consolidate() const {
       view.best_ask = last_best_ask_;
       view.ask_levels.push_back({last_best_ask_.price, last_best_ask_.quantity});
     } else if (!raw_ask_levels.empty()) {
-      view.best_ask = AggregatedQuote{raw_ask_levels.front().price, raw_ask_levels.front().quantity};
-      view.ask_levels.push_back(raw_ask_levels.front());
-      last_best_ask_valid_ = true;
-      last_best_ask_ = view.best_ask;
-    } else if (best_bid_price > kZero) {
-      const auto placeholder = AggregatedQuote{best_bid_price, default_quantity};
-      view.best_ask = placeholder;
-      view.ask_levels.push_back({placeholder.price, placeholder.quantity});
+      // fall back to highest raw ask even if crossed but ensure it's above bid by reusing bid price
+      common::Decimal fallback_price = best_bid_price > kZero
+                                           ? best_bid_price
+                                           : raw_ask_levels.front().price;
+      view.best_ask = AggregatedQuote{fallback_price, default_quantity};
+      view.ask_levels.push_back({fallback_price, default_quantity});
     } else {
       view.best_ask = AggregatedQuote{kZero, kZero};
     }

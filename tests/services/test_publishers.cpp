@@ -11,6 +11,18 @@
 using hermeneutic::common::AggregatedBookView;
 using hermeneutic::common::Decimal;
 
+namespace {
+Decimal adjustPriceForTest(const Decimal& price, const Decimal& offset_bps, bool bid) {
+  const auto one = hermeneutic::common::DecimalWide::fromInteger(1);
+  const auto scale = hermeneutic::common::DecimalWide::fromInteger(10'000);
+  const auto wide_price = hermeneutic::common::DecimalWide::fromRaw(price.raw());
+  const auto wide_offset = hermeneutic::common::DecimalWide::fromRaw(offset_bps.raw());
+  const auto fraction = wide_offset / scale;
+  const auto factor = bid ? (one - fraction) : (one + fraction);
+  return Decimal::fromRaw((wide_price * factor).raw());
+}
+}  // namespace
+
 TEST_CASE("bbo publisher keeps 8 decimal precision") {
   AggregatedBookView view;
   view.best_bid.price = Decimal::fromString("12345.67890123");
@@ -50,9 +62,8 @@ TEST_CASE("price bands calculator applies offsets") {
   auto quotes = calculator.compute(view);
   REQUIRE(quotes.size() == 1);
   Decimal offset = Decimal::fromInteger(50);
-  Decimal fraction = offset / Decimal::fromInteger(10'000);
-  Decimal expected_bid = view.best_bid.price * (Decimal::fromInteger(1) - fraction);
-  Decimal expected_ask = view.best_ask.price * (Decimal::fromInteger(1) + fraction);
+  auto expected_bid = adjustPriceForTest(view.best_bid.price, offset, true);
+  auto expected_ask = adjustPriceForTest(view.best_ask.price, offset, false);
   CHECK(quotes[0].bid_price == expected_bid);
   CHECK(quotes[0].ask_price == expected_ask);
   auto line = hermeneutic::price_bands::formatQuote(quotes[0]);

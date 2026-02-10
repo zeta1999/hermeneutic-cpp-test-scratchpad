@@ -54,7 +54,7 @@ CACHE_PRIME_IMAGE=${CACHE_PRIME_IMAGE:-"hermeneutic/aggregator"}
 
 # Build aggregator first to populate caches other images can reuse.
 build_image "$CACHE_PRIME_IMAGE" docker/Dockerfile.aggregator \
-  --buildkit-inline-cache \
+  --cache-to type=inline \
   --cache-from "$CACHE_PRIME_IMAGE"
 
 # Remaining services reuse the aggregator build stage cache so the heavy

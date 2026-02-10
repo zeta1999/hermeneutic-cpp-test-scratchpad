@@ -116,3 +116,23 @@ about the run it all in one go mode: run the tests in the end
 semi magic all in one run script, even without the "fast replay mode"
 no socket test stuff
 fix run local stck one/linux: 15s but why include build time ...
+
+=== in codespace
+
+sudo apt-get update
+  sudo apt-get install -y ca-certificates curl gnupg lsb-release
+  sudo install -m 0755 -d /etc/apt/keyrings
+  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --yes --dearmor -o /etc/apt/keyrings/docker.gpg
+  echo \
+    "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \
+    https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" \
+    | sudo tee /etc/apt/sources.list.d/docker.list >/dev/null
+  sudo apt-get update
+  sudo apt-get install -y docker-ce docker-ce-cli containerd.io
+  sudo usermod -aG docker $USER
+  newgrp docker   # re-evaluate group membership without restarting
+  docker run hello-world
+
+===
+sudo systemctl enable docker
+  sudo systemctl start docker

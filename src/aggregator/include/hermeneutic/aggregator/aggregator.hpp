@@ -9,6 +9,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include "hermeneutic/common/assert.hpp"
 #include "hermeneutic/common/concurrent_queue.hpp"
 #include "hermeneutic/common/events.hpp"
 #include "hermeneutic/lob/order_book.hpp"

@@ -11,8 +11,7 @@ namespace hermeneutic::common::detail {
 
 }  // namespace hermeneutic::common::detail
 
-#if 1
-//defined(HERMENEUTIC_ENABLE_DEBUG_ASSERTS) && HERMENEUTIC_ENABLE_DEBUG_ASSERTS // TODO restore
+#if defined(HERMENEUTIC_ENABLE_DEBUG_ASSERTS) && HERMENEUTIC_ENABLE_DEBUG_ASSERTS
 #define HERMENEUTIC_ASSERT_DEBUG(expr, ...)                                                      \
   do {                                                                                           \
     if (!(expr)) {                                                                               \

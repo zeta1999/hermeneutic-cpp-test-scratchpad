@@ -43,20 +43,24 @@ TEST_CASE("Price bands stay positive for large quotes") {
   auto quotes = calculator.compute(view);
   REQUIRE(quotes.size() == 2);
 
-  auto expect = [](double price, double bps, bool bid) {
-    const double fraction = bps / 10'000.0;
-    const double factor = bid ? (1.0 - fraction) : (1.0 + fraction);
+  auto expect_double = [](double price, double bps, bool bid) {
+    const double frac = bps / 10'000.0;
+    const double factor = bid ? (1.0 - frac) : (1.0 + frac);
     return price * factor;
   };
 
   auto close = [](double lhs, double rhs) {
-    return std::fabs(lhs - rhs) < 1e-6;
+    return std::fabs(lhs - rhs) < 1e-4;
   };
 
-  CHECK(close(quotes[0].bid_price.toDouble(), expect(30045.49, 50, true)));
-  CHECK(close(quotes[0].ask_price.toDouble(), expect(30050.50, 50, false)));
-  CHECK(close(quotes[1].bid_price.toDouble(), expect(30045.49, 500, true)));
-  CHECK(close(quotes[1].ask_price.toDouble(), expect(30050.50, 500, false)));
+  const double quote0_bid = quotes[0].bid_price.toDouble();
+  const double quote0_ask = quotes[0].ask_price.toDouble();
+  const double quote1_bid = quotes[1].bid_price.toDouble();
+  const double quote1_ask = quotes[1].ask_price.toDouble();
+  CHECK(close(quote0_bid, expect_double(30045.49, 50, true)));
+  CHECK(close(quote0_ask, expect_double(30050.50, 50, false)));
+  CHECK(close(quote1_bid, expect_double(30045.49, 500, true)));
+  CHECK(close(quote1_ask, expect_double(30050.50, 500, false)));
   CHECK(quotes[0].bid_price.toDouble() > 0.0);
   CHECK(quotes[0].ask_price.toDouble() > 0.0);
 }

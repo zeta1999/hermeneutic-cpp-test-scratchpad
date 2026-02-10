@@ -11,6 +11,7 @@
 #include <grpcpp/grpcpp.h>
 
 #include "aggregator.grpc.pb.h"
+#include "hermeneutic/common/assert.hpp"
 #include "hermeneutic/common/events.hpp"
 
 namespace hermeneutic::services {

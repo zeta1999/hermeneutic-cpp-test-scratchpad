@@ -16,6 +16,8 @@ BookStreamClient::BookStreamClient(std::string endpoint,
       symbol_(std::move(symbol)),
       callback_(std::move(callback)),
       reconnect_delay_(reconnect_delay) {
+  HERMENEUTIC_ASSERT_DEBUG(!symbol_.empty(), "symbol must be non-empty");
+  HERMENEUTIC_ASSERT_DEBUG(static_cast<bool>(callback_), "callback must be valid");
   channel_factory_ = [this]() {
     return ::grpc::CreateChannel(endpoint_, ::grpc::InsecureChannelCredentials());
   };
@@ -30,7 +32,11 @@ BookStreamClient::BookStreamClient(ChannelFactory channel_factory,
       token_(std::move(token)),
       symbol_(std::move(symbol)),
       callback_(std::move(callback)),
-      reconnect_delay_(reconnect_delay) {}
+      reconnect_delay_(reconnect_delay) {
+  HERMENEUTIC_ASSERT_DEBUG(!symbol_.empty(), "symbol must be non-empty");
+  HERMENEUTIC_ASSERT_DEBUG(static_cast<bool>(callback_), "callback must be valid");
+  HERMENEUTIC_ASSERT_DEBUG(static_cast<bool>(channel_factory_), "channel factory must be valid");
+}
 
 BookStreamClient::~BookStreamClient() { stop(); }
 

@@ -20,7 +20,53 @@ using common::Decimal;
 
 namespace {
 constexpr Decimal kZero = Decimal::fromRaw(0);
+
+void virtualUncross(std::vector<common::PriceLevel>& bids,
+                    std::vector<common::PriceLevel>& asks) {
+  const auto zero = Decimal::fromRaw(0);
+  for (std::size_t i = 1; i < bids.size(); ++i) {
+    HERMENEUTIC_ASSERT_DEBUG(bids[i - 1].price > bids[i].price,
+                             "bid levels must remain strictly descending before uncross");
+  }
+  for (std::size_t i = 1; i < asks.size(); ++i) {
+    HERMENEUTIC_ASSERT_DEBUG(asks[i - 1].price < asks[i].price,
+                             "ask levels must remain strictly ascending before uncross");
+  }
+  std::size_t bid_index = 0;
+  std::size_t ask_index = 0;
+  while (bid_index < bids.size() && ask_index < asks.size()) {
+    auto& bid = bids[bid_index];
+    auto& ask = asks[ask_index];
+    if (bid.price < ask.price) {
+      break;
+    }
+    const auto matched = std::min(bid.quantity, ask.quantity);
+    bid.quantity -= matched;
+    ask.quantity -= matched;
+    if (bid.quantity <= zero) {
+      ++bid_index;
+    }
+    if (ask.quantity <= zero) {
+      ++ask_index;
+    }
+  }
+  const auto erase_consumed = [&](std::vector<common::PriceLevel>& levels, std::size_t consumed) {
+    const auto remove_prefix = std::min(consumed, levels.size());
+    levels.erase(levels.begin(), levels.begin() + static_cast<std::ptrdiff_t>(remove_prefix));
+    levels.erase(std::remove_if(levels.begin(), levels.end(), [&](const auto& level) {
+                     return level.quantity <= zero;
+                   }),
+                 levels.end());
+  };
+  erase_consumed(bids, bid_index);
+  erase_consumed(asks, ask_index);
+  if (!bids.empty() && !asks.empty()) {
+    HERMENEUTIC_ASSERT_DEBUG(bids.front().price < asks.front().price,
+                             "uncrossed book still crossed");
+  }
 }
+
+}  // namespace
 
 AggregationEngine::AggregationEngine() = default;
 
@@ -49,10 +95,12 @@ void AggregationEngine::stop() {
 }
 
 void AggregationEngine::push(BookEvent event) {
+  HERMENEUTIC_ASSERT_DEBUG(!event.exchange.empty(), "book event missing exchange");
   queue_.push(std::move(event));
 }
 
 AggregationEngine::SubscriberId AggregationEngine::subscribe(Subscriber subscriber) {
+  HERMENEUTIC_ASSERT_DEBUG(static_cast<bool>(subscriber), "subscriber callback must be valid");
   const auto id = next_subscriber_id_.fetch_add(1);
   std::lock_guard<std::mutex> lock(mutex_);
   subscribers_.emplace(id, std::move(subscriber));
@@ -74,6 +122,7 @@ void AggregationEngine::setExpectedExchanges(std::vector<std::string> exchanges)
   expected_exchanges_.clear();
   ready_exchanges_.clear();
   for (auto& ex : exchanges) {
+    HERMENEUTIC_ASSERT_DEBUG(!ex.empty(), "expected exchange names must be non-empty");
     expected_exchanges_.insert(ex);
   }
   require_all_ready_ = !expected_exchanges_.empty();
@@ -177,36 +226,24 @@ AggregatedBookView AggregationEngine::consolidate() const {
       view.bid_levels.push_back({price, qty});
     }
   }
-
-  std::vector<common::PriceLevel> raw_ask_levels;
-  raw_ask_levels.reserve(aggregated_asks.size());
+  view.ask_levels.reserve(aggregated_asks.size());
   for (const auto& [price, qty] : aggregated_asks) {
     if (qty > kZero) {
-      raw_ask_levels.push_back({price, qty});
+      view.ask_levels.push_back({price, qty});
     }
   }
 
+  virtualUncross(view.bid_levels, view.ask_levels);
+
   common::Decimal best_bid_price = kZero;
-  common::Decimal best_bid_quantity = kZero;
   if (!view.bid_levels.empty()) {
     best_bid_price = view.bid_levels.front().price;
-    best_bid_quantity = view.bid_levels.front().quantity;
-    view.best_bid = AggregatedQuote{best_bid_price, best_bid_quantity};
+    view.best_bid = AggregatedQuote{best_bid_price, view.bid_levels.front().quantity};
   } else {
     view.best_bid = AggregatedQuote{kZero, kZero};
   }
-  std::vector<common::PriceLevel> filtered_asks;
-  filtered_asks.reserve(raw_ask_levels.size());
-  for (const auto& level : raw_ask_levels) {
-    if (best_bid_price > kZero && level.price <= best_bid_price) {
-      continue;
-    }
-    filtered_asks.push_back(level);
-  }
 
-  const auto default_quantity = (best_bid_quantity > kZero) ? best_bid_quantity : common::Decimal::fromInteger(1);
-  if (!filtered_asks.empty()) {
-    view.ask_levels = std::move(filtered_asks);
+  if (!view.ask_levels.empty()) {
     view.best_ask = AggregatedQuote{view.ask_levels.front().price, view.ask_levels.front().quantity};
     last_best_ask_valid_ = true;
     last_best_ask_ = view.best_ask;
@@ -246,6 +283,7 @@ AggregatedBookView AggregationEngine::consolidate() const {
 
 void AggregationEngine::validateAggregatedView(const AggregatedBookView& view) const {
 #if defined(HERMENEUTIC_ENABLE_DEBUG_ASSERTS) && HERMENEUTIC_ENABLE_DEBUG_ASSERTS
+  HERMENEUTIC_ASSERT_DEBUG(view.exchange_count == books_.size(), "exchange count mismatch");
   const auto zero = common::Decimal::fromRaw(0);
   if (view.best_bid.quantity > zero) {
     HERMENEUTIC_ASSERT_DEBUG(view.best_bid.price >= zero, "best bid price negative");
@@ -298,6 +336,18 @@ void AggregationEngine::validateAggregatedView(const AggregatedBookView& view) c
     }
     prev_ask_price = level.price;
     first = false;
+  }
+  if (view.max_feed_timestamp_ns > 0) {
+    HERMENEUTIC_ASSERT_DEBUG(view.max_feed_timestamp_ns >= view.last_feed_timestamp_ns,
+                             "max feed timestamp must be >= last feed timestamp");
+  }
+  if (view.max_local_timestamp_ns > 0) {
+    HERMENEUTIC_ASSERT_DEBUG(view.max_local_timestamp_ns >= view.last_local_timestamp_ns,
+                             "max local timestamp must be >= last local timestamp");
+  }
+  if (view.publish_timestamp_ns > 0 && view.max_feed_timestamp_ns > 0) {
+    HERMENEUTIC_ASSERT_DEBUG(view.publish_timestamp_ns >= view.max_feed_timestamp_ns,
+                             "publish timestamp must not precede feed data");
   }
 #endif
 }

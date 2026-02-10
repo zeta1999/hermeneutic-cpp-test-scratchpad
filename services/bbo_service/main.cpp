@@ -9,6 +9,7 @@
 #include <thread>
 
 #include "hermeneutic/bbo/bbo_publisher.hpp"
+#include "hermeneutic/common/assert.hpp"
 #include "common/book_stream_client.hpp"
 
 namespace {
@@ -62,6 +63,11 @@ int main(int argc, char** argv) {
         auto timestamp_ns = view.publish_timestamp_ns;
         if (timestamp_ns == 0) {
           timestamp_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(view.timestamp.time_since_epoch()).count();
+        }
+        if (view.best_bid.quantity > hermeneutic::common::Decimal::fromRaw(0) &&
+            view.best_ask.quantity > hermeneutic::common::Decimal::fromRaw(0)) {
+          HERMENEUTIC_ASSERT_DEBUG(view.best_ask.price >= view.best_bid.price,
+                                   "csv export detected crossed book");
         }
         csv << timestamp_ns << ','
             << symbol << ','

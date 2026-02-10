@@ -18,6 +18,7 @@ void applyDelta(common::Side side,
                 common::Decimal delta,
                 std::map<common::Decimal, common::Decimal, std::greater<common::Decimal>>& bids,
                 std::map<common::Decimal, common::Decimal, std::less<common::Decimal>>& asks) {
+  HERMENEUTIC_ASSERT_DEBUG(price >= kZero, "price must be non-negative");
   if (side == common::Side::Bid) {
     auto it = bids.find(price);
     Decimal next = delta;

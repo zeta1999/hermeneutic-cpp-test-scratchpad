@@ -24,8 +24,18 @@ TEST_CASE("aggregator consolidates best bid and ask") {
   engine.start();
   engine.push(makeNewOrder("notbinance", 1, Side::Bid, "100.00", "1", 1, timeFromNanoseconds(100)));
   engine.push(makeNewOrder("notcoinbase", 2, Side::Bid, "101.00", "2", 2, timeFromNanoseconds(200)));
-  std::this_thread::sleep_for(std::chrono::milliseconds(10));
-  auto view = engine.latest();
+  auto await_best = [&]() {
+    const auto deadline = std::chrono::steady_clock::now() + std::chrono::milliseconds(200);
+    while (std::chrono::steady_clock::now() < deadline) {
+      auto snapshot = engine.latest();
+      if (snapshot.best_bid.price.toString(2) == "101.00") {
+        return snapshot;
+      }
+      std::this_thread::sleep_for(std::chrono::milliseconds(2));
+    }
+    return engine.latest();
+  };
+  auto view = await_best();
   CHECK(view.best_bid.price.toString(2) == "101.00");
   CHECK(view.best_bid.quantity.toString(0) == "2");
   CHECK(view.last_feed_timestamp_ns >= 200);
@@ -43,8 +53,18 @@ TEST_CASE("aggregator exposes aggregated depth levels") {
   engine.push(makeNewOrder("ex2", 3, Side::Bid, "100.00", "3", 3, timeFromNanoseconds(3000)));
   engine.push(makeNewOrder("ex2", 4, Side::Ask, "105.00", "4", 4, timeFromNanoseconds(4000)));
   engine.push(makeNewOrder("ex3", 5, Side::Ask, "106.00", "5", 5, timeFromNanoseconds(5000)));
-  std::this_thread::sleep_for(std::chrono::milliseconds(10));
-  auto view = engine.latest();
+  const auto view = [&]() {
+    const auto deadline = std::chrono::steady_clock::now() + std::chrono::milliseconds(200);
+    while (std::chrono::steady_clock::now() < deadline) {
+      auto snapshot = engine.latest();
+      if (!snapshot.ask_levels.empty() && snapshot.best_bid.price.toString(2) == "101.00" &&
+          snapshot.best_ask.price.toString(2) == "102.00") {
+        return snapshot;
+      }
+      std::this_thread::sleep_for(std::chrono::milliseconds(2));
+    }
+    return engine.latest();
+  }();
   CHECK(view.bid_levels.size() >= 2);
   CHECK(view.bid_levels[0].price.toString(2) == "101.00");
   CHECK(view.bid_levels[1].price.toString(2) == "100.00");
@@ -55,6 +75,32 @@ TEST_CASE("aggregator exposes aggregated depth levels") {
   CHECK(view.last_feed_timestamp_ns == 5000);
   CHECK(view.max_feed_timestamp_ns == 5000);
   CHECK(view.min_feed_timestamp_ns == 2000);
+  engine.stop();
+}
+
+TEST_CASE("aggregator removes crossed liquidity via virtual matching") {
+  hermeneutic::aggregator::AggregationEngine engine;
+  engine.start();
+  engine.push(makeNewOrder("ex1", 1, Side::Bid, "100.00", "1", 1));
+  engine.push(makeNewOrder("ex1", 2, Side::Bid, "101.00", "2", 2));
+  engine.push(makeNewOrder("ex2", 3, Side::Ask, "101.00", "1", 3));
+  engine.push(makeNewOrder("ex2", 4, Side::Ask, "102.00", "2", 4));
+  const auto view = [&]() {
+    const auto deadline = std::chrono::steady_clock::now() + std::chrono::milliseconds(200);
+    while (std::chrono::steady_clock::now() < deadline) {
+      auto snapshot = engine.latest();
+      if (snapshot.bid_levels.size() >= 2 && snapshot.ask_levels.size() >= 2) {
+        return snapshot;
+      }
+      std::this_thread::sleep_for(std::chrono::milliseconds(2));
+    }
+    return engine.latest();
+  }();
+  CHECK(view.best_bid.price.toString(2) == "101.00");
+  CHECK(view.best_bid.quantity.toString(0) == "1");
+  CHECK(view.best_ask.price.toString(2) == "102.00");
+  CHECK(view.best_ask.price > view.best_bid.price);
+  CHECK(view.ask_levels.front().price == view.best_ask.price);
   engine.stop();
 }
 

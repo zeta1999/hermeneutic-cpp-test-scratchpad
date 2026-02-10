@@ -1,5 +1,46 @@
 include(FetchContent)
 
+if(FETCHCONTENT_FULLY_DISCONNECTED)
+  message(STATUS "Disabling FETCHCONTENT_FULLY_DISCONNECTED for fresh dependency sync")
+  set(FETCHCONTENT_FULLY_DISCONNECTED OFF CACHE BOOL "" FORCE)
+endif()
+
+function(_hermeneutic_prepare_fetchcontent name)
+  string(TOUPPER "${name}" _upper_name)
+  set(_source_var "FETCHCONTENT_SOURCE_DIR_${_upper_name}")
+  if(DEFINED ${_source_var})
+    set(_source_dir "${${_source_var}}")
+    if(_source_dir AND NOT EXISTS "${_source_dir}")
+      message(STATUS
+              "Clearing stale ${_source_var} path '${_source_dir}' (missing)")
+      unset(${_source_var} CACHE)
+      unset(${_source_var})
+    endif()
+  endif()
+
+  if(NOT DEFINED ${_source_var} OR "${${_source_var}}" STREQUAL "")
+    file(GLOB _hermeneutic_other_builds LIST_DIRECTORIES true
+         "${CMAKE_SOURCE_DIR}/build*")
+    file(REAL_PATH "${CMAKE_BINARY_DIR}" _resolved_binary)
+    foreach(_abs_build_dir IN LISTS _hermeneutic_other_builds)
+      if(NOT IS_DIRECTORY "${_abs_build_dir}")
+        continue()
+      endif()
+      file(REAL_PATH "${_abs_build_dir}" _resolved_candidate)
+      if(_resolved_candidate STREQUAL "${_resolved_binary}")
+        continue()
+      endif()
+      set(_candidate_dir "${_resolved_candidate}/_deps/${name}-src")
+      if(EXISTS "${_candidate_dir}")
+        message(STATUS
+                "Reusing ${name} sources from '${_candidate_dir}'")
+        set(${_source_var} "${_candidate_dir}" CACHE PATH "" FORCE)
+        break()
+      endif()
+    endforeach()
+  endif()
+endfunction()
+
 set(SPDLOG_VERSION v1.13.0 CACHE STRING "spdlog version")
 set(SIMDJSON_VERSION v3.1.8 CACHE STRING "simdjson version")
 set(GRPC_VERSION v1.44.0 CACHE STRING "grpc version")
@@ -8,12 +49,14 @@ set(GRPC_VERSION v1.44.0 CACHE STRING "grpc version")
 # set(GRPC_VERSION v1.62.0 CACHE STRING "grpc version")
 set(POCO_VERSION poco-1.13.3-release CACHE STRING "poco version")
 
+_hermeneutic_prepare_fetchcontent(spdlog)
 FetchContent_Declare(
   spdlog
   GIT_REPOSITORY https://github.com/gabime/spdlog.git
   GIT_TAG ${SPDLOG_VERSION}
 )
 
+_hermeneutic_prepare_fetchcontent(simdjson)
 FetchContent_Declare(
   simdjson
   GIT_REPOSITORY https://github.com/simdjson/simdjson.git
@@ -33,6 +76,7 @@ set(protobuf_INSTALL OFF CACHE BOOL "" FORCE)
 set(protobuf_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(protobuf_BUILD_CONFORMANCE OFF CACHE BOOL "" FORCE)
 set(RE2_BUILD_TESTING OFF CACHE BOOL "re2 tests" FORCE)
+_hermeneutic_prepare_fetchcontent(grpc)
 FetchContent_Declare(
   grpc
   GIT_REPOSITORY https://github.com/grpc/grpc.git
@@ -43,6 +87,7 @@ FetchContent_Declare(
 set(POCO_ENABLE_TESTS OFF CACHE BOOL "" FORCE)
 set(POCO_ENABLE_SAMPLES OFF CACHE BOOL "" FORCE)
 set(POCO_UNBUNDLED ON CACHE BOOL "" FORCE)
+_hermeneutic_prepare_fetchcontent(poco)
 FetchContent_Declare(
   poco
   GIT_REPOSITORY https://github.com/pocoproject/poco.git

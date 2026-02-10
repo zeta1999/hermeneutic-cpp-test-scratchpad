@@ -1,9 +1,7 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include <doctest/doctest.h>
 
-#ifndef REQUIRE
-#define REQUIRE(...) CHECK(__VA_ARGS__)
-#endif
+#include "tests/include/doctest_config.hpp"
 
 #include "hermeneutic/bbo/bbo_publisher.hpp"
 #include "hermeneutic/common/events.hpp"

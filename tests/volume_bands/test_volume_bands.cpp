@@ -1,9 +1,7 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include <doctest/doctest.h>
 
-#ifndef REQUIRE
-#define REQUIRE(...) CHECK(__VA_ARGS__)
-#endif
+#include "tests/include/doctest_config.hpp"
 
 #include "hermeneutic/common/events.hpp"
 #include "hermeneutic/volume_bands/volume_bands_publisher.hpp"

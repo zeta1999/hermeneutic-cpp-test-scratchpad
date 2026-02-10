@@ -7,6 +7,7 @@ function(add_project_test target)
       PROJECT_BINARY_DIR="${CMAKE_BINARY_DIR}"
       PROJECT_SOURCE_DIR="${CMAKE_SOURCE_DIR}"
   )
+  target_include_directories(${target} PRIVATE ${CMAKE_SOURCE_DIR})
   add_test(NAME ${target} COMMAND ${target})
 endfunction()
 

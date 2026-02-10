@@ -24,6 +24,14 @@ option(HERMENEUTIC_ALLOW_TESTLESS_BUILDS
        "Permit configuring without the project's tests"
        OFF)
 
+set(_hermeneutic_assert_default OFF)
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  set(_hermeneutic_assert_default ON)
+endif()
+option(HERMENEUTIC_ENABLE_DEBUG_ASSERTS
+       "Enable hermeneutic's debug assertions outside of Debug builds"
+       ${_hermeneutic_assert_default})
+
 set(HERMENEUTIC_DECIMAL_BACKEND "int128"
     CACHE STRING "Decimal backend (int128, double, wide)")
 set_property(CACHE HERMENEUTIC_DECIMAL_BACKEND PROPERTY STRINGS
@@ -51,6 +59,7 @@ endif()
 target_compile_definitions(project_options
   INTERFACE
     ${_hermeneutic_decimal_define}=1
+    HERMENEUTIC_ENABLE_DEBUG_ASSERTS=$<BOOL:${HERMENEUTIC_ENABLE_DEBUG_ASSERTS}>
 )
 
 add_subdirectory(proto)

@@ -9,6 +9,16 @@ ROOT = Path(sys.argv[1]) if len(sys.argv) > 1 else Path('output')
 
 issues = defaultdict(list)
 
+
+def parse_int(row, key):
+    value = row.get(key)
+    if value in (None, ''):
+        return 0
+    try:
+        return int(value)
+    except ValueError:
+        return 0
+
 # Check BBO
 bbo_path = ROOT / 'bbo' / 'bbo_quotes.csv'
 if bbo_path.exists():
@@ -18,10 +28,17 @@ if bbo_path.exists():
             bid = Decimal(row['best_bid_price'])
             ask = Decimal(row['best_ask_price'])
             ts = row['timestamp_ns']
+            max_feed = parse_int(row, 'max_feed_timestamp_ns')
+            min_feed = parse_int(row, 'min_feed_timestamp_ns')
+            publish_ns = parse_int(row, 'publish_timestamp_ns')
             if ask == 0:
                 issues['bbo'].append(f"{ts}: ask price is zero (row {idx})")
             elif bid > ask:
                 issues['bbo'].append(f"{ts}: bid {bid} exceeds ask {ask} (row {idx})")
+            if publish_ns and max_feed and publish_ns - max_feed > 5_000_000_000:
+                issues['bbo'].append(f"{ts}: publish lag {(publish_ns - max_feed) / 1e9:.2f}s (row {idx})")
+            if max_feed and min_feed and max_feed - min_feed > 5_000_000_000:
+                issues['bbo'].append(f"{ts}: feed spread {(max_feed - min_feed) / 1e9:.2f}s (row {idx})")
 else:
     issues['bbo'].append('file missing')
 

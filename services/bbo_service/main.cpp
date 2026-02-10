@@ -47,7 +47,9 @@ int main(int argc, char** argv) {
     return 1;
   }
   if (need_header) {
-    csv << "timestamp_ns,symbol,best_bid_price,best_bid_quantity,best_ask_price,best_ask_quantity,exchange_count\n";
+    csv << "timestamp_ns,symbol,best_bid_price,best_bid_quantity,best_ask_price,best_ask_quantity,exchange_count,"
+        << "last_feed_timestamp_ns,last_local_timestamp_ns,min_feed_timestamp_ns,max_feed_timestamp_ns,"
+        << "min_local_timestamp_ns,max_local_timestamp_ns,publish_timestamp_ns\n";
     csv.flush();
   }
 
@@ -57,14 +59,24 @@ int main(int argc, char** argv) {
       token,
       symbol,
       [&](const hermeneutic::common::AggregatedBookView& view) {
-        auto timestamp_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(view.timestamp.time_since_epoch()).count();
+        auto timestamp_ns = view.publish_timestamp_ns;
+        if (timestamp_ns == 0) {
+          timestamp_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(view.timestamp.time_since_epoch()).count();
+        }
         csv << timestamp_ns << ','
             << symbol << ','
             << view.best_bid.price.toString(8) << ','
             << view.best_bid.quantity.toString(8) << ','
             << view.best_ask.price.toString(8) << ','
             << view.best_ask.quantity.toString(8) << ','
-            << view.exchange_count << '\n';
+            << view.exchange_count << ','
+            << view.last_feed_timestamp_ns << ','
+            << view.last_local_timestamp_ns << ','
+            << view.min_feed_timestamp_ns << ','
+            << view.max_feed_timestamp_ns << ','
+            << view.min_local_timestamp_ns << ','
+            << view.max_local_timestamp_ns << ','
+            << timestamp_ns << '\n';
         csv.flush();
         spdlog::info(publisher.format(view));
       });

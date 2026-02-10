@@ -1,9 +1,11 @@
 #include "hermeneutic/aggregator/aggregator.hpp"
 #include "hermeneutic/aggregator/config.hpp"
+#include "hermeneutic/common/assert.hpp"
 
 #include <algorithm>
 #include <limits>
 #include <map>
+#include <string>
 #include <spdlog/spdlog.h>
 #include <simdjson.h>
 #include <stdexcept>
@@ -213,13 +215,6 @@ AggregatedBookView AggregationEngine::consolidate() const {
     if (last_best_ask_valid_) {
       view.best_ask = last_best_ask_;
       view.ask_levels.push_back({last_best_ask_.price, last_best_ask_.quantity});
-    } else if (!raw_ask_levels.empty()) {
-      // fall back to highest raw ask even if crossed but ensure it's above bid by reusing bid price
-      common::Decimal fallback_price = best_bid_price > kZero
-                                           ? best_bid_price
-                                           : raw_ask_levels.front().price;
-      view.best_ask = AggregatedQuote{fallback_price, default_quantity};
-      view.ask_levels.push_back({fallback_price, default_quantity});
     } else {
       view.best_ask = AggregatedQuote{kZero, kZero};
     }
@@ -232,7 +227,113 @@ AggregatedBookView AggregationEngine::consolidate() const {
   view.min_local_timestamp_ns = (min_local_ns == std::numeric_limits<std::int64_t>::max()) ? 0 : min_local_ns;
   view.max_local_timestamp_ns = max_local_ns;
 
+  const auto publish_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(view.timestamp.time_since_epoch()).count();
+  view.publish_timestamp_ns = publish_ns;
+  validateAggregatedView(view);
+  const auto feed_span = (view.min_feed_timestamp_ns > 0 && view.max_feed_timestamp_ns > 0)
+                             ? (view.max_feed_timestamp_ns - view.min_feed_timestamp_ns)
+                             : 0;
+  const auto local_span = (view.min_local_timestamp_ns > 0 && view.max_local_timestamp_ns > 0)
+                              ? (view.max_local_timestamp_ns - view.min_local_timestamp_ns)
+                              : 0;
+  const auto publish_delay = (view.max_feed_timestamp_ns > 0)
+                                 ? (publish_ns - view.max_feed_timestamp_ns)
+                                 : 0;
+  maybeWarnOnStaleness(feed_span, local_span, publish_delay);
+
   return view;
+}
+
+void AggregationEngine::validateAggregatedView(const AggregatedBookView& view) const {
+#if defined(HERMENEUTIC_ENABLE_DEBUG_ASSERTS) && HERMENEUTIC_ENABLE_DEBUG_ASSERTS
+  const auto zero = common::Decimal::fromRaw(0);
+  if (view.best_bid.quantity > zero) {
+    HERMENEUTIC_ASSERT_DEBUG(view.best_bid.price >= zero, "best bid price negative");
+  }
+  if (view.best_ask.quantity > zero) {
+    HERMENEUTIC_ASSERT_DEBUG(view.best_ask.price >= zero, "best ask price negative");
+  }
+  if (view.best_bid.quantity > zero && view.best_ask.quantity > zero) {
+    HERMENEUTIC_ASSERT_DEBUG(view.best_ask.price > view.best_bid.price,
+                             "best ask must exceed best bid");
+  }
+
+  if (!view.bid_levels.empty()) {
+    HERMENEUTIC_ASSERT_DEBUG(view.bid_levels.front().price == view.best_bid.price,
+                             "first bid level must match best bid");
+    HERMENEUTIC_ASSERT_DEBUG(view.bid_levels.front().quantity == view.best_bid.quantity,
+                             "first bid level quantity must match best bid");
+  }
+  auto prev_bid_price = view.best_bid.price;
+  bool first = true;
+  for (const auto& level : view.bid_levels) {
+    HERMENEUTIC_ASSERT_DEBUG(level.price >= zero, "bid level price negative");
+    HERMENEUTIC_ASSERT_DEBUG(level.quantity > zero, "bid level quantity non-positive");
+    if (!first) {
+      HERMENEUTIC_ASSERT_DEBUG(level.price < prev_bid_price, "bid levels not strictly descending");
+    }
+    HERMENEUTIC_ASSERT_DEBUG(level.price <= view.best_bid.price, "bid level exceeds best bid price");
+    prev_bid_price = level.price;
+    first = false;
+  }
+
+  if (!view.ask_levels.empty()) {
+    HERMENEUTIC_ASSERT_DEBUG(view.ask_levels.front().price == view.best_ask.price,
+                             "first ask level must match best ask");
+    HERMENEUTIC_ASSERT_DEBUG(view.ask_levels.front().quantity == view.best_ask.quantity,
+                             "first ask level quantity must match best ask");
+  }
+  auto prev_ask_price = view.best_ask.price;
+  first = true;
+  for (const auto& level : view.ask_levels) {
+    HERMENEUTIC_ASSERT_DEBUG(level.price >= zero, "ask level price negative");
+    HERMENEUTIC_ASSERT_DEBUG(level.quantity > zero, "ask level quantity non-positive");
+    if (!first) {
+      HERMENEUTIC_ASSERT_DEBUG(level.price > prev_ask_price, "ask levels not strictly ascending");
+    }
+    HERMENEUTIC_ASSERT_DEBUG(level.price >= view.best_ask.price, "ask level below best ask");
+    if (view.best_bid.quantity > zero) {
+      HERMENEUTIC_ASSERT_DEBUG(level.price > view.best_bid.price,
+                               "ask level must exceed best bid price");
+    }
+    prev_ask_price = level.price;
+    first = false;
+  }
+#endif
+}
+
+void AggregationEngine::maybeWarnOnStaleness(std::int64_t feed_span,
+                                             std::int64_t local_span,
+                                             std::int64_t publish_delay) const {
+  constexpr std::int64_t kSpreadThresholdNs =
+      std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::seconds(2)).count();
+  constexpr std::int64_t kDelayThresholdNs =
+      std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::seconds(5)).count();
+  constexpr auto kMinWarningInterval = std::chrono::seconds(5);
+
+  std::vector<std::string> reasons;
+  if (feed_span > kSpreadThresholdNs) {
+    reasons.push_back("feed window " + std::to_string(feed_span) + "ns");
+  }
+  if (local_span > kSpreadThresholdNs) {
+    reasons.push_back("local window " + std::to_string(local_span) + "ns");
+  }
+  if (publish_delay > kDelayThresholdNs) {
+    reasons.push_back("publish lag " + std::to_string(publish_delay) + "ns");
+  }
+  if (reasons.empty()) {
+    return;
+  }
+  const auto now = std::chrono::steady_clock::now();
+  if (now - last_staleness_warning_ < kMinWarningInterval) {
+    return;
+  }
+  last_staleness_warning_ = now;
+  std::string message = reasons.front();
+  for (std::size_t i = 1; i < reasons.size(); ++i) {
+    message.append("; ").append(reasons[i]);
+  }
+  spdlog::warn("Aggregated feed staleness detected: {}", message);
 }
 
 }  // namespace hermeneutic::aggregator

@@ -4,7 +4,9 @@ target_sources(common
     common/include/hermeneutic/common/decimal.hpp
     common/include/hermeneutic/common/events.hpp
     common/include/hermeneutic/common/concurrent_queue.hpp
+    common/include/hermeneutic/common/assert.hpp
   PRIVATE
+    common/assert.cpp
     common/decimal.cpp
     common/enum.cpp
     common/events.cpp

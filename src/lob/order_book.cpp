@@ -50,6 +50,40 @@ void applyDelta(common::Side side,
 
 }  // namespace
 
+void LimitOrderBook::validateInvariants() const {
+#if defined(HERMENEUTIC_ENABLE_DEBUG_ASSERTS) && HERMENEUTIC_ENABLE_DEBUG_ASSERTS
+  const Decimal kZero = Decimal::fromRaw(0);
+  bool first = true;
+  Decimal previous_price{};
+  for (const auto& [price, qty] : bids_) {
+    HERMENEUTIC_ASSERT_DEBUG(price >= kZero, "bid price negative");
+    HERMENEUTIC_ASSERT_DEBUG(qty > kZero, "bid quantity non-positive");
+    if (!first) {
+      HERMENEUTIC_ASSERT_DEBUG(price < previous_price, "bid levels not strictly descending");
+    }
+    previous_price = price;
+    first = false;
+  }
+
+  first = true;
+  previous_price = Decimal{};
+  for (const auto& [price, qty] : asks_) {
+    HERMENEUTIC_ASSERT_DEBUG(price >= kZero, "ask price negative");
+    HERMENEUTIC_ASSERT_DEBUG(qty > kZero, "ask quantity non-positive");
+    if (!first) {
+      HERMENEUTIC_ASSERT_DEBUG(price > previous_price, "ask levels not strictly ascending");
+    }
+    previous_price = price;
+    first = false;
+  }
+
+  if (!bids_.empty() && !asks_.empty()) {
+    HERMENEUTIC_ASSERT_DEBUG(asks_.begin()->first > bids_.begin()->first,
+                             "best ask must exceed best bid");
+  }
+#endif
+}
+
 void LimitOrderBook::apply(const BookEvent& event) {
   if (!exchange_name_.empty() && exchange_name_ != event.exchange) {
     throw std::invalid_argument("update exchange mismatch");
@@ -127,6 +161,7 @@ void LimitOrderBook::apply(const BookEvent& event) {
       break;
     }
   }
+  validateInvariants();
 }
 
 common::PriceLevel LimitOrderBook::bestBid() const {

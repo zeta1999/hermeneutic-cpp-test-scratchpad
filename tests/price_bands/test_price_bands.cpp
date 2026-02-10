@@ -1,7 +1,9 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include <doctest/doctest.h>
 
+#include <array>
 #include <cmath>
+#include <sstream>
 
 #include "tests/include/doctest_config.hpp"
 
@@ -9,6 +11,7 @@
 #include "hermeneutic/price_bands/price_bands_publisher.hpp"
 
 using hermeneutic::common::Decimal;
+using hermeneutic::common::DecimalWide;
 
 TEST_CASE("Price bands calculator applies offsets") {
   auto view = hermeneutic::common::AggregatedBookView{};
@@ -43,24 +46,46 @@ TEST_CASE("Price bands stay positive for large quotes") {
   auto quotes = calculator.compute(view);
   REQUIRE(quotes.size() == 2);
 
-  auto expect_double = [](double price, double bps, bool bid) {
-    const double frac = bps / 10'000.0;
-    const double factor = bid ? (1.0 - frac) : (1.0 + frac);
-    return price * factor;
+  auto expect_decimal = [](const Decimal& price, const Decimal& bps, bool bid) {
+    const Decimal fraction = bps / Decimal::fromInteger(10'000);
+    const auto widen = [](const Decimal& value) {
+      return DecimalWide::fromRaw(value.raw());
+    };
+    const DecimalWide wide_one = DecimalWide::fromInteger(1);
+    const DecimalWide wide_price = widen(price);
+    const DecimalWide wide_fraction = widen(fraction);
+    const DecimalWide factor = bid ? (wide_one - wide_fraction) : (wide_one + wide_fraction);
+    const DecimalWide adjusted = wide_price * factor;
+    return Decimal::fromRaw(adjusted.raw());
   };
 
-  auto close = [](double lhs, double rhs) {
-    return std::fabs(lhs - rhs) < 1e-4;
-  };
+  const auto offsets = std::array{Decimal::fromInteger(50), Decimal::fromInteger(500)};
+  for (std::size_t i = 0; i < offsets.size(); ++i) {
+    CAPTURE(i);
+    const auto offset = offsets[i];
+    const auto expected_bid = expect_decimal(view.best_bid.price, offset, true);
+    const auto expected_ask = expect_decimal(view.best_ask.price, offset, false);
+    const double bid_delta =
+        quotes[i].bid_price.toDouble() - expected_bid.toDouble();
+    std::ostringstream bid_info;
+    bid_info << "offset=" << offset.toString(0)
+             << " bid_actual=" << quotes[i].bid_price.toString(10)
+             << " bid_expected=" << expected_bid.toString(10)
+             << " bid_delta_double=" << bid_delta;
+    DOCTEST_INFO(bid_info.str());
 
-  const double quote0_bid = quotes[0].bid_price.toDouble();
-  const double quote0_ask = quotes[0].ask_price.toDouble();
-  const double quote1_bid = quotes[1].bid_price.toDouble();
-  const double quote1_ask = quotes[1].ask_price.toDouble();
-  CHECK(close(quote0_bid, expect_double(30045.49, 50, true)));
-  CHECK(close(quote0_ask, expect_double(30050.50, 50, false)));
-  CHECK(close(quote1_bid, expect_double(30045.49, 500, true)));
-  CHECK(close(quote1_ask, expect_double(30050.50, 500, false)));
-  CHECK(quotes[0].bid_price.toDouble() > 0.0);
-  CHECK(quotes[0].ask_price.toDouble() > 0.0);
+    const double ask_delta =
+        quotes[i].ask_price.toDouble() - expected_ask.toDouble();
+    std::ostringstream ask_info;
+    ask_info << "offset=" << offset.toString(0)
+             << " ask_actual=" << quotes[i].ask_price.toString(10)
+             << " ask_expected=" << expected_ask.toString(10)
+             << " ask_delta_double=" << ask_delta;
+    DOCTEST_INFO(ask_info.str());
+    CHECK(quotes[i].bid_price == expected_bid);
+    CHECK(quotes[i].ask_price == expected_ask);
+  }
+
+  CHECK(quotes[0].bid_price > Decimal::fromInteger(0));
+  CHECK(quotes[0].ask_price > Decimal::fromInteger(0));
 }

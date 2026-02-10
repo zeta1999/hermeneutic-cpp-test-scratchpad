@@ -36,7 +36,9 @@ services:
     image: hermeneutic/bbo
     depends_on:
       - aggregator
-    command: ["aggregator:50051", "agg-docker-token", "BTCUSDT"]
+    volumes:
+      - ../output/bbo:/app
+    command: ["aggregator:50051", "agg-docker-token", "BTCUSDT", "/app/bbo_quotes.csv"]
   volume_bands:
     build:
       context: ..
@@ -44,7 +46,9 @@ services:
     image: hermeneutic/volume
     depends_on:
       - aggregator
-    command: ["aggregator:50051", "agg-docker-token", "BTCUSDT"]
+    volumes:
+      - ../output/volume_bands:/app
+    command: ["aggregator:50051", "agg-docker-token", "BTCUSDT", "/app/volume_bands.csv"]
   price_bands:
     build:
       context: ..
@@ -52,4 +56,6 @@ services:
     image: hermeneutic/price
     depends_on:
       - aggregator
-    command: ["aggregator:50051", "agg-docker-token", "BTCUSDT"]
+    volumes:
+      - ../output/price_bands:/app
+    command: ["aggregator:50051", "agg-docker-token", "BTCUSDT", "/app/price_bands.csv"]

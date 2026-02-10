@@ -65,21 +65,37 @@ Executables land at `build/services/<name>/<name>`. Run three mock exchanges, th
 
 ## Docker + demo stack
 
-Every service ships with a dedicated Dockerfile (`docker/Dockerfile.*`). Build the suite then bring up the compose topology (three CEX containers, aggregator, and the three gRPC clients):
+The Docker workflow is now split into explicit build and run steps so you can reuse images (and even build multi-arch artifacts with Buildx) before launching the compose demo.
 
-```bash
-cmake --build build --target docker-images
-cd docker
-docker compose up --build
+### Build images (supports multi-arch)
+
+```
+# Build host-arch images with buildx and load them into your local daemon.
+scripts/docker_build.sh
+
+# Build and push Linux/amd64+arm64 images (set OUTPUT to push or any other buildx output spec).
+PLATFORMS=linux/amd64,linux/arm64 OUTPUT=push scripts/docker_build.sh
 ```
 
-The compose file (`docker/compose.yml`) launches:
+The script ensures a buildx builder exists, then builds `hermeneutic/{cex,aggregator,bbo,volume,price}` using the Dockerfiles in `docker/`. When `OUTPUT=load` (the default) you must stick to a single platform because Docker can only load one architecture into the local daemon; switch to `OUTPUT=push` or an explicit `--output` target when building a manifest list.
 
-- `cex-notbinance|notcoinbase|notkraken` — websocket mocks serving the NDJSON fixtures under `data/` with unique tokens/ports.
-- `aggregator` — runs `aggregator_service` against `config/aggregator.json`, binding gRPC on `localhost:50051`.
-- `bbo`, `volume_bands`, `price_bands` — each container starts its respective client service pointing at `aggregator:50051` with the docker token `agg-docker-token`.
+### Run the demo stack
 
-Client stdout is streamed to the compose logs, and each container now appends its derived data to CSV files inside the container filesystem (`/app/bbo_quotes.csv`, `/app/volume_bands.csv`, `/app/price_bands.csv`). Use `docker cp <container>:<path> <dest>` to retrieve those artifacts if you want to analyze them outside the running containers.
+```
+# Brings up the compose topology without rebuilding images.
+scripts/docker_run.sh up
+
+# Pass any compose arguments you need (e.g. detached mode).
+scripts/docker_run.sh up -d
+```
+
+The helper script creates `output/{bbo,volume_bands,price_bands}` under the repo root and maps those directories into the gRPC client containers. Each service writes its CSV stream directly to the host:
+
+- `output/bbo/bbo_quotes.csv`
+- `output/volume_bands/volume_bands.csv`
+- `output/price_bands/price_bands.csv`
+
+The compose file (`docker/compose.yml`) still launches the same services as before (three mock CEX feeds, the aggregator, and the three gRPC clients) and binds the aggregator gRPC endpoint to `localhost:50051`.
 
 ## Mock CEX protocol
 

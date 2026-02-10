@@ -112,3 +112,4 @@ sanitizers & maybe valgrind runs + code coverage
 vendorizing/devendorizing exercise 
 docker stuff ~> reduce logs optionally 
 FX for volumes ~
+about the run it all in one go mode: run the tests in the end

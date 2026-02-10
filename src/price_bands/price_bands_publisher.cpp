@@ -7,10 +7,20 @@ namespace {
 const common::Decimal kOne = common::Decimal::fromInteger(1);
 const common::Decimal kTenThousand = common::Decimal::fromInteger(10'000);
 
-common::Decimal adjustPrice(const common::Decimal& price, const common::Decimal& offset_bps, bool bid) {
+inline common::DecimalWide widen(const common::Decimal& value) {
+  return common::DecimalWide::fromRaw(value.raw());
+}
+
+common::Decimal adjustPrice(const common::Decimal& price,
+                            const common::Decimal& offset_bps,
+                            bool bid) {
   auto fraction = offset_bps / kTenThousand;
-  common::Decimal factor = bid ? (kOne - fraction) : (kOne + fraction);
-  return price * factor;
+  auto wide_price = widen(price);
+  auto wide_fraction = widen(fraction);
+  auto wide_one = widen(kOne);
+  common::DecimalWide factor = bid ? (wide_one - wide_fraction) : (wide_one + wide_fraction);
+  auto adjusted = wide_price * factor;
+  return common::Decimal::fromRaw(adjusted.raw());
 }
 
 }  // namespace

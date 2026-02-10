@@ -71,6 +71,7 @@ Executables land at `build/services/<name>/<name>`. Run three mock exchanges, th
 ```
 
 `aggregator_service` now waits for feed hostnames in the config to resolve before dialing their WebSockets, so the Docker image no longer needs a shim entrypoint. Set `HERMENEUTIC_WAIT_FOR_FEEDS=0` to skip that wait loop during local experiments.
+The default local config binds gRPC to `127.0.0.1` (not `0.0.0.0`) so macOS’ sandbox doesn’t block the listener; adjust `config/aggregator.json` if you explicitly need a wildcard bind.
 
 Prefer a one-liner? `scripts/run_local_stack.sh` builds the same binaries and launches them for you, mirroring the compose topology but without Docker. Override knobs via environment variables:
 
@@ -120,10 +121,11 @@ docker images hermeneutic/* --format "{{.Repository}}:{{.Tag}}\t{{.Size}}"
 ### Run the demo stack
 
 ```
-# Brings up the compose topology without rebuilding images.
-scripts/docker_run.sh up
+# Rebuild images (if needed) then bring up the stack via compose.
+# Equivalent to: docker compose -f docker/compose.yml build && docker compose -f docker/compose.yml up
+scripts/docker_run.sh --build
 
-# Pass any compose arguments you need (e.g. detached mode).
+# Or reuse existing images and pass any compose args you need (e.g. detached mode).
 scripts/docker_run.sh up -d
 ```
 
@@ -151,6 +153,16 @@ scripts/generate_demo_data.py --exchange notkraken --output data/notkraken.ndjso
 ```
 
 Because `scripts/docker_run.sh` binds the `output/` directory into the client containers, you always have a local copy of the CSV output without running `docker cp`. Delete the files between runs if you want a clean capture.
+
+The generator now uses ~250 BTC per level across eight depth levels (with random jitter and a simple GBM mid-price), so cumulative notionals reach the 1M–50M thresholds the volume-band client emits. Lower `--quantity` or `--depth` if you want leaner books for experimentation.
+
+After any demo run, lint the generated CSVs with:
+
+```
+scripts/validate_csv.py output
+```
+
+The script flags rows where bids exceed asks, asks collapse to zero, or volume-band prices fail to get worse as thresholds increase.
 
 ## stdout publishers & verification
 

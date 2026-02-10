@@ -2,7 +2,7 @@
   "symbol": "BTCUSDT",
   "publish_interval_ms": 50,
   "grpc": {
-    "listen_address": "0.0.0.0",
+    "listen_address": "127.0.0.1",
     "port": 50051,
     "auth_token": "agg-local-token"
   },

@@ -12,11 +12,17 @@ inline common::DecimalWide widen(const common::Decimal& value) {
   return common::DecimalWide::fromRaw(value.raw());
 }
 
-bool exceedsThreshold(const common::Decimal& price,
-                      const common::Decimal& quantity,
-                      const common::Decimal& threshold) {
-  auto notional = widen(price) * widen(quantity);
-  return notional >= widen(threshold);
+common::Decimal findPriceForThreshold(const std::vector<common::PriceLevel>& levels,
+                                      const common::Decimal& threshold) {
+  common::DecimalWide accumulated = common::DecimalWide::fromRaw(0);
+  const auto wide_threshold = widen(threshold);
+  for (const auto& level : levels) {
+    accumulated += widen(level.price) * widen(level.quantity);
+    if (accumulated >= wide_threshold) {
+      return level.price;
+    }
+  }
+  return common::Decimal::fromRaw(0);
 }
 }  // namespace
 
@@ -25,10 +31,8 @@ std::vector<common::VolumeBandQuote> VolumeBandsCalculator::compute(
   std::vector<common::VolumeBandQuote> quotes;
   quotes.reserve(thresholds_.size());
   for (const auto& threshold : thresholds_) {
-    const bool bid_ok = exceedsThreshold(view.best_bid.price, view.best_bid.quantity, threshold);
-    const bool ask_ok = exceedsThreshold(view.best_ask.price, view.best_ask.quantity, threshold);
-    const auto bid_price = bid_ok ? view.best_bid.price : common::Decimal::fromRaw(0);
-    const auto ask_price = ask_ok ? view.best_ask.price : common::Decimal::fromRaw(0);
+    const auto bid_price = findPriceForThreshold(view.bid_levels, threshold);
+    const auto ask_price = findPriceForThreshold(view.ask_levels, threshold);
     quotes.push_back(common::VolumeBandQuote{threshold, bid_price, ask_price});
   }
   return quotes;

@@ -1,0 +1,15 @@
+High-level plan to address CSV anomalies (ask <= bid, zero ask values, flat volume-band prices):
+
+1. Demo data improvements
+   - Increase snapshot depth and diversify prices: add more ask levels above mid-price so exchanges never start with empty asks. Ensure new orders have both bid/ask variants so depth replenishes.
+   - Introduce exponential-brownian mid-price drift; each exchange should wobble around the same mean but not collapse asks simultaneously.
+
+2. Aggregator safeguards
+   - When consolidating asks, drop levels priced <= best bid to enforce bid<ask but do NOT empty the entire ask book. If no valid asks remain, keep the previous best ask until new asks arrive (instead of publishing zeros).
+   - Add unit tests that feed per-exchange snapshots with minimal depth to verify `AggregatedBookView` never reports `best_ask_price == 0` while any exchange has asks.
+
+3. Volume-band calculator
+   - Walk the full ask/bid depth to find the threshold price, so higher thresholds naturally reference deeper (worse) prices; add regression tests to confirm monotonic behaviour: `bid_price` decreases, `ask_price` increases as threshold grows.
+
+4. Validation tools
+   - Add a lightweight script under `scripts/validate_csv.py` to scan `output/*/*.csv`, flag rows with `best_bid_price >= best_ask_price`, `best_ask_price == 0`, or identical prices across volume-band thresholds. Integrate into CI/local verification.

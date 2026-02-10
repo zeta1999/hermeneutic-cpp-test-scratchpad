@@ -20,6 +20,9 @@ if [ ! -d "$OUTPUT_DIR" ]; then
   mkdir -p "$OUTPUT_DIR"
 fi
 mkdir -p "$OUTPUT_DIR/bbo" "$OUTPUT_DIR/volume_bands" "$OUTPUT_DIR/price_bands"
+: > "$OUTPUT_DIR/bbo/bbo_quotes.csv"
+: > "$OUTPUT_DIR/volume_bands/volume_bands.csv"
+: > "$OUTPUT_DIR/price_bands/price_bands.csv"
 
 if [ ! -f "$CONFIG_PATH" ]; then
   echo "[local-stack] missing config file: $CONFIG_PATH" >&2

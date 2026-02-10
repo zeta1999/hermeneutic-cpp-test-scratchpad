@@ -1,0 +1,13 @@
+CSV issues (volume bands all share the same price; best bids greater than best asks) caused by synthetic feeds where every level uses nearly identical prices and sizes. Plan for improving CSV realism:
+
+1. Volume bands
+   - Enhance `scripts/generate_demo_data.py` to build tiered depth levels (prices grow further away from the mid-price per level) and assign different sizes, so cumulative notionals cross thresholds at distinct prices.
+   - Regenerate `data/not*.ndjson` with the new generator.
+   - Update `tests/volume_bands/test_volume_bands.cpp` to assert per-threshold prices rather than just checking zero/non-zero.
+
+2. Bid/ask crossing
+   - Adjust `src/aggregator/aggregator.cpp` to discard ask levels whose price falls below the best bid before publishing `AggregatedBookView` (prevent bid > ask in CSVs).
+   - Add regression tests (e.g. new case in `tests/services/test_publishers.cpp`) to ensure `best_bid_price <= best_ask_price` under normal operation.
+
+3. CSV validation tooling
+   - Add a developer helper script under `scripts/` that scans `output/*.csv` to flag rows where bids exceed asks or where volume bands repeat the same price across thresholds, so regressions are detected quickly.

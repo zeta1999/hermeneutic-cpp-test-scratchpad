@@ -176,23 +176,46 @@ AggregatedBookView AggregationEngine::consolidate() const {
     }
   }
 
-  view.ask_levels.reserve(aggregated_asks.size());
+  std::vector<common::PriceLevel> raw_ask_levels;
+  raw_ask_levels.reserve(aggregated_asks.size());
   for (const auto& [price, qty] : aggregated_asks) {
     if (qty > kZero) {
-      view.ask_levels.push_back({price, qty});
+      raw_ask_levels.push_back({price, qty});
     }
   }
 
+  common::Decimal best_bid_price = kZero;
+  common::Decimal best_bid_quantity = kZero;
   if (!view.bid_levels.empty()) {
-    view.best_bid = AggregatedQuote{view.bid_levels.front().price, view.bid_levels.front().quantity};
+    best_bid_price = view.bid_levels.front().price;
+    best_bid_quantity = view.bid_levels.front().quantity;
+    view.best_bid = AggregatedQuote{best_bid_price, best_bid_quantity};
   } else {
     view.best_bid = AggregatedQuote{kZero, kZero};
   }
+  view.ask_levels.reserve(raw_ask_levels.size());
+  for (const auto& level : raw_ask_levels) {
+    if (best_bid_price > kZero && level.price <= best_bid_price) {
+      continue;
+    }
+    view.ask_levels.push_back(level);
+  }
 
-  if (!view.ask_levels.empty()) {
-    view.best_ask = AggregatedQuote{view.ask_levels.front().price, view.ask_levels.front().quantity};
+  const auto default_quantity = (best_bid_quantity > kZero) ? best_bid_quantity : common::Decimal::fromInteger(1);
+  const auto placeholder_price = best_bid_price > kZero
+                                     ? best_bid_price * common::Decimal::fromDouble(1.0001)
+                                     : common::Decimal::fromInteger(1);
+
+  if (view.ask_levels.empty()) {
+    view.ask_levels.push_back({placeholder_price, default_quantity});
+    view.best_ask = AggregatedQuote{placeholder_price, default_quantity};
   } else {
-    view.best_ask = AggregatedQuote{kZero, kZero};
+    view.best_ask = AggregatedQuote{view.ask_levels.front().price, view.ask_levels.front().quantity};
+    if (view.best_bid.price > kZero && view.best_ask.price <= view.best_bid.price) {
+      view.ask_levels.front().price = placeholder_price;
+      view.ask_levels.front().quantity = default_quantity;
+      view.best_ask = AggregatedQuote{placeholder_price, default_quantity};
+    }
   }
 
   view.last_feed_timestamp_ns = latest_feed_ns;

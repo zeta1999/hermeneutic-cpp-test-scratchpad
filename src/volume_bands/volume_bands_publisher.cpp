@@ -1,5 +1,7 @@
 #include "hermeneutic/volume_bands/volume_bands_publisher.hpp"
 
+#include <sstream>
+
 namespace hermeneutic::volume_bands {
 
 VolumeBandsCalculator::VolumeBandsCalculator(std::vector<common::Decimal> thresholds)
@@ -27,6 +29,14 @@ std::vector<common::Decimal> defaultThresholds() {
       common::Decimal::fromInteger(25'000'000),
       common::Decimal::fromInteger(50'000'000),
   };
+}
+
+std::string formatQuote(const common::VolumeBandQuote& quote) {
+  std::ostringstream stream;
+  stream << "Bands " << quote.notional.toString(0)
+         << " -> bid " << quote.bid_price.toString(2)
+         << " ask " << quote.ask_price.toString(2);
+  return stream.str();
 }
 
 }  // namespace hermeneutic::volume_bands

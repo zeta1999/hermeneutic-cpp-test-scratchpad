@@ -1,0 +1,32 @@
+Instructions review summary (see instructions/polish.md, Senior_C___Engineer_Test_Assignment.pdf, xxx.txt)
+
+1. Requirements traceability
+   - Re-read Senior_C___Engineer_Test_Assignment.pdf and capture every functional/non-functional requirement in a matrix. Current repo does not document which sections are satisfied, so a traceability doc is missing.
+   - Confirm the three client variations (BBO, volume-bands, price-bands) truly satisfy the “stdout publisher” spec. Today they log via spdlog + CSV files; add documentation/tests proving they emit the required formats.
+
+2. Demo data and docker scenario
+   - Provide larger, more varied NDJSON fixtures so the docker demo exercises the BBO/volume/price calculators meaningfully (polish.md explicitly requests “more voluminous demo data”). Add instructions on how to rotate/refresh datasets.
+   - Document/automate copying CSV outputs off the containers (current README only implies docker cp; polish wants an end-to-end narrative).
+
+3. Testing gaps
+   - Add unit/integration tests that cover the client services (grpc reconnect paths, CSV logging, stdout format). Currently there are only aggregator- and book-stream tests.
+   - Expand Decimal tests per xxx.txt (“decimal type is probably crap” + “more decimal tests”).
+   - Add regression coverage for fast replay mode, timestamp handling, and asynchronous publishing mentioned in xxx.txt comments.
+
+4. Build/toolchain issues
+   - Resolve the linux/clang11 vs grpc/abseil incompatibility noted in xxx.txt (FormatConversionCharSet error). Either update dependencies or ship the suggested patch pipeline.
+   - Address the warning/error backlog captured in xxx.txt (signedness warnings, missing include path for services/common/grpc_helpers.hpp when building fresh).
+   - Provide tooling to avoid rebuilding third-party deps every time (xxx.txt “have a look at logs … remove the whole dep check each time”). Our new build script does not yet implement dependency caching beyond buildx caching.
+
+5. Runtime behaviour & polish
+   - Implement/verify “fast replay mode” and “alerts / Stan style” behaviour described in xxx.txt.
+   - Ensure aggregator enforces the startup gating logic spelled out in comments (“only start diffusing updates if all sources are updated”) and document the concurrency guarantees (lockless/wait-free aspirations in xxx.txt).
+   - Improve security defaults (non-trivial passwords/tokens) per xxx.txt note.
+
+6. Misc backlog from xxx.txt
+   - Investigate “build/ folder collision” when multiple presets run.
+   - Optimize Docker image sizes (multistage suggestions still pending).
+   - Evaluate “accelerated virtual time mode” feasibility.
+   - Review WSS reconnect behaviour (xxx.txt “make sure we reconnect on error, skip sequence numbers”).
+
+Next steps: once these TODOs are prioritized, create issues per item and decide which belong to future sprints versus immediate hardening.

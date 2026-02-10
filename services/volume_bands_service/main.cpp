@@ -67,10 +67,7 @@ int main(int argc, char** argv) {
               << quote.notional.toString(0) << ','
               << quote.bid_price.toString(8) << ','
               << quote.ask_price.toString(8) << '\n';
-          spdlog::info("Bands {} -> bid {} ask {}",
-                       quote.notional.toString(0),
-                       quote.bid_price.toString(2),
-                       quote.ask_price.toString(2));
+          spdlog::info(hermeneutic::volume_bands::formatQuote(quote));
         }
         csv.flush();
       });

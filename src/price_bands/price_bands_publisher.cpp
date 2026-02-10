@@ -1,5 +1,7 @@
 #include "hermeneutic/price_bands/price_bands_publisher.hpp"
 
+#include <sstream>
+
 namespace hermeneutic::price_bands {
 namespace {
 const common::Decimal kOne = common::Decimal::fromInteger(1);
@@ -38,6 +40,14 @@ std::vector<common::Decimal> defaultOffsets() {
       common::Decimal::fromInteger(500),
       common::Decimal::fromInteger(1000),
   };
+}
+
+std::string formatQuote(const common::PriceBandQuote& quote) {
+  std::ostringstream stream;
+  stream << "Offset " << quote.offset_bps.toString(0)
+         << " bps -> bid " << quote.bid_price.toString(2)
+         << " ask " << quote.ask_price.toString(2);
+  return stream.str();
 }
 
 }  // namespace hermeneutic::price_bands

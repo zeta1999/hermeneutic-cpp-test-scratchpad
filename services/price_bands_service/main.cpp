@@ -67,10 +67,7 @@ int main(int argc, char** argv) {
               << quote.offset_bps.toString(0) << ','
               << quote.bid_price.toString(8) << ','
               << quote.ask_price.toString(8) << '\n';
-          spdlog::info("Offset {} bps -> bid {} ask {}",
-                       quote.offset_bps.toString(0),
-                       quote.bid_price.toString(2),
-                       quote.ask_price.toString(2));
+          spdlog::info(hermeneutic::price_bands::formatQuote(quote));
         }
         csv.flush();
       });

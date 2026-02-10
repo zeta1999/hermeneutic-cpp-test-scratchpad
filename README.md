@@ -1,6 +1,6 @@
 # Hermeneutic C++ Trading Playground
 
-This repository models the assignment brief with a CMake-driven C++ workspace. Three mock Central Exchanges stream BTC/USDT order book deltas over authenticated WebSockets (POCO), the aggregator consumes those feeds, maintains per-exchange books, and exposes an authenticated gRPC stream of consolidated best bid/ask data. Client services (BBO, volume bands, price bands) subscribe to that stream and publish derived metrics.
+This repository models the assignment brief with a CMake-driven C++ workspace. Three mock Central Exchanges stream BTC/USDT order book deltas over authenticated WebSockets (POCO), the aggregator consumes those feeds, maintains per-exchange books, and exposes an authenticated gRPC stream of consolidated best bid/ask data. Client services (BBO, volume bands, price bands) subscribe to that stream and publish derived metrics. Requirement-to-implementation mappings live in `instructions/traceability.md`.
 
 ## Project layout
 
@@ -96,6 +96,31 @@ The helper script creates `output/{bbo,volume_bands,price_bands}` under the repo
 - `output/price_bands/price_bands.csv`
 
 The compose file (`docker/compose.yml`) still launches the same services as before (three mock CEX feeds, the aggregator, and the three gRPC clients) and binds the aggregator gRPC endpoint to `localhost:50051`.
+
+## Demo data & rotating fixtures
+
+The `data/*.ndjson` feeds are generated via `scripts/generate_demo_data.py`, which emits deterministic snapshots plus hundreds of order/cancel events per exchange. Regenerate or extend the fixtures whenever you need heavier loads:
+
+```
+scripts/generate_demo_data.py --exchange notbinance --output data/notbinance.ndjson \
+  --events 1000 --seed 42 --base-price 30000
+scripts/generate_demo_data.py --exchange notcoinbase --output data/notcoinbase.ndjson \
+  --events 1000 --seed 43 --base-price 30125
+scripts/generate_demo_data.py --exchange notkraken --output data/notkraken.ndjson \
+  --events 1000 --seed 44 --base-price 29980
+```
+
+Because `scripts/docker_run.sh` binds the `output/` directory into the client containers, you always have a local copy of the CSV output without running `docker cp`. Delete the files between runs if you want a clean capture.
+
+## stdout publishers & verification
+
+Each client variation subscribes to the aggregator via `BookStreamClient`, formats a human-readable line, logs it via `spdlog::info` (stdout), and appends the same data to a CSV file. Formatting helpers live under:
+
+- `hermeneutic::bbo::BboPublisher::format`
+- `hermeneutic::volume_bands::formatQuote`
+- `hermeneutic::price_bands::formatQuote`
+
+Unit tests in `tests/services/test_publishers.cpp` assert the exact strings emitted, so the stdout contract stays stable.
 
 ## Mock CEX protocol
 

@@ -23,6 +23,18 @@ add_project_test(test_cex_type1_service SOURCES cex_type1/test_cex_type1_service
 add_project_test(test_cex_reconnect SOURCES cex_type1/test_reconnect.cpp LIBS cex_type1)
 add_project_test(test_grpc_helpers SOURCES services/test_grpc_helpers.cpp LIBS services_common)
 target_include_directories(test_grpc_helpers PRIVATE ${CMAKE_SOURCE_DIR})
+add_project_test(test_bbo_publisher
+  SOURCES bbo/test_bbo_publisher.cpp
+  LIBS bbo)
+add_project_test(test_volume_bands
+  SOURCES volume_bands/test_volume_bands.cpp
+  LIBS volume_bands)
+add_project_test(test_price_bands
+  SOURCES price_bands/test_price_bands.cpp
+  LIBS price_bands)
+add_project_test(test_publishers
+  SOURCES services/test_publishers.cpp
+  LIBS bbo volume_bands price_bands)
 add_project_test(test_aggregator_service_exec
   SOURCES aggregator/test_aggregator_service_exec.cpp
   LIBS services_common grpc++ Poco::Net Poco::Util Poco::Foundation)

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include <vector>
 
 #include "hermeneutic/common/events.hpp"
@@ -17,5 +18,6 @@ class VolumeBandsCalculator {
 };
 
 std::vector<common::Decimal> defaultThresholds();
+std::string formatQuote(const common::VolumeBandQuote& quote);
 
 }  // namespace hermeneutic::volume_bands

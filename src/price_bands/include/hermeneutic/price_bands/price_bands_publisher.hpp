@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include <vector>
 
 #include "hermeneutic/common/events.hpp"
@@ -17,5 +18,6 @@ class PriceBandsCalculator {
 };
 
 std::vector<common::Decimal> defaultOffsets();
+std::string formatQuote(const common::PriceBandQuote& quote);
 
 }  // namespace hermeneutic::price_bands

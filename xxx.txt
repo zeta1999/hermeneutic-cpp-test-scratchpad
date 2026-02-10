@@ -100,3 +100,12 @@ security: use a non-trivial pwd ...
 
  docker compose -f docker/compose.yml up --build
  docker build sh too slow (cross compile to linux/amd64)
+
+ ===
+ release build
+ debug build
+doc debug sessions 
+...
+the waitfree list/queue ~ 22'
+run the whole stuff without docker with hints at how to dedug that
+ 

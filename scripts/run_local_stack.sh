@@ -9,7 +9,7 @@ set -euo pipefail
 ROOT_DIR=$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)
 BUILD_DIR=${BUILD_DIR:-"$ROOT_DIR/build"}
 BUILD_TYPE=${BUILD_TYPE:-"RelWithDebInfo"}
-PARALLEL=${BUILD_PARALLEL:-""}
+PARALLEL=${BUILD_PARALLEL:-"8"}
 CONFIG_PATH=${CONFIG_PATH:-"$ROOT_DIR/config/aggregator.json"}
 SYMBOL=${SYMBOL:-"BTCUSDT"}
 AGG_ENDPOINT=${AGG_ENDPOINT:-"127.0.0.1:50051"}
@@ -113,4 +113,19 @@ start_service "volume_bands" "$volume_bin" "$AGG_ENDPOINT" "$AGG_TOKEN" "$SYMBOL
 start_service "price_bands" "$price_bin" "$AGG_ENDPOINT" "$AGG_TOKEN" "$SYMBOL" "$OUTPUT_DIR/price_bands/price_bands.csv"
 
 echo "[local-stack] services running. Press Ctrl-C to stop. Logs stream below."
-wait -n || true
+wait_any() {
+  if wait -n >/dev/null 2>&1; then
+    return
+  fi
+  while true; do
+    for pid in "${PIDS[@]}"; do
+      if ! kill -0 "$pid" >/dev/null 2>&1; then
+        wait "$pid" 2>/dev/null || true
+        return
+      fi
+    done
+    sleep 1
+  done
+}
+
+wait_any || true

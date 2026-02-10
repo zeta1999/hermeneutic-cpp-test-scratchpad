@@ -1,0 +1,12 @@
+CSV sanity issues observed on 2026-02-10:
+
+1. Volume bands always zero — demo NDJSON feeds only produce tiny bid/ask notionals, so the default 1M+/5M+ thresholds never flip on. Synthetic fixtures and tests need smaller thresholds (100k/250k/etc.) or richer demo quantities.
+2. Price bands show negative/absurd prices — Decimal multiplication in PriceBandsCalculator overflows when applying +/- bps offsets (similar to the older volume-band bug). Need to widen to DecimalWide before multiplying and add regression tests.
+3. BBO CSV shows crossed markets (best bid > best ask) — aggregator currently publishes raw per-exchange best prices, so occasional crossings are expected when exchanges diverge. Decide whether to clamp values or explicitly document the behavior.
+
+Action plan:
+
+- Add CSV sanity tests (Doctest + small Python helper) that feed known book snapshots into volume/price calculators and assert non-zero, sign-correct outputs.
+- Regenerate demo NDJSON (`scripts/generate_demo_data.py`) with higher quantities so volume thresholds trigger, or configure services to use lower defaults for demos.
+- Patch `hermeneutic::price_bands::PriceBandsCalculator` to widen price*factor multiplications (mirroring the Volume bands fix), then extend unit tests to cover overflow cases.
+- Verify whether crossed bids are acceptable; if not, adjust AggregationEngine to enforce bid<=ask before publishing, otherwise document the behavior in README/tests.

@@ -92,17 +92,24 @@ The script watches all services and tears them down when one of them exits or yo
 
 The Docker workflow is now split into explicit build and run steps so you can reuse images (and even build multi-arch artifacts with Buildx) before launching the compose demo.
 
-### Build images (supports multi-arch)
+### Build images (host-arch by default)
 
 ```
-# Build host-arch images with buildx and load them into your local daemon.
-scripts/docker_build.sh
+# Reuse the CMake helper target (wraps the individual docker build commands).
+cmake --build build --target docker-images
 
-# Build and push Linux/amd64+arm64 images (set OUTPUT to push or any other buildx output spec).
-PLATFORMS=linux/amd64,linux/arm64 OUTPUT=push scripts/docker_build.sh
+# Or let compose rebuild everything with your overrides.
+docker compose -f docker/compose.yml build
+
+# Need a multi-arch manifest? Invoke buildx bake directly.
+docker buildx bake \
+  --file docker/compose.yml \
+  --set *.platform=linux/amd64,linux/arm64 \
+  --push
 ```
 
-The script ensures a buildx builder exists, then builds `hermeneutic/{cex,aggregator,bbo,volume,price}` using the Dockerfiles in `docker/`. When `OUTPUT=load` (the default) you must stick to a single platform because Docker can only load one architecture into the local daemon; switch to `OUTPUT=push` or an explicit `--output` target when building a manifest list.
+All of these paths consume the Dockerfiles under `docker/`. Stick to host-architecture builds (Apple silicon hosts emit arm64 images; Linux/Windows x86 hosts emit amd64) for local testing, and only reach for the `buildx bake` variant when you truly need to publish multi-arch images.
+
 
 Inspect image sizes with:
 

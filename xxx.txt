@@ -170,3 +170,5 @@ linux only ?
 but things are okay on mac???
 
 => add more internal tests ...
+
+price band / FX

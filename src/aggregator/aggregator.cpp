@@ -266,6 +266,7 @@ AggregatedBookView AggregationEngine::consolidate() const {
 
   const auto publish_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(view.timestamp.time_since_epoch()).count();
   view.publish_timestamp_ns = publish_ns;
+  //HERMENEUTIC_ASSERT_DEBUG(false, "xxx");
   validateAggregatedView(view);
   const auto feed_span = (view.min_feed_timestamp_ns > 0 && view.max_feed_timestamp_ns > 0)
                              ? (view.max_feed_timestamp_ns - view.min_feed_timestamp_ns)

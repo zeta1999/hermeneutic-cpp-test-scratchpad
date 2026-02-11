@@ -90,5 +90,5 @@ inline void AttachAuth(::grpc::ClientContext& context, const std::string& token)
     context.AddMetadata("authorization", "Bearer " + token);
   }
 }
-
+  
 }  // namespace hermeneutic::services::grpc_helpers

@@ -2,8 +2,11 @@
 
 #include <sstream>
 
+#include "hermeneutic/common/assert.hpp"
+
 namespace hermeneutic::price_bands {
 namespace {
+const common::Decimal kZero = common::Decimal::fromRaw(0);
 const common::Decimal kOne = common::Decimal::fromInteger(1);
 const common::Decimal kTenThousand = common::Decimal::fromInteger(10'000);
 
@@ -30,14 +33,20 @@ PriceBandsCalculator::PriceBandsCalculator(std::vector<common::Decimal> offsets_
 
 std::vector<common::PriceBandQuote> PriceBandsCalculator::compute(
     const common::AggregatedBookView& view) const {
+  if (view.best_bid.quantity > kZero && view.best_ask.quantity > kZero) {
+    HERMENEUTIC_ASSERT_DEBUG(view.best_ask.price > view.best_bid.price,
+                             "price band input view best ask must exceed best bid");
+  }
   std::vector<common::PriceBandQuote> quotes;
   quotes.reserve(offsets_bps_.size());
   for (const auto& offset : offsets_bps_) {
-    quotes.push_back(common::PriceBandQuote{
-        offset,
-        adjustPrice(view.best_bid.price, offset, true),
-        adjustPrice(view.best_ask.price, offset, false),
-    });
+    auto bid_price = adjustPrice(view.best_bid.price, offset, true);
+    auto ask_price = adjustPrice(view.best_ask.price, offset, false);
+    HERMENEUTIC_ASSERT_DEBUG(bid_price >= kZero, "price band bid negative");
+    HERMENEUTIC_ASSERT_DEBUG(ask_price >= kZero, "price band ask negative");
+    HERMENEUTIC_ASSERT_DEBUG(ask_price > bid_price,
+                             "price band ask must exceed bid for offset");
+    quotes.push_back(common::PriceBandQuote{offset, bid_price, ask_price});
   }
   return quotes;
 }

@@ -3,7 +3,11 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <sstream>
 #include <vector>
+
+#include <spdlog/sinks/ostream_sink.h>
+#include <spdlog/spdlog.h>
 
 #include "hermeneutic/common/events.hpp"
 #include "hermeneutic/lob/order_book.hpp"
@@ -39,6 +43,30 @@ BookEvent makeCancel(std::uint64_t id, std::uint64_t sequence) {
   event.order.order_id = id;
   return event;
 }
+
+struct ScopedLogCapture {
+  ScopedLogCapture() {
+    sink = std::make_shared<spdlog::sinks::ostream_sink_mt>(stream);
+    auto logger = std::make_shared<spdlog::logger>("test-lob", sink);
+    logger->set_level(spdlog::level::info);
+    logger->set_pattern("%v");
+    previous = spdlog::default_logger();
+    spdlog::set_default_logger(logger);
+  }
+
+  ~ScopedLogCapture() { spdlog::set_default_logger(previous); }
+
+  void clear() {
+    stream.str("");
+    stream.clear();
+  }
+
+  std::string str() const { return stream.str(); }
+
+  std::ostringstream stream;
+  std::shared_ptr<spdlog::sinks::ostream_sink_mt> sink;
+  std::shared_ptr<spdlog::logger> previous;
+};
 
 }  // namespace
 
@@ -93,4 +121,25 @@ TEST_CASE("limit order book iterates limit orders when needed") {
   }
   std::sort(ids.begin(), ids.end());
   CHECK(ids == std::vector<std::uint64_t>({1, 2}));
+}
+
+TEST_CASE("limit order book warns and rejects crossed orders") {
+  ScopedLogCapture logs;
+  hermeneutic::lob::LimitOrderBook book;
+  book.apply(makeNewOrder(1, Side::Bid, "100.00", "2", 1));
+  book.apply(makeNewOrder(2, Side::Ask, "105.00", "5", 2));
+
+  auto initial_best_bid = book.bestBid().price;
+  auto initial_best_ask = book.bestAsk().price;
+
+  book.apply(makeNewOrder(3, Side::Bid, "110.00", "1", 3));
+  CHECK(book.bestBid().price == initial_best_bid);
+  CHECK(book.bestAsk().price == initial_best_ask);
+  CHECK(logs.str().find("crossed bid order 3") != std::string::npos);
+
+  logs.clear();
+  book.apply(makeNewOrder(4, Side::Ask, "90.00", "1", 4));
+  CHECK(book.bestBid().price == initial_best_bid);
+  CHECK(book.bestAsk().price == initial_best_ask);
+  CHECK(logs.str().find("crossed ask order 4") != std::string::npos);
 }

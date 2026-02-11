@@ -122,7 +122,7 @@ TEST_CASE("aggregator waits for expected exchanges before publishing") {
   });
 
   engine.push(makeNewOrder("ex1", 1, Side::Bid, "100.00", "1", 1));
-  engine.push(makeNewOrder("ex1", 2, Side::Ask, "102.00", "1", 2));
+  engine.push(makeNewOrder("ex1", 2, Side::Ask, "104.00", "1", 2));
   std::this_thread::sleep_for(std::chrono::milliseconds(10));
   {
     std::lock_guard<std::mutex> lock(mutex);
@@ -135,6 +135,8 @@ TEST_CASE("aggregator waits for expected exchanges before publishing") {
     CHECK(cv.wait_for(lock, std::chrono::milliseconds(200), [&] { return updates.size() >= 1; }));
     CHECK(updates.back().exchange_count == 2);
     CHECK(updates.back().best_bid.price.toString(2) == "101.00");
+    CHECK(updates.back().best_ask.price.toString(2) == "104.00");
+    CHECK(updates.back().best_ask.price > updates.back().best_bid.price);
   }
 
   engine.push(makeNewOrder("ex1", 4, Side::Bid, "103.00", "3", 4));
@@ -142,6 +144,8 @@ TEST_CASE("aggregator waits for expected exchanges before publishing") {
     std::unique_lock<std::mutex> lock(mutex);
     CHECK(cv.wait_for(lock, std::chrono::milliseconds(200), [&] { return updates.size() >= 2; }));
     CHECK(updates.back().best_bid.price.toString(2) == "103.00");
+    CHECK(updates.back().best_ask.price.toString(2) == "104.00");
+    CHECK(updates.back().best_ask.price > updates.back().best_bid.price);
   }
 
   engine.unsubscribe(id);

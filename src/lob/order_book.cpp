@@ -2,6 +2,8 @@
 
 #include <stdexcept>
 
+#include <spdlog/spdlog.h>
+
 namespace hermeneutic::lob {
 
 using common::BookEvent;
@@ -53,10 +55,10 @@ void applyDelta(common::Side side,
 
 void LimitOrderBook::validateInvariants() const {
 #if defined(HERMENEUTIC_ENABLE_DEBUG_ASSERTS) && HERMENEUTIC_ENABLE_DEBUG_ASSERTS
-  const Decimal kZero = Decimal::fromRaw(0);
   bool first = true;
   Decimal previous_price{};
   for (const auto& [price, qty] : bids_) {
+    // to use for checks HERMENEUTIC_LOG_DEBUG("bid {} @ {}", qty.toString(6), price.toString(6));
     HERMENEUTIC_ASSERT_DEBUG(price >= kZero, "bid price negative");
     HERMENEUTIC_ASSERT_DEBUG(qty > kZero, "bid quantity non-positive");
     if (!first) {
@@ -69,6 +71,7 @@ void LimitOrderBook::validateInvariants() const {
   first = true;
   previous_price = Decimal{};
   for (const auto& [price, qty] : asks_) {
+    // to use for checks HERMENEUTIC_LOG_DEBUG("ask {} @ {}", qty.toString(6), price.toString(6));
     HERMENEUTIC_ASSERT_DEBUG(price >= kZero, "ask price negative");
     HERMENEUTIC_ASSERT_DEBUG(qty > kZero, "ask quantity non-positive");
     if (!first) {
@@ -79,8 +82,13 @@ void LimitOrderBook::validateInvariants() const {
   }
 
   if (!bids_.empty() && !asks_.empty()) {
-    HERMENEUTIC_ASSERT_DEBUG(asks_.begin()->first > bids_.begin()->first,
-                             "best ask must exceed best bid");
+    const auto& best_bid = bids_.begin()->first;
+    const auto& best_ask = asks_.begin()->first;
+    if (!(best_ask > best_bid)) {
+      spdlog::critical("Order book '{}' crossed: best_bid={} best_ask={}",
+                       exchange_name_, best_bid.toString(6), best_ask.toString(6));
+    }
+    HERMENEUTIC_ASSERT_DEBUG(best_ask > best_bid, "best ask must exceed best bid");
   }
 #endif
 }
@@ -118,6 +126,8 @@ void LimitOrderBook::apply(const BookEvent& event) {
 
   switch (event.kind) {
     case BookEventKind::Snapshot: {
+      HERMENEUTIC_LOG_DEBUG("snapshot");
+
       bids_.clear();
       asks_.clear();
       orders_.clear();
@@ -134,6 +144,8 @@ void LimitOrderBook::apply(const BookEvent& event) {
       break;
     }
     case BookEventKind::NewOrder: {
+      HERMENEUTIC_LOG_DEBUG("new order");
+
       const auto& order = event.order;
       if (order.order_id == 0) {
         break;
@@ -144,11 +156,36 @@ void LimitOrderBook::apply(const BookEvent& event) {
         applyDelta(existing->second.side, existing->second.price, removal, bids_, asks_);
         orders_.erase(existing);
       }
+      const auto reject_crossed = [&](common::Side side, const Decimal& price) {
+        if (side == common::Side::Bid) {
+          if (!asks_.empty() && price >= asks_.begin()->first) {
+            spdlog::warn(
+                "Ignoring crossed bid order {} on '{}': price {} >= best ask {}",
+                order.order_id, exchange_name_, price.toString(6),
+                asks_.begin()->first.toString(6));
+            return true;
+          }
+        } else {
+          if (!bids_.empty() && price <= bids_.begin()->first) {
+            spdlog::warn(
+                "Ignoring crossed ask order {} on '{}': price {} <= best bid {}",
+                order.order_id, exchange_name_, price.toString(6),
+                bids_.begin()->first.toString(6));
+            return true;
+          }
+        }
+        return false;
+      };
+      if (reject_crossed(order.side, order.price)) {
+        break;
+      }
       orders_.emplace(order.order_id, order);
       applyDelta(order.side, order.price, order.quantity, bids_, asks_);
       break;
     }
     case BookEventKind::CancelOrder: {
+      HERMENEUTIC_LOG_DEBUG("cancel");
+
       if (event.order.order_id == 0) {
         break;
       }

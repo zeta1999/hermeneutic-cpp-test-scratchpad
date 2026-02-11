@@ -172,3 +172,5 @@ but things are okay on mac???
 => add more internal tests ...
 
 price band / FX
+
+some test with eigenbugs - on small vms lol ~ but rest starts to look good

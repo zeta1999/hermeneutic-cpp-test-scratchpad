@@ -173,7 +173,8 @@ but things are okay on mac???
 
 price band / FX
 
-some test with eigenbugs - on small vms lol ~ but rest starts to look good
+measure performances
 
+some test with eigenbugs - on small vms lol ~ but rest starts to look good
  Start  5: test_book_stream_client // m...
  

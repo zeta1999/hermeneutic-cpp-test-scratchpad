@@ -116,6 +116,7 @@ start_service "volume_bands" "$volume_bin" "$AGG_ENDPOINT" "$AGG_TOKEN" "$SYMBOL
 start_service "price_bands" "$price_bin" "$AGG_ENDPOINT" "$AGG_TOKEN" "$SYMBOL" "$OUTPUT_DIR/price_bands/price_bands.csv"
 
 echo "[local-stack] services running. Press Ctrl-C to stop. Logs stream below."
+sleep 15
 wait_any() {
   if wait -n >/dev/null 2>&1; then
     return

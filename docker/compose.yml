@@ -3,19 +3,19 @@ services:
     build:
       context: ..
       dockerfile: docker/Dockerfile.cex
-    image: hermeneutic/cex
+    image: hermeneutic/cex:notbinance
     command: ["notbinance", "/app/data/notbinance.ndjson", "9001", "notbinance-token", "150"]
   cex-notcoinbase:
     build:
       context: ..
       dockerfile: docker/Dockerfile.cex
-    image: hermeneutic/cex
+    image: hermeneutic/cex:notcoinbase
     command: ["notcoinbase", "/app/data/notcoinbase.ndjson", "9002", "notcoinbase-token", "200"]
   cex-notkraken:
     build:
       context: ..
       dockerfile: docker/Dockerfile.cex
-    image: hermeneutic/cex
+    image: hermeneutic/cex:notkraken
     command: ["notkraken", "/app/data/notkraken.ndjson", "9003", "notkraken-token", "220"]
   aggregator:
     build:

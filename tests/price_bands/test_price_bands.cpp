@@ -41,6 +41,8 @@ TEST_CASE("Price bands stay positive for large quotes") {
   auto view = hermeneutic::common::AggregatedBookView{};
   view.best_bid.price = Decimal::fromString("30045.49");
   view.best_ask.price = Decimal::fromString("30050.50");
+  view.best_bid.quantity = Decimal::fromString("1");
+  view.best_ask.quantity = Decimal::fromString("1");
   hermeneutic::price_bands::PriceBandsCalculator calculator(
       {Decimal::fromInteger(50), Decimal::fromInteger(500)});
   auto quotes = calculator.compute(view);
@@ -88,4 +90,16 @@ TEST_CASE("Price bands stay positive for large quotes") {
 
   CHECK(quotes[0].bid_price > Decimal::fromInteger(0));
   CHECK(quotes[0].ask_price > Decimal::fromInteger(0));
+}
+
+TEST_CASE("Price bands require both best bid and ask") {
+  hermeneutic::common::AggregatedBookView view{};
+  view.best_bid.price = Decimal::fromString("100.00");
+  view.best_bid.quantity = Decimal::fromString("1");
+  view.best_ask.price = Decimal::fromString("101.00");
+  view.best_ask.quantity = Decimal::fromRaw(0);
+
+  hermeneutic::price_bands::PriceBandsCalculator calculator({Decimal::fromInteger(50)});
+  auto quotes = calculator.compute(view);
+  CHECK(quotes.empty());
 }

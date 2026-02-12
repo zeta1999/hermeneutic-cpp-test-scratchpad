@@ -33,10 +33,11 @@ PriceBandsCalculator::PriceBandsCalculator(std::vector<common::Decimal> offsets_
 
 std::vector<common::PriceBandQuote> PriceBandsCalculator::compute(
     const common::AggregatedBookView& view) const {
-  if (view.best_bid.quantity > kZero && view.best_ask.quantity > kZero) {
-    HERMENEUTIC_ASSERT_DEBUG(view.best_ask.price > view.best_bid.price,
-                             "price band input view best ask must exceed best bid");
+  if (view.best_bid.quantity <= kZero || view.best_ask.quantity <= kZero) {
+    return {};
   }
+  HERMENEUTIC_ASSERT_DEBUG(view.best_ask.price > view.best_bid.price,
+                           "price band input view best ask must exceed best bid");
   std::vector<common::PriceBandQuote> quotes;
   quotes.reserve(offsets_bps_.size());
   for (const auto& offset : offsets_bps_) {

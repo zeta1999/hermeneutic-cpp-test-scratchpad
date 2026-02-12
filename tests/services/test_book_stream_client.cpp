@@ -108,15 +108,14 @@ TEST_CASE("book stream client reconnects when server restarts") {
   server->Wait();
   server.reset();
 
-  engine.push(makeNewOrder("s1", 3, Side::Bid, "102.00", "1", 3));
-
   server = startServer(service);
   {
     std::lock_guard<std::mutex> lock(server_mutex);
     server_raw = server.get();
   }
-  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  std::this_thread::sleep_for(std::chrono::milliseconds(150));
 
+  engine.push(makeNewOrder("s1", 3, Side::Bid, "102.00", "1", 3));
   engine.push(makeNewOrder("s2", 4, Side::Ask, "103.00", "1", 4));
 
   {

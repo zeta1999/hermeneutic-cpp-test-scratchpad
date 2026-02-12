@@ -57,7 +57,9 @@ TEST_CASE("volume bands calculator gates by notional") {
 TEST_CASE("price bands calculator applies offsets") {
   AggregatedBookView view;
   view.best_bid.price = Decimal::fromString("200.00");
+  view.best_bid.quantity = Decimal::fromString("1.0");
   view.best_ask.price = Decimal::fromString("201.00");
+  view.best_ask.quantity = Decimal::fromString("1.0");
   hermeneutic::price_bands::PriceBandsCalculator calculator({Decimal::fromInteger(50)});
   auto quotes = calculator.compute(view);
   REQUIRE(quotes.size() == 1);

@@ -4,3 +4,4 @@ build*
 output/
 Testing
 *log.log
+*##*

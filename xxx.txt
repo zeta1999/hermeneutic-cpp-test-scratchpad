@@ -179,3 +179,4 @@ some test with eigenbugs - on small vms lol ~ but rest starts to look good
  Start  5: test_book_stream_client // m...
  
 == linux amd64 okay 
+Test #6 test_aggregator_grpc_service make sure there is no timing problem ~

@@ -28,3 +28,9 @@ RUN apt-get update \
     && npm --prefix "${CODEX_ROOT}" install --save-exact "mime@${CODEX_MIME_CJS_VERSION}" \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y \
+        clang lld llvm llvm-15-tools \
+        gcovr \
+        python3 python3-pip \
+    && rm -rf /var/lib/apt/lists/*

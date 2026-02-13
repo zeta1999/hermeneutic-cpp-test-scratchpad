@@ -72,7 +72,12 @@ if [ "$TOOLCHAIN" = "Clang" ]; then
   head -n 20 "$BUILD_DIR/coverage/llvm-cov-report.txt"
 else
   if command -v gcovr >/dev/null 2>&1; then
-    gcovr -r "$HERMENEUTIC_ROOT" "$BUILD_DIR" > "$BUILD_DIR/coverage/gcovr-report.txt"
+    gcovr \
+      -r "$HERMENEUTIC_ROOT" \
+      --exclude '.*_deps/.*' \
+      --exclude '.*/third_party/.*' \
+      --gcov-ignore-parse-errors \
+      "$BUILD_DIR" > "$BUILD_DIR/coverage/gcovr-report.txt"
     printf '%s\n' "[coverage] gcovr report written to $BUILD_DIR/coverage/gcovr-report.txt"
   else
     printf '%s\n' "[coverage] gcovr not found; .gcda files available under $BUILD_DIR" >&2

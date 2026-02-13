@@ -135,11 +135,11 @@ TEST_CASE("limit order book warns and rejects crossed orders") {
   book.apply(makeNewOrder(3, Side::Bid, "110.00", "1", 3));
   CHECK(book.bestBid().price == initial_best_bid);
   CHECK(book.bestAsk().price == initial_best_ask);
-  CHECK(logs.str().find("crossed bid order 3") != std::string::npos);
+  CHECK(logs.str().find("Ignoring crossed bid order 3") != std::string::npos);
 
   logs.clear();
   book.apply(makeNewOrder(4, Side::Ask, "90.00", "1", 4));
   CHECK(book.bestBid().price == initial_best_bid);
   CHECK(book.bestAsk().price == initial_best_ask);
-  CHECK(logs.str().find("crossed ask order 4") != std::string::npos);
+  CHECK(logs.str().find("Ignoring crossed ask order 4") != std::string::npos);
 }

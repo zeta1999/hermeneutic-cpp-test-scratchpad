@@ -11,6 +11,7 @@
 #include "hermeneutic/bbo/bbo_publisher.hpp"
 #include "hermeneutic/common/assert.hpp"
 #include "common/book_stream_client.hpp"
+#include "common/csv_utils.hpp"
 
 namespace {
 std::atomic<bool> g_running{true};
@@ -38,20 +39,17 @@ int main(int argc, char** argv) {
     csv_path = argv[4];
   }
 
-  bool need_header = true;
-  if (std::filesystem::exists(csv_path) && std::filesystem::file_size(csv_path) > 0) {
-    need_header = false;
+  constexpr std::string_view kHeader =
+      "timestamp_ns,symbol,best_bid_price,best_bid_quantity,best_ask_price,best_ask_quantity,exchange_count,"
+      "last_feed_timestamp_ns,last_local_timestamp_ns,min_feed_timestamp_ns,max_feed_timestamp_ns,"
+      "min_local_timestamp_ns,max_local_timestamp_ns,publish_timestamp_ns";
+  if (!hermeneutic::services::ensureCsvHasHeader(csv_path, kHeader)) {
+    return 1;
   }
   std::ofstream csv(csv_path, std::ios::app);
   if (!csv.is_open()) {
     spdlog::error("Failed to open {} for writing", csv_path);
     return 1;
-  }
-  if (need_header) {
-    csv << "timestamp_ns,symbol,best_bid_price,best_bid_quantity,best_ask_price,best_ask_quantity,exchange_count,"
-        << "last_feed_timestamp_ns,last_local_timestamp_ns,min_feed_timestamp_ns,max_feed_timestamp_ns,"
-        << "min_local_timestamp_ns,max_local_timestamp_ns,publish_timestamp_ns\n";
-    csv.flush();
   }
 
   hermeneutic::bbo::BboPublisher publisher;

@@ -11,6 +11,7 @@
 #include "hermeneutic/price_bands/price_bands_publisher.hpp"
 #include "hermeneutic/common/assert.hpp"
 #include "common/book_stream_client.hpp"
+#include "common/csv_utils.hpp"
 
 namespace {
 std::atomic<bool> g_running{true};
@@ -21,6 +22,7 @@ void handleSignal(int) {
 }  // namespace
 
 int main(int argc, char** argv) {
+  spdlog::set_level(spdlog::level::debug);
   std::string endpoint = "127.0.0.1:50051";
   std::string token = "";
   std::string symbol = "BTCUSDT";
@@ -38,19 +40,16 @@ int main(int argc, char** argv) {
     csv_path = argv[4];
   }
 
-  bool need_header = true;
-  if (std::filesystem::exists(csv_path) && std::filesystem::file_size(csv_path) > 0) {
-    need_header = false;
+  constexpr std::string_view kHeader =
+      "timestamp_ns,symbol,offset_bps,bid_price,ask_price,last_feed_timestamp_ns,last_local_timestamp_ns,"
+      "min_feed_timestamp_ns,max_feed_timestamp_ns,min_local_timestamp_ns,max_local_timestamp_ns,publish_timestamp_ns";
+  if (!hermeneutic::services::ensureCsvHasHeader(csv_path, kHeader)) {
+    return 1;
   }
   std::ofstream csv(csv_path, std::ios::app);
   if (!csv.is_open()) {
     spdlog::error("Failed to open {} for writing", csv_path);
     return 1;
-  }
-  if (need_header) {
-    csv << "timestamp_ns,symbol,offset_bps,bid_price,ask_price,last_feed_timestamp_ns,last_local_timestamp_ns,"
-        << "min_feed_timestamp_ns,max_feed_timestamp_ns,min_local_timestamp_ns,max_local_timestamp_ns,publish_timestamp_ns\n";
-    csv.flush();
   }
 
   auto calculator = hermeneutic::price_bands::PriceBandsCalculator(
@@ -65,12 +64,21 @@ int main(int argc, char** argv) {
           timestamp_ns =
               std::chrono::duration_cast<std::chrono::nanoseconds>(view.timestamp.time_since_epoch()).count();
         }
+        spdlog::debug("price_bands_service snapshot: publish_ts={} best_bid={} qty={} best_ask={} qty={} exchanges={}",
+                      timestamp_ns,
+                      view.best_bid.price.toString(8), view.best_bid.quantity.toString(8),
+                      view.best_ask.price.toString(8), view.best_ask.quantity.toString(8),
+                      view.exchange_count);
         if (view.best_bid.quantity > hermeneutic::common::Decimal::fromRaw(0) &&
             view.best_ask.quantity > hermeneutic::common::Decimal::fromRaw(0)) {
           HERMENEUTIC_ASSERT_DEBUG(view.best_ask.price >= view.best_bid.price,
                                    "price bands export detected crossed book");
         }
         auto quotes = calculator.compute(view);
+        if (quotes.empty()) {
+          spdlog::warn("price_bands_service: calculator returned 0 bands for snapshot timestamp {}", timestamp_ns);
+        }
+        spdlog::debug("price_bands_service: writing {} bands", quotes.size());
         for (const auto& quote : quotes) {
           csv << timestamp_ns << ','
               << symbol << ','
@@ -90,7 +98,8 @@ int main(int argc, char** argv) {
       });
 
   client.start();
-  spdlog::info("Price bands client streaming from {}", endpoint);
+  spdlog::info("Price bands client streaming from {} token='{}' symbol='{}' output={}"
+               , endpoint, token, symbol, csv_path);
   std::signal(SIGINT, handleSignal);
   std::signal(SIGTERM, handleSignal);
   while (g_running.load()) {

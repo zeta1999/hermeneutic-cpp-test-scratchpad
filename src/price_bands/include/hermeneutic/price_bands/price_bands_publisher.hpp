@@ -11,10 +11,13 @@ class PriceBandsCalculator {
  public:
   explicit PriceBandsCalculator(std::vector<common::Decimal> offsets_bps);
 
-  std::vector<common::PriceBandQuote> compute(const common::AggregatedBookView& view) const;
+ std::vector<common::PriceBandQuote> compute(const common::AggregatedBookView& view) const;
 
  private:
   std::vector<common::Decimal> offsets_bps_;
+  mutable common::AggregatedQuote cached_best_bid_{};
+  mutable common::AggregatedQuote cached_best_ask_{};
+  mutable bool have_cached_best_{false};
 };
 
 std::vector<common::Decimal> defaultOffsets();

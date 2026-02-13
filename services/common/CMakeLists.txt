@@ -3,8 +3,10 @@ target_sources(services_common
   PUBLIC
     book_stream_client.hpp
     grpc_helpers.hpp
+    csv_utils.hpp
   PRIVATE
     book_stream_client.cpp
+    csv_utils.cpp
 )
 target_include_directories(services_common PUBLIC
   ${CMAKE_SOURCE_DIR}/services

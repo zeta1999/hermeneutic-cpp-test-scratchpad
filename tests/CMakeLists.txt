@@ -24,6 +24,8 @@ add_project_test(test_cex_type1_service SOURCES cex_type1/test_cex_type1_service
 add_project_test(test_cex_reconnect SOURCES cex_type1/test_reconnect.cpp LIBS cex_type1)
 add_project_test(test_grpc_helpers SOURCES services/test_grpc_helpers.cpp LIBS services_common)
 target_include_directories(test_grpc_helpers PRIVATE ${CMAKE_SOURCE_DIR})
+add_project_test(test_csv_utils SOURCES services/test_csv_utils.cpp LIBS services_common)
+target_include_directories(test_csv_utils PRIVATE ${CMAKE_SOURCE_DIR})
 add_project_test(test_bbo_publisher
   SOURCES bbo/test_bbo_publisher.cpp
   LIBS bbo)

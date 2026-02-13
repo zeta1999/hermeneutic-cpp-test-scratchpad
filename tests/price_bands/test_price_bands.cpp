@@ -25,10 +25,23 @@ TEST_CASE("Price bands calculator applies offsets") {
   auto quotes = calculator.compute(view);
   REQUIRE(quotes.size() == 1);
 
+  auto compute_expected = [](const Decimal& price, const Decimal& offset, bool bid) {
+    const auto widen_decimal = [](const Decimal& value) {
+      return DecimalWide::fromRaw(value.raw());
+    };
+    const DecimalWide wide_one = DecimalWide::fromInteger(1);
+    const DecimalWide wide_offset = widen_decimal(offset);
+    const DecimalWide wide_fraction =
+        wide_offset / DecimalWide::fromInteger(10'000);
+    const DecimalWide wide_price = widen_decimal(price);
+    const DecimalWide factor = bid ? (wide_one - wide_fraction) : (wide_one + wide_fraction);
+    const DecimalWide adjusted = wide_price * factor;
+    return Decimal::fromRaw(adjusted.raw());
+  };
+
   Decimal offset = Decimal::fromInteger(50);
-  Decimal fraction = offset / Decimal::fromInteger(10'000);
-  Decimal expected_bid = view.best_bid.price * (Decimal::fromInteger(1) - fraction);
-  Decimal expected_ask = view.best_ask.price * (Decimal::fromInteger(1) + fraction);
+  Decimal expected_bid = compute_expected(view.best_bid.price, offset, true);
+  Decimal expected_ask = compute_expected(view.best_ask.price, offset, false);
 
   CHECK(quotes[0].bid_price == expected_bid);
   CHECK(quotes[0].ask_price == expected_ask);
@@ -49,13 +62,12 @@ TEST_CASE("Price bands stay positive for large quotes") {
   REQUIRE(quotes.size() == 2);
 
   auto expect_decimal = [](const Decimal& price, const Decimal& bps, bool bid) {
-    const Decimal fraction = bps / Decimal::fromInteger(10'000);
     const auto widen = [](const Decimal& value) {
       return DecimalWide::fromRaw(value.raw());
     };
     const DecimalWide wide_one = DecimalWide::fromInteger(1);
     const DecimalWide wide_price = widen(price);
-    const DecimalWide wide_fraction = widen(fraction);
+    const DecimalWide wide_fraction = widen(bps) / DecimalWide::fromInteger(10'000);
     const DecimalWide factor = bid ? (wide_one - wide_fraction) : (wide_one + wide_fraction);
     const DecimalWide adjusted = wide_price * factor;
     return Decimal::fromRaw(adjusted.raw());
@@ -102,4 +114,23 @@ TEST_CASE("Price bands require both best bid and ask") {
   hermeneutic::price_bands::PriceBandsCalculator calculator({Decimal::fromInteger(50)});
   auto quotes = calculator.compute(view);
   CHECK(quotes.empty());
+}
+
+TEST_CASE("Price bands reuse last good snapshot when book flickers") {
+  hermeneutic::common::AggregatedBookView view{};
+  view.best_bid.price = Decimal::fromString("100.00");
+  view.best_bid.quantity = Decimal::fromString("1");
+  view.best_ask.price = Decimal::fromString("101.00");
+  view.best_ask.quantity = Decimal::fromString("1");
+
+  hermeneutic::price_bands::PriceBandsCalculator calculator({Decimal::fromInteger(50)});
+  auto first = calculator.compute(view);
+  REQUIRE(first.size() == 1);
+
+  // Now drop the ask quantity to zero to mimic a temporary feed outage.
+  view.best_ask.quantity = Decimal::fromRaw(0);
+  auto reused = calculator.compute(view);
+  REQUIRE(reused.size() == 1);
+  CHECK(reused[0].bid_price == first[0].bid_price);
+  CHECK(reused[0].ask_price == first[0].ask_price);
 }

@@ -5,6 +5,25 @@ if [ -z "${HERMENEUTIC_ROOT:-}" ]; then
   HERMENEUTIC_ROOT=$(CDPATH= cd -- "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)
 fi
 
+detect_core_count() {
+  local count
+  if command -v sysctl >/dev/null 2>&1; then
+    count=$(sysctl -n hw.ncpu 2>/dev/null || true)
+  fi
+  if [ -z "$count" ] && command -v nproc >/dev/null 2>&1; then
+    count=$(nproc 2>/dev/null || true)
+  fi
+  if [[ ! "$count" =~ ^[0-9]+$ ]] || [ "$count" -le 0 ]; then
+    count=8
+  fi
+  if [ "$count" -gt 8 ]; then
+    count=8
+  fi
+  printf '%s' "$count"
+}
+
+DEFAULT_BUILD_CORES=$(detect_core_count)
+
 ensure_build_dir() {
   local build_dir=$1
   shift || true
@@ -14,11 +33,11 @@ ensure_build_dir() {
 }
 
 build_jobs() {
-  echo "${BUILD_PARALLEL:-8}"
+  echo "${BUILD_PARALLEL:-$DEFAULT_BUILD_CORES}"
 }
 
 ctest_jobs() {
-  echo "${CTEST_JOBS:-8}"
+  echo "${CTEST_JOBS:-$DEFAULT_BUILD_CORES}"
 }
 
 sanitize_env_default() {

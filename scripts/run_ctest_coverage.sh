@@ -1,5 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
+
+# Make Homebrew-installed LLVM tools discoverable (common on macOS).
+for llvm_dir in /opt/homebrew/opt/llvm/bin /usr/local/opt/llvm/bin; do
+  if [ -d "$llvm_dir" ] && [[ ":$PATH:" != *":$llvm_dir:"* ]]; then
+    PATH="$llvm_dir:$PATH"
+  fi
+done
 SCRIPT_DIR=$(CDPATH= cd -- "$(dirname "$0")" && pwd)
 source "$SCRIPT_DIR/support/build_variants.sh"
 BUILD_DIR=${BUILD_DIR:-"$HERMENEUTIC_ROOT/build.coverage"}
@@ -27,7 +34,7 @@ ensure_build_dir "$BUILD_DIR" "${CMAKE_ARGS[@]}"
 cmake --build "$BUILD_DIR" --parallel "${BUILD_PARALLEL:-$(build_jobs)}"
 ensure_directory "$BUILD_DIR/coverage"
 if [ "$TOOLCHAIN" = "Clang" ]; then
-  export LLVM_PROFILE_FILE="$BUILD_DIR/coverage/ctest-%p.profraw"
+  export LLVM_PROFILE_FILE="$BUILD_DIR/coverage/ctest-%p-%m.profraw"
 fi
 ctest --test-dir "$BUILD_DIR" --output-on-failure -j "$(ctest_jobs)"
 if [ "$TOOLCHAIN" = "Clang" ]; then
@@ -35,29 +42,39 @@ if [ "$TOOLCHAIN" = "Clang" ]; then
   profraws=($BUILD_DIR/coverage/*.profraw)
   shopt -u nullglob
   if [ ${#profraws[@]} -eq 0 ]; then
-    echo "[coverage] No .profraw files were generated" >&2
+    printf '%s\n' "[coverage] No .profraw files were generated" >&2
     exit 0
   fi
   llvm_profdata=$(command -v llvm-profdata || true)
   llvm_cov=$(command -v llvm-cov || true)
   if [ -z "$llvm_profdata" ] || [ -z "$llvm_cov" ]; then
-    echo "[coverage] llvm-profdata/llvm-cov not available; raw profiles left under $BUILD_DIR/coverage" >&2
+    printf '%s\n' "[coverage] llvm-profdata/llvm-cov not available; raw profiles left under $BUILD_DIR/coverage" >&2
     exit 0
   fi
   "$llvm_profdata" merge -sparse "${profraws[@]}" -o "$BUILD_DIR/coverage/coverage.profdata"
-  mapfile -t binaries < <(find "$BUILD_DIR" -type f -perm -111 \( -path "$BUILD_DIR/tests/*" -o -path "$BUILD_DIR/services/*" \))
+  binaries=()
+  while IFS= read -r -d '' bin; do
+    binaries+=("$bin")
+  done < <(find "$BUILD_DIR" -type f -perm -111 \( -path "$BUILD_DIR/tests/*" -o -path "$BUILD_DIR/services/*" \) -print0)
   if [ ${#binaries[@]} -eq 0 ]; then
-    echo "[coverage] No binaries discovered for llvm-cov report" >&2
+    printf '%s\n' "[coverage] No binaries discovered for llvm-cov report" >&2
     exit 0
   fi
-  "$llvm_cov" report "${binaries[@]}" -instr-profile "$BUILD_DIR/coverage/coverage.profdata" \
+  cov_objects=()
+  for bin in "${binaries[@]}"; do
+    cov_objects+=("-object" "$bin")
+  done
+  "$llvm_cov" report -ignore-filename-regex "/_deps/" "${cov_objects[@]}" \
+    -instr-profile "$BUILD_DIR/coverage/coverage.profdata" \
     > "$BUILD_DIR/coverage/llvm-cov-report.txt"
-  echo "[coverage] LLVM coverage report written to $BUILD_DIR/coverage/llvm-cov-report.txt"
+  printf '%s\n' "[coverage] LLVM coverage report written to $BUILD_DIR/coverage/llvm-cov-report.txt"
+  printf '%s\n' "[coverage] Summary (first 20 lines):"
+  head -n 20 "$BUILD_DIR/coverage/llvm-cov-report.txt"
 else
   if command -v gcovr >/dev/null 2>&1; then
     gcovr -r "$HERMENEUTIC_ROOT" "$BUILD_DIR" > "$BUILD_DIR/coverage/gcovr-report.txt"
-    echo "[coverage] gcovr report written to $BUILD_DIR/coverage/gcovr-report.txt"
+    printf '%s\n' "[coverage] gcovr report written to $BUILD_DIR/coverage/gcovr-report.txt"
   else
-    echo "[coverage] gcovr not found; .gcda files available under $BUILD_DIR" >&2
+    printf '%s\n' "[coverage] gcovr not found; .gcda files available under $BUILD_DIR" >&2
   fi
 fi

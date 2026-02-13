@@ -1,5 +1,4 @@
 #include <Poco/Net/DNS.h>
-#include <Poco/URI.h>
 
 #include <algorithm>
 #include <atomic>
@@ -9,10 +8,10 @@
 #include <cstdint>
 #include <cstdlib>
 #include <memory>
+#include <optional>
 #include <sstream>
 #include <string>
 #include <thread>
-#include <unordered_set>
 #include <vector>
 
 #include <grpcpp/grpcpp.h>
@@ -24,6 +23,7 @@
 #include "hermeneutic/aggregator/grpc_service.hpp"
 #include "hermeneutic/cex_type1/feed.hpp"
 #include "hermeneutic/common/events.hpp"
+#include "services/aggregator_service/feed_wait.hpp"
 
 namespace {
 std::atomic<bool> g_running{true};
@@ -32,57 +32,6 @@ void handleSignal(int) {
   g_running = false;
 }
 
-bool waitForFeedsEnabled() {
-  const char* env = std::getenv("HERMENEUTIC_WAIT_FOR_FEEDS");
-  if (!env) {
-    return true;
-  }
-  std::string value(env);
-  std::transform(value.begin(), value.end(), value.begin(), [](unsigned char c) {
-    return static_cast<char>(std::tolower(c));
-  });
-  if (value.empty()) {
-    return true;
-  }
-  return !(value == "0" || value == "false" || value == "no" || value == "off");
-}
-
-void waitForFeedHosts(const hermeneutic::aggregator::AggregatorConfig& config) {
-  if (!waitForFeedsEnabled()) {
-    spdlog::info("Skipping feed host wait (HERMENEUTIC_WAIT_FOR_FEEDS disabled)");
-    return;
-  }
-  std::unordered_set<std::string> hosts;
-  for (const auto& feed : config.feeds) {
-    try {
-      Poco::URI uri(feed.url);
-      auto host = uri.getHost();
-      if (!host.empty()) {
-        hosts.insert(host);
-      }
-    } catch (const std::exception& ex) {
-      spdlog::warn("Failed to parse feed URL {}: {}", feed.url, ex.what());
-    }
-  }
-  for (const auto& host : hosts) {
-    while (g_running.load()) {
-      try {
-        Poco::Net::DNS::resolveOne(host);
-        spdlog::info("Feed host {} resolved", host);
-        break;
-      } catch (const Poco::Exception& ex) {
-        spdlog::info("Waiting for feed host {}: {}", host, ex.displayText());
-      } catch (const std::exception& ex) {
-        spdlog::info("Waiting for feed host {}: {}", host, ex.what());
-      }
-      std::this_thread::sleep_for(std::chrono::seconds(1));
-    }
-    if (!g_running.load()) {
-      spdlog::info("Feed host wait interrupted");
-      return;
-    }
-  }
-}
 }  // namespace
 
 int main(int argc, char** argv) {
@@ -97,10 +46,24 @@ int main(int argc, char** argv) {
     std::signal(SIGINT, handleSignal);
     std::signal(SIGTERM, handleSignal);
 
-    waitForFeedHosts(config);
-    if (!g_running.load()) {
-      spdlog::info("Shutdown requested before aggregator startup");
-      return 0;
+    if (!hermeneutic::services::aggregator_service::shouldWaitForFeeds()) {
+      spdlog::info("Skipping feed host wait (HERMENEUTIC_WAIT_FOR_FEEDS disabled)");
+    } else {
+      auto resolver = [](const std::string& host) -> std::optional<std::string> {
+        try {
+          Poco::Net::DNS::resolveOne(host);
+          return std::nullopt;
+        } catch (const Poco::Exception& ex) {
+          return ex.displayText();
+        } catch (const std::exception& ex) {
+          return std::string(ex.what());
+        }
+      };
+      hermeneutic::services::aggregator_service::waitForFeedHosts(config, g_running, resolver);
+      if (!g_running.load()) {
+        spdlog::info("Shutdown requested before aggregator startup");
+        return 0;
+      }
     }
 
     hermeneutic::aggregator::AggregationEngine engine;

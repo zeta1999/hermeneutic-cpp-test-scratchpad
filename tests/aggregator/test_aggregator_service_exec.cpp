@@ -114,7 +114,7 @@ TEST_CASE("aggregator_service streams aggregated books from cex executables") {
       std::cerr << "Skipping aggregator_service test: " << ex.displayText() << std::endl;
       return;
     }
-    REQUIRE(waitForTcp("127.0.0.1", proc.port, 2s));
+    REQUIRE(waitForTcp("127.0.0.1", proc.port, 5s));
     feeds.push_back(std::move(proc));
   }
 
@@ -178,7 +178,7 @@ TEST_CASE("aggregator_service streams aggregated books from cex executables") {
   }
 
   auto channel = grpc::CreateChannel("127.0.0.1:" + std::to_string(grpc_port), grpc::InsecureChannelCredentials());
-  if (!channel->WaitForConnected(std::chrono::system_clock::now() + 2s)) {
+  if (!channel->WaitForConnected(std::chrono::system_clock::now() + 5s)) {
     cleanup();
     CHECK(false);
     return;

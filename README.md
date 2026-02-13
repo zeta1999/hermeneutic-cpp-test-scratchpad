@@ -53,7 +53,7 @@ Helper runners keep common permutations at hand:
 
 - `scripts/run_ctest_debug.sh` hits the `build.debug` tree with debug asserts enabled.
 - `scripts/run_ctest_debug_asan.sh` / `_tsan.sh` configure `build.debug-asan` / `build.debug-tsan`, export the right sanitizer options, build, and run `ctest`.
-- `scripts/run_ctest_coverage.sh` configures `build.coverage` with either clang (`-fprofile-instr-generate -fcoverage-mapping`) or GCC (`--coverage`) instrumentation, runs `ctest` with the right environment (`LLVM_PROFILE_FILE` for clang), and produces a text summary via `llvm-cov` or `gcovr` when those tools are available. On macOS install LLVM via Homebrew (`brew install llvm`) so `llvm-profdata`/`llvm-cov` land in `/opt/homebrew/opt/llvm/bin` where the script will find them automatically.
+- `scripts/run_ctest_coverage.sh` configures `build.coverage` with either clang (`-fprofile-instr-generate -fcoverage-mapping`) or GCC (`--coverage`) instrumentation, runs `ctest` with the right environment (`LLVM_PROFILE_FILE` for clang), and produces a text summary via `llvm-cov` or `gcovr` when those tools are available. The reports are always written to `build.coverage/coverage/llvm-cov-report.txt` (clang) or `build.coverage/coverage/gcovr-report.txt` (GCC) and are echoed to the terminal on every run. On macOS install LLVM via Homebrew (`brew install llvm`) so `llvm-profdata`/`llvm-cov` land in `/opt/homebrew/opt/llvm/bin` where the script will find them automatically.
 
 ### Platform/architecture notes
 

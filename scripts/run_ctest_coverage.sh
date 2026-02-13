@@ -34,6 +34,7 @@ ensure_build_dir "$BUILD_DIR" "${CMAKE_ARGS[@]}"
 cmake --build "$BUILD_DIR" --parallel "${BUILD_PARALLEL:-$(build_jobs)}"
 ensure_directory "$BUILD_DIR/coverage"
 if [ "$TOOLCHAIN" = "Clang" ]; then
+  rm -f "$BUILD_DIR"/coverage/*.profraw "$BUILD_DIR"/coverage/*.profdata 2>/dev/null || true
   export LLVM_PROFILE_FILE="$BUILD_DIR/coverage/ctest-%p-%m.profraw"
 fi
 ctest --test-dir "$BUILD_DIR" --output-on-failure -j "$(ctest_jobs)"
@@ -70,15 +71,20 @@ if [ "$TOOLCHAIN" = "Clang" ]; then
   printf '%s\n' "[coverage] LLVM coverage report written to $BUILD_DIR/coverage/llvm-cov-report.txt"
   printf '%s\n' "[coverage] Summary (first 20 lines):"
   head -n 20 "$BUILD_DIR/coverage/llvm-cov-report.txt"
+  cat "$BUILD_DIR/coverage/llvm-cov-report.txt"
 else
   if command -v gcovr >/dev/null 2>&1; then
     gcovr \
       -r "$HERMENEUTIC_ROOT" \
       --exclude '.*_deps/.*' \
       --exclude '.*/third_party/.*' \
-      --gcov-ignore-parse-errors \
+      --exclude '.*/SQLParser/.*' \
+      --exclude '.*/proto/grpc/channelz/.*' \
+      --gcov-ignore-errors=no_working_dir_found \
+      --gcov-ignore-parse-errors=all \
       "$BUILD_DIR" > "$BUILD_DIR/coverage/gcovr-report.txt"
     printf '%s\n' "[coverage] gcovr report written to $BUILD_DIR/coverage/gcovr-report.txt"
+    cat "$BUILD_DIR/coverage/gcovr-report.txt"
   else
     printf '%s\n' "[coverage] gcovr not found; .gcda files available under $BUILD_DIR" >&2
   fi

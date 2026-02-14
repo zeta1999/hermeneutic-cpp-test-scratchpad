@@ -54,6 +54,7 @@ Helper runners keep common permutations at hand:
 - `scripts/run_ctest_debug.sh` hits the `build.debug` tree with debug asserts enabled.
 - `scripts/run_ctest_debug_asan.sh` / `_tsan.sh` configure `build.debug-asan` / `build.debug-tsan`, export the right sanitizer options, build, and run `ctest`.
 - `scripts/run_ctest_coverage.sh` configures `build.coverage` with either clang (`-fprofile-instr-generate -fcoverage-mapping`) or GCC (`--coverage`) instrumentation, runs `ctest` with the right environment (`LLVM_PROFILE_FILE` for clang), and produces a text summary via `llvm-cov` or `gcovr` when those tools are available. The reports are always written to `build.coverage/coverage/llvm-cov-report.txt` (clang) or `build.coverage/coverage/gcovr-report.txt` (GCC) and are echoed to the terminal on every run. On macOS install LLVM via Homebrew (`brew install llvm`) so `llvm-profdata`/`llvm-cov` land in `/opt/homebrew/opt/llvm/bin` where the script will find them automatically.
+- `scripts/compile_debug.sh [targets…]` bootstraps the `build.debug` tree (with debug asserts) and optionally builds a subset of targets. The VS Code tasks/launch configs use this helper to make sure the binaries exist before the debugger launches.
 
 ### Platform/architecture notes
 
@@ -107,6 +108,17 @@ Want richer instrumentation? Dedicated wrappers preconfigure separate build tree
 - `scripts/run_local_stack_debug.sh` / `scripts/run_local_stack_once_debug.sh` → `build.debug`
 - `scripts/run_local_stack_debug_asan.sh` / `_tsan.sh` → `build.debug-asan` / `build.debug-tsan`
 - `scripts/run_local_stack_coverage.sh` / `_once_coverage.sh` → `build.coverage` (clang and GCC coverage flags supported)
+
+The coverage wrappers share the same reporting logic as `scripts/run_ctest_coverage.sh`: clang builds emit
+`build.coverage/coverage/llvm-cov-report.txt`, GCC builds emit `build.coverage/coverage/gcovr-report.txt`, and both
+variants stream those reports to the terminal after the stack stops.
+
+## VS Code debugging
+
+`.vscode/tasks.json` and `.vscode/launch.json` ship ready-to-use configs for stepping through doctest binaries.
+They rely on `scripts/compile_debug.sh` to build `test_service_entrypoints` and `test_aggregator_service_exec`, then
+attach either `gdb` (Linux amd64/arm64 via the cpptools extension) or `lldb` (macOS via the CodeLLDB extension).
+See `docs/vscode-debug.md` for setup details.
 
 Each wrapper auto-configures the matching build directory (with `HERMENEUTIC_ENABLE_DEBUG_ASSERTS=ON`) and then delegates to the base script.
 

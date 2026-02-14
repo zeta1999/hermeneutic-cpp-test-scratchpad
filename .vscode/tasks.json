@@ -1,0 +1,37 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build (Debug)",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/compile_debug.sh",
+      "group": "build",
+      "problemMatcher": ["$gcc"],
+      "presentation": {
+        "reveal": "always"
+      }
+    },
+    {
+      "label": "build test_service_entrypoints (Debug)",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/compile_debug.sh",
+      "args": ["test_service_entrypoints"],
+      "group": "build",
+      "problemMatcher": ["$gcc"],
+      "presentation": {
+        "reveal": "always"
+      }
+    },
+    {
+      "label": "build test_aggregator_service_exec (Debug)",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/compile_debug.sh",
+      "args": ["test_aggregator_service_exec"],
+      "group": "build",
+      "problemMatcher": ["$gcc"],
+      "presentation": {
+        "reveal": "always"
+      }
+    }
+  ]
+}

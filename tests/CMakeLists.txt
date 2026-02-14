@@ -15,6 +15,7 @@ add_project_test(test_decimal SOURCES common/test_decimal.cpp LIBS common)
 add_project_test(test_enum SOURCES common/test_enum.cpp LIBS common)
 add_project_test(test_order_book SOURCES lob/test_order_book.cpp LIBS lob)
 add_project_test(test_aggregator SOURCES aggregator/test_aggregator.cpp LIBS aggregator)
+add_project_test(test_sanitizer_demos SOURCES common/test_sanitizer_demos.cpp)
 add_project_test(test_aggregator_feed_wait
   SOURCES aggregator/test_feed_wait.cpp
   LIBS aggregator_service_support)

@@ -1,0 +1,77 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug test_service_entrypoints (Linux)",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build.debug/tests/test_service_entrypoints",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "environment": [
+        {
+          "name": "PROJECT_BINARY_DIR",
+          "value": "${workspaceFolder}/build.debug"
+        }
+      ],
+      "MIMode": "gdb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ],
+      "preLaunchTask": "build test_service_entrypoints (Debug)"
+    },
+    {
+      "name": "Debug test_service_entrypoints (macOS)",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/build.debug/tests/test_service_entrypoints",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PROJECT_BINARY_DIR": "${workspaceFolder}/build.debug"
+      },
+      "preLaunchTask": "build test_service_entrypoints (Debug)"
+    },
+    {
+      "name": "Debug test_aggregator_service_exec (Linux)",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build.debug/tests/test_aggregator_service_exec",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "environment": [
+        {
+          "name": "PROJECT_BINARY_DIR",
+          "value": "${workspaceFolder}/build.debug"
+        }
+      ],
+      "MIMode": "gdb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ],
+      "preLaunchTask": "build test_aggregator_service_exec (Debug)"
+    },
+    {
+      "name": "Debug test_aggregator_service_exec (macOS)",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/build.debug/tests/test_aggregator_service_exec",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PROJECT_BINARY_DIR": "${workspaceFolder}/build.debug"
+      },
+      "preLaunchTask": "build test_aggregator_service_exec (Debug)"
+    }
+  ]
+}

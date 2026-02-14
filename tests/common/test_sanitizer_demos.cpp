@@ -4,7 +4,6 @@
 #include <atomic>
 #include <csignal>
 #include <thread>
-#include <vector>
 
 #ifndef _WIN32
 #include <sys/types.h>
@@ -36,9 +35,9 @@ namespace {
 
 #ifndef _WIN32
 [[gnu::noinline]] void triggerAsanOverflow() {
-  std::vector<int> buffer(4, 0);
-  volatile int index = 4;
-  buffer[index] = 42;  // one element past the end
+  char* buffer = new char[8];
+  buffer[8] = 'x';  // one byte past the allocation
+  delete[] buffer;
 }
 
 [[gnu::noinline]] void triggerTsanRace() {
@@ -80,19 +79,19 @@ bool runChildAndExpectFailure(void (*func)()) {
 }  // namespace
 
 TEST_CASE("sanitizers/asan_overflow_demo") {
-#if !HERMENEUTIC_ASAN_ENABLED || defined(_WIN32)
-  INFO("AddressSanitizer not enabled on this platform; skipping overflow demo");
-  return;
-#else
+//#if !HERMENEUTIC_ASAN_ENABLED || defined(_WIN32)
+//  INFO("AddressSanitizer not enabled on this platform; skipping overflow demo");
+//  return;
+///#else
   CHECK(runChildAndExpectFailure(triggerAsanOverflow));
-#endif
+//#endif
 }
 
 TEST_CASE("sanitizers/tsan_data_race_demo") {
-#if !HERMENEUTIC_TSAN_ENABLED || defined(_WIN32)
-  INFO("ThreadSanitizer not enabled on this platform; skipping data-race demo");
-  return;
-#else
+//#if !HERMENEUTIC_TSAN_ENABLED || defined(_WIN32)
+//  INFO("ThreadSanitizer not enabled on this platform; skipping data-race demo");
+//  return;
+//#else
   CHECK(runChildAndExpectFailure(triggerTsanRace));
-#endif
+//#endif
 }

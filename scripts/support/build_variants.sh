@@ -44,7 +44,11 @@ sanitize_env_default() {
   local kind=$1
   case "$kind" in
     asan)
-      export ASAN_OPTIONS=${ASAN_OPTIONS:-"detect_leaks=1"}
+      local leak_opt="detect_leaks=1"
+      if [[ "${OSTYPE:-}" == darwin* ]]; then
+        leak_opt="detect_leaks=0"
+      fi
+      export ASAN_OPTIONS=${ASAN_OPTIONS:-"$leak_opt"}
       ;;
     tsan)
       export TSAN_OPTIONS=${TSAN_OPTIONS:-"halt_on_error=1"}

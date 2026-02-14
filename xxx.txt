@@ -185,3 +185,4 @@ Test #6 test_aggregator_grpc_service make sure there is no timing problem ~
 volume_bands => what FX
 run one go "accelerated" ~ virtual time
 ccache or sccache 
+bbo is it stale after a while? => add visualization with say jupyter 

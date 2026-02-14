@@ -15,5 +15,7 @@ CMAKE_ARGS=(
 )
 ensure_build_dir "$BUILD_DIR" "${CMAKE_ARGS[@]}"
 sanitize_env_default tsan
-export BUILD_PARALLEL=${BUILD_PARALLEL:-$(build_jobs)}
+BUILD_PARALLEL_VALUE=${BUILD_PARALLEL:-$(build_jobs)}
+cmake --build "$BUILD_DIR" --parallel "$BUILD_PARALLEL_VALUE"
+export BUILD_PARALLEL="$BUILD_PARALLEL_VALUE"
 exec BUILD_DIR="$BUILD_DIR" "$HERMENEUTIC_ROOT/scripts/run_local_stack_once.sh" "$@"

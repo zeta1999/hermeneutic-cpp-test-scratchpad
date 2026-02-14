@@ -157,7 +157,7 @@ docker buildx bake \
   --push
 ```
 
-All of these paths consume the Dockerfiles under `docker/`. Stick to host-architecture builds (Apple silicon hosts emit arm64 images; Linux/Windows x86 hosts emit amd64) for local testing, and only reach for the `buildx bake` variant when you truly need to publish multi-arch images.
+All of these paths consume the Dockerfiles under `docker/`. Stick to host-architecture builds (Apple silicon hosts emit arm64 images; Linux/Windows x86 hosts emit amd64) for local testing, and only reach for the `buildx bake` variant when you truly need to publish multi-arch images. Export `HERMENEUTIC_DOCKER_SUFFIX=.alpine` to make every build command use the Alpine Dockerfiles (for slimmer images) or leave it unset to stick with the Debian defaults.
 
 
 Inspect image sizes with:
@@ -175,6 +175,12 @@ scripts/docker_run.sh --build
 
 # Or reuse existing images and pass any compose args you need (e.g. detached mode).
 scripts/docker_run.sh up -d
+
+# Switch to the Alpine Dockerfiles without exporting env vars.
+scripts/docker_run.sh --alpine --build up
+
+# Point to any other Dockerfile suffix (for example ".alpine" or future custom variants).
+scripts/docker_run.sh --docker-suffix .alpine up -d
 ```
 
 The helper script creates `output/{bbo,volume_bands,price_bands}` under the repo root and maps those directories into the gRPC client containers. Each service writes its CSV stream directly to the host:

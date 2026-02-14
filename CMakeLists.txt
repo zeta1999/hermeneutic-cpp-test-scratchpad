@@ -24,6 +24,8 @@ option(HERMENEUTIC_ALLOW_TESTLESS_BUILDS
        "Permit configuring without the project's tests"
        OFF)
 
+set(HERMENEUTIC_DOCKER_SUFFIX "$ENV{HERMENEUTIC_DOCKER_SUFFIX}")
+
 set(_hermeneutic_assert_default OFF)
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   set(_hermeneutic_assert_default ON)
@@ -72,11 +74,11 @@ if(BUILD_TESTING)
 endif()
 
 add_custom_target(docker-images
-  COMMAND ${CMAKE_COMMAND} -E env DOCKER_BUILDKIT=1 docker build -f docker/Dockerfile.aggregator -t hermeneutic/aggregator .
-  COMMAND ${CMAKE_COMMAND} -E env DOCKER_BUILDKIT=1 docker build -f docker/Dockerfile.bbo -t hermeneutic/bbo .
-  COMMAND ${CMAKE_COMMAND} -E env DOCKER_BUILDKIT=1 docker build -f docker/Dockerfile.volume -t hermeneutic/volume .
-  COMMAND ${CMAKE_COMMAND} -E env DOCKER_BUILDKIT=1 docker build -f docker/Dockerfile.price -t hermeneutic/price .
-  COMMAND ${CMAKE_COMMAND} -E env DOCKER_BUILDKIT=1 docker build -f docker/Dockerfile.cex -t hermeneutic/cex .
+  COMMAND ${CMAKE_COMMAND} -E env DOCKER_BUILDKIT=1 docker build -f docker/Dockerfile.aggregator${HERMENEUTIC_DOCKER_SUFFIX} -t hermeneutic/aggregator .
+  COMMAND ${CMAKE_COMMAND} -E env DOCKER_BUILDKIT=1 docker build -f docker/Dockerfile.bbo${HERMENEUTIC_DOCKER_SUFFIX} -t hermeneutic/bbo .
+  COMMAND ${CMAKE_COMMAND} -E env DOCKER_BUILDKIT=1 docker build -f docker/Dockerfile.volume${HERMENEUTIC_DOCKER_SUFFIX} -t hermeneutic/volume .
+  COMMAND ${CMAKE_COMMAND} -E env DOCKER_BUILDKIT=1 docker build -f docker/Dockerfile.price${HERMENEUTIC_DOCKER_SUFFIX} -t hermeneutic/price .
+  COMMAND ${CMAKE_COMMAND} -E env DOCKER_BUILDKIT=1 docker build -f docker/Dockerfile.cex${HERMENEUTIC_DOCKER_SUFFIX} -t hermeneutic/cex .
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
   COMMENT "Build all service docker images"
 )

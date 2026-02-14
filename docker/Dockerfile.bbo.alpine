@@ -1,0 +1,36 @@
+FROM alpine:3.19 AS build
+RUN apk add --no-cache \
+    bash \
+    build-base \
+    cmake \
+    git \
+    openssl-dev \
+    sqlite-dev \
+    pcre2-dev \
+    zlib-dev \
+    expat-dev \
+    linux-headers \
+    python3 \
+    py3-pip
+ENV CFLAGS="$CFLAGS -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE" \
+    CXXFLAGS="$CXXFLAGS -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE"
+WORKDIR /src
+COPY . .
+RUN cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
+    && cmake --build build --parallel 4
+RUN cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
+    && cmake --build build --target bbo_service
+
+FROM alpine:3.19
+RUN apk add --no-cache \
+    libstdc++ \
+    openssl \
+    pcre2 \
+    zlib \
+    expat \
+    sqlite-libs \
+    && adduser -D app
+WORKDIR /app
+COPY --from=build /src/build/services/bbo_service/bbo_service /usr/local/bin/bbo_service
+USER app
+ENTRYPOINT ["/usr/local/bin/bbo_service"]

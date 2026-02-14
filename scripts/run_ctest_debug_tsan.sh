@@ -13,6 +13,44 @@ CMAKE_ARGS=(
   "-DCMAKE_SHARED_LINKER_FLAGS=${SAN_FLAGS}"
   "-DCMAKE_MODULE_LINKER_FLAGS=${SAN_FLAGS}"
 )
+
+find_protoc_in_build() {
+  local search_dir=$1
+  if [ -d "$search_dir" ]; then
+    find "$search_dir" -path '*third_party/protobuf/protoc-*' -type f -perm -111 2>/dev/null | head -n1 || true
+  fi
+}
+
+ensure_non_sanitized_protoc() {
+  local existing=${PROTOC_BIN:-${PROTOC:-}}
+  if [ -n "$existing" ]; then
+    printf '%s' "$existing"
+    return 0
+  fi
+
+  local base_dir=${PROTOC_BUILD_DIR:-"$HERMENEUTIC_ROOT/build"}
+  local candidate=$(find_protoc_in_build "$base_dir")
+  if [ -z "$candidate" ]; then
+    echo "[tsan] building host protoc in $base_dir" >&2
+    if [ ! -f "$base_dir/CMakeCache.txt" ]; then
+      cmake -S "$HERMENEUTIC_ROOT" -B "$base_dir" -DCMAKE_BUILD_TYPE=RelWithDebInfo
+    fi
+    cmake --build "$base_dir" --target protoc --parallel "$(build_jobs)"
+    candidate=$(find_protoc_in_build "$base_dir")
+  fi
+  if [ -z "$candidate" ]; then
+    candidate=$(command -v protoc || true)
+  fi
+  if [ -z "$candidate" ]; then
+    echo "[tsan] error: unable to locate a non-sanitized protoc binary." >&2
+    echo "       Run a normal build (e.g. cmake --preset relwithdebinfo && cmake --build build) before running this script." >&2
+    exit 1
+  fi
+  printf '%s' "$candidate"
+}
+
+PROTOC_BIN=$(ensure_non_sanitized_protoc)
+CMAKE_ARGS+=("-DProtobuf_PROTOC_EXECUTABLE=$PROTOC_BIN")
 ensure_build_dir "$BUILD_DIR" "${CMAKE_ARGS[@]}"
 sanitize_env_default tsan
 cmake --build "$BUILD_DIR" --parallel "${BUILD_PARALLEL:-$(build_jobs)}"

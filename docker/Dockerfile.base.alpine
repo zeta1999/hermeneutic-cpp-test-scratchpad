@@ -1,0 +1,15 @@
+FROM alpine:3.19
+RUN apk add --no-cache \
+    bash \
+    build-base \
+    cmake \
+    git \
+    openssl-dev \
+    sqlite-dev \
+    pcre2-dev \
+    zlib-dev \
+    expat-dev \
+    python3 \
+    py3-pip
+WORKDIR /src
+COPY . .

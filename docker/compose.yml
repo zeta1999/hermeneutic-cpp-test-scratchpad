@@ -2,25 +2,25 @@ services:
   cex-notbinance:
     build:
       context: ..
-      dockerfile: docker/Dockerfile.cex
+      dockerfile: docker/Dockerfile.cex${HERMENEUTIC_DOCKER_SUFFIX:-}
     image: hermeneutic/cex:notbinance
     command: ["notbinance", "/app/data/notbinance.ndjson", "9001", "notbinance-token", "150"]
   cex-notcoinbase:
     build:
       context: ..
-      dockerfile: docker/Dockerfile.cex
+      dockerfile: docker/Dockerfile.cex${HERMENEUTIC_DOCKER_SUFFIX:-}
     image: hermeneutic/cex:notcoinbase
     command: ["notcoinbase", "/app/data/notcoinbase.ndjson", "9002", "notcoinbase-token", "200"]
   cex-notkraken:
     build:
       context: ..
-      dockerfile: docker/Dockerfile.cex
+      dockerfile: docker/Dockerfile.cex${HERMENEUTIC_DOCKER_SUFFIX:-}
     image: hermeneutic/cex:notkraken
     command: ["notkraken", "/app/data/notkraken.ndjson", "9003", "notkraken-token", "220"]
   aggregator:
     build:
       context: ..
-      dockerfile: docker/Dockerfile.aggregator
+      dockerfile: docker/Dockerfile.aggregator${HERMENEUTIC_DOCKER_SUFFIX:-}
     image: hermeneutic/aggregator
     depends_on:
       - cex-notbinance
@@ -33,7 +33,7 @@ services:
   bbo:
     build:
       context: ..
-      dockerfile: docker/Dockerfile.bbo
+      dockerfile: docker/Dockerfile.bbo${HERMENEUTIC_DOCKER_SUFFIX:-}
     image: hermeneutic/bbo
     depends_on:
       - aggregator
@@ -43,7 +43,7 @@ services:
   volume_bands:
     build:
       context: ..
-      dockerfile: docker/Dockerfile.volume
+      dockerfile: docker/Dockerfile.volume${HERMENEUTIC_DOCKER_SUFFIX:-}
     image: hermeneutic/volume
     depends_on:
       - aggregator
@@ -53,7 +53,7 @@ services:
   price_bands:
     build:
       context: ..
-      dockerfile: docker/Dockerfile.price
+      dockerfile: docker/Dockerfile.price${HERMENEUTIC_DOCKER_SUFFIX:-}
     image: hermeneutic/price
     depends_on:
       - aggregator

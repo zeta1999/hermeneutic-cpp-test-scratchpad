@@ -6,6 +6,7 @@ build-linux/
 build-linux*/
 build-release/
 build-release*/
+build.*/
 Testing/
 Testing/**
 output/

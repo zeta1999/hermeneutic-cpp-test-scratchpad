@@ -53,5 +53,12 @@ PROTOC_BIN=$(ensure_non_sanitized_protoc)
 CMAKE_ARGS+=("-DProtobuf_PROTOC_EXECUTABLE=$PROTOC_BIN")
 ensure_build_dir "$BUILD_DIR" "${CMAKE_ARGS[@]}"
 sanitize_env_default tsan
-cmake --build "$BUILD_DIR" --parallel "${BUILD_PARALLEL:-$(build_jobs)}"
-ctest --test-dir "$BUILD_DIR" --output-on-failure -j "$(ctest_jobs)"
+echo "$BUILD_DIR" "${CMAKE_ARGS[@]}"
+
+cmake -S . -B "$BUILD_DIR" \
+    -DCMAKE_BUILD_TYPE=Debug \
+    -DHERMENEUTIC_ENABLE_DEBUG_ASSERTS=ON \
+    "-DPROTOBUF_PROTOC_EXECUTABLE=$PROTOC_BIN"
+
+cmake --build "$BUILD_DIR" --parallel "${BUILD_PARALLEL:-$(build_jobs)}" 
+ctest --test-dir "$BUILD_DIR" --output-on-failure -j "$(ctest_jobs)" 

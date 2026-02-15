@@ -29,6 +29,17 @@ cmake --build --preset relwithdebinfo-8jobs       # verbose build
 ctest --test-dir build
 ```
 
+If [`ccache`](docs/ccache.md) is installed, the build automatically uses it as
+the compiler launcher (look for the `ccache found` configure message). Install
+it via `brew install ccache` (macOS) or `sudo apt-get install -y ccache`
+(Debian/Ubuntu) to speed up rebuilds.
+
+Third-party dependencies fetched via CMake’s `FetchContent` API are cached under
+`.deps-cache/` by default (ignored by Git). Set `HERMENEUTIC_DEPS_DIR=/path/to/cache`
+before running CMake if you want to reuse a different location. Because nothing
+is cached inside `build*/`, you can `rm -rf build*` whenever you need a fresh
+configure without re-cloning spdlog/grpc/etc.
+
 The build preset pins `CMAKE_BUILD_PARALLEL_LEVEL` to 8 so future `cmake --build`
 invocations avoid oversubscribing local CPUs; feel free to opt back into manual
 `--parallel` flags if you need a different level of concurrency.
@@ -90,6 +101,11 @@ Prefer a one-liner? `scripts/run_local_stack.sh` builds the same binaries and la
 # Reuse an existing build directory and adjust concurrency/output paths.
 BUILD_DIR=build-release BUILD_PARALLEL=12 OUTPUT_DIR=./output \
   scripts/run_local_stack.sh
+
+Only need the binaries (for IDE debugging or external scripts)? Run
+`scripts/build_local_stack.sh` to configure/build the aggregator and client
+services without launching anything. It respects the same `BUILD_DIR`,
+`BUILD_PARALLEL`, and `BUILD_TYPE` overrides as `run_local_stack.sh`.
 ```
 
 The script watches all services and tears them down when one of them exits or you press `Ctrl-C`.
@@ -182,6 +198,8 @@ scripts/docker_run.sh --alpine --build up
 # Point to any other Dockerfile suffix (for example ".alpine" or future custom variants).
 scripts/docker_run.sh --docker-suffix .alpine up -d
 ```
+
+`scripts/docker_run.sh` exports `DOCKER_BUILDKIT=1` so BuildKit can reuse its own cache storage. Each Dockerfile mounts `/root/.cache/ccache` for ccache and `/root/.cache/hermeneutic-deps` for downloaded dependencies, so repeated builds no longer refetch gRPC/POCO.
 
 The helper script creates `output/{bbo,volume_bands,price_bands}` under the repo root and maps those directories into the gRPC client containers. Each service writes its CSV stream directly to the host:
 

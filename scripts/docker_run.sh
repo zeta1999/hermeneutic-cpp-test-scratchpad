@@ -7,6 +7,7 @@ ROOT_DIR=$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)
 cd "$ROOT_DIR"
 
 DOCKER_SUFFIX=${HERMENEUTIC_DOCKER_SUFFIX:-}
+export DOCKER_BUILDKIT=${DOCKER_BUILDKIT:-1}
 
 while [ "$#" -gt 0 ]; do
   case "$1" in
@@ -48,6 +49,7 @@ mkdir -p "$OUTPUT_DIR/bbo" "$OUTPUT_DIR/volume_bands" "$OUTPUT_DIR/price_bands"
 : > "$OUTPUT_DIR/price_bands/price_bands.csv"
 
 echo "[compose] writing CSV outputs under $OUTPUT_DIR"
+
 if [ "$#" -gt 0 ] && [ "$1" = "--build" ]; then
   shift
   echo "[compose] rebuilding images via docker compose"

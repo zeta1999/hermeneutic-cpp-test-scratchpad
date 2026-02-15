@@ -1,7 +1,9 @@
-FROM debian:bookworm-slim AS build
+# syntax=docker/dockerfile:1.4
+FROM debian:bookworm-slim AS base
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     build-essential \
+    ccache \
     cmake \
     git \
     pkg-config \
@@ -10,11 +12,26 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     sqlite3 libsqlite3-dev zlib1g-dev libpcre2-dev libpcre2-posix3 \
     libssl-dev && update-ca-certificates && rm -rf /var/lib/apt/lists/*
 RUN apt-get update && apt-get install -y libexpat1-dev
+ENV CCACHE_DIR=/root/.cache/ccache CCACHE_BASEDIR=/src \
+    HERMENEUTIC_DEPS_DIR=/root/.cache/hermeneutic-deps
 WORKDIR /src
+
+FROM base AS deps
+WORKDIR /src
+COPY CMakeLists.txt CMakeLists.txt
+COPY cmake cmake
+RUN cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DFETCHCONTENT_BASE_DIR=$HERMENEUTIC_DEPS_DIR \
+    -DHERMENEUTIC_FETCH_DEPS_ONLY=ON
+
+FROM base AS build
+WORKDIR /src
+COPY --from=deps /root/.cache/hermeneutic-deps /root/.cache/hermeneutic-deps
 COPY . .
-RUN cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
+RUN --mount=type=cache,target=/root/.cache/ccache \
+    cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DFETCHCONTENT_BASE_DIR=$HERMENEUTIC_DEPS_DIR \
     && cmake --build build --parallel 4
-RUN cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
+RUN --mount=type=cache,target=/root/.cache/ccache \
+    cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DFETCHCONTENT_BASE_DIR=$HERMENEUTIC_DEPS_DIR \
     && cmake --build build --target bbo_service
 
 FROM debian:bookworm-slim

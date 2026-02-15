@@ -1,7 +1,9 @@
-FROM alpine:3.19 AS build
+# syntax=docker/dockerfile:1.4
+FROM alpine:3.19 AS base
 RUN apk add --no-cache \
     bash \
     build-base \
+    ccache \
     cmake \
     git \
     openssl-dev \
@@ -13,12 +15,27 @@ RUN apk add --no-cache \
     python3 \
     py3-pip
 ENV CFLAGS="$CFLAGS -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE" \
-    CXXFLAGS="$CXXFLAGS -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE"
+    CXXFLAGS="$CXXFLAGS -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE" \
+    HERMENEUTIC_DEPS_DIR=/root/.cache/hermeneutic-deps
+ENV CCACHE_DIR=/root/.cache/ccache CCACHE_BASEDIR=/src
 WORKDIR /src
+
+FROM base AS deps
+WORKDIR /src
+COPY CMakeLists.txt CMakeLists.txt
+COPY cmake cmake
+RUN cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DFETCHCONTENT_BASE_DIR=$HERMENEUTIC_DEPS_DIR \
+    -DHERMENEUTIC_FETCH_DEPS_ONLY=ON
+
+FROM base AS build
+WORKDIR /src
+COPY --from=deps /root/.cache/hermeneutic-deps /root/.cache/hermeneutic-deps
 COPY . .
-RUN cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
+RUN --mount=type=cache,target=/root/.cache/ccache \
+    cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DFETCHCONTENT_BASE_DIR=$HERMENEUTIC_DEPS_DIR \
     && cmake --build build --parallel 4
-RUN cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
+RUN --mount=type=cache,target=/root/.cache/ccache \
+    cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DFETCHCONTENT_BASE_DIR=$HERMENEUTIC_DEPS_DIR \
     && cmake --build build --target volume_bands_service
 
 FROM alpine:3.19

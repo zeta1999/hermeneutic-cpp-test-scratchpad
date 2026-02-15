@@ -8,6 +8,25 @@ if(NOT DEFINED CMAKE_POLICY_VERSION_MINIMUM)
 endif()
 project(hermeneutic LANGUAGES C CXX)
 
+find_program(CCACHE_PROGRAM ccache)
+if(CCACHE_PROGRAM)
+  message(STATUS "ccache found: ${CCACHE_PROGRAM}")
+  set(CMAKE_C_COMPILER_LAUNCHER ${CCACHE_PROGRAM})
+  set(CMAKE_CXX_COMPILER_LAUNCHER ${CCACHE_PROGRAM})
+else()
+  message(STATUS "ccache not found; compiling without compiler launcher")
+endif()
+
+if(NOT DEFINED FETCHCONTENT_BASE_DIR OR FETCHCONTENT_BASE_DIR STREQUAL "")
+  if(DEFINED ENV{HERMENEUTIC_DEPS_DIR} AND NOT "$ENV{HERMENEUTIC_DEPS_DIR}" STREQUAL "")
+    set(FETCHCONTENT_BASE_DIR "$ENV{HERMENEUTIC_DEPS_DIR}")
+  else()
+    set(FETCHCONTENT_BASE_DIR "${CMAKE_SOURCE_DIR}/.deps-cache")
+  endif()
+endif()
+file(MAKE_DIRECTORY "${FETCHCONTENT_BASE_DIR}")
+message(STATUS "FetchContent base dir: ${FETCHCONTENT_BASE_DIR}")
+
 if(APPLE AND NOT DEFINED CMAKE_OSX_ARCHITECTURES)
   set(CMAKE_OSX_ARCHITECTURES "arm64" CACHE STRING "" FORCE)
 endif()
@@ -22,6 +41,9 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 option(BUILD_TESTING "Build the unit test suite" ON)
 option(HERMENEUTIC_ALLOW_TESTLESS_BUILDS
        "Permit configuring without the project's tests"
+       OFF)
+option(HERMENEUTIC_FETCH_DEPS_ONLY
+       "If ON, stop configuration after FetchContent populates dependencies"
        OFF)
 
 set(HERMENEUTIC_DOCKER_SUFFIX "$ENV{HERMENEUTIC_DOCKER_SUFFIX}")
@@ -47,6 +69,11 @@ if(NOT BUILD_TESTING AND NOT HERMENEUTIC_ALLOW_TESTLESS_BUILDS)
 endif()
 
 include(cmake/deps/FetchDependencies.cmake)
+
+if(HERMENEUTIC_FETCH_DEPS_ONLY)
+  message(STATUS "Fetch-only configuration requested; skipping target registration")
+  return()
+endif()
 
 set(_hermeneutic_decimal_define HERMENEUTIC_DECIMAL_BACKEND_INT128)
 if(HERMENEUTIC_DECIMAL_BACKEND STREQUAL "double")

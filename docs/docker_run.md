@@ -17,3 +17,9 @@ scripts/docker_run.sh up -d                # reuse images, run in detached mode
 scripts/docker_run.sh --alpine --build up  # rebuild/run using Alpine Dockerfiles
 scripts/docker_run.sh --docker-suffix .foo up  # use Dockerfile.*.foo variants
 ```
+
+The script exports `DOCKER_BUILDKIT=1`, so Docker builds automatically take
+advantage of BuildKit’s caching. Each Dockerfile mounts `/root/.cache/ccache`
+plus a `/root/.cache/hermeneutic-deps` directory, so both compiler outputs and
+FetchContent downloads persist between builds while staying out of Git and the
+Docker build context.

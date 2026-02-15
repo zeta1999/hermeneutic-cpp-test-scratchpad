@@ -3,5 +3,6 @@ build-linux
 build*
 output/
 Testing
+.deps-cache/
 *log.log
 *##*

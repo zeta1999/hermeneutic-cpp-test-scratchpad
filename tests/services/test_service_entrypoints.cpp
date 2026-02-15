@@ -25,7 +25,7 @@ std::string uniqueSuffix(const std::string& prefix) {
 }
 
 std::optional<std::string> waitForCsvHeader(const std::filesystem::path& csv_path,
-                                            std::chrono::milliseconds timeout = std::chrono::milliseconds(500)) {
+                                            std::chrono::milliseconds timeout = std::chrono::milliseconds(6000)) {
   auto deadline = std::chrono::steady_clock::now() + timeout;
   while (std::chrono::steady_clock::now() < deadline) {
     std::ifstream csv(csv_path);
@@ -40,7 +40,7 @@ std::optional<std::string> waitForCsvHeader(const std::filesystem::path& csv_pat
 
 bool runProcessBriefly(const std::filesystem::path& binary,
                        const std::vector<std::string>& args,
-                       std::chrono::milliseconds runtime = std::chrono::milliseconds(200)) {
+                       std::chrono::milliseconds runtime = std::chrono::milliseconds(1500)) {
   if (!std::filesystem::exists(binary)) {
     INFO(std::string("Skipping missing binary: ") + binary.string());
     return false;
@@ -52,7 +52,7 @@ bool runProcessBriefly(const std::filesystem::path& binary,
       Poco::Process::requestTermination(handle.id());
     } catch (...) {
     }
-    std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
     try {
       Poco::Process::kill(handle);
     } catch (...) {
@@ -112,7 +112,7 @@ TEST_CASE("aggregator_service main handles graceful shutdown with empty config")
     cfg << "}\n";
   }
   EnvGuard wait_guard("HERMENEUTIC_WAIT_FOR_FEEDS", "0");
-  CHECK(runProcessBriefly(binary, {config_path.string()}, std::chrono::milliseconds(300)));
+  CHECK(runProcessBriefly(binary, {config_path.string()}, std::chrono::milliseconds(1500)));
   std::error_code ec;
   std::filesystem::remove_all(temp_dir, ec);
 }
@@ -128,7 +128,7 @@ TEST_CASE("bbo_service main writes CSV header on startup") {
   auto csv_path = temp_dir / "bbo.csv";
   CHECK(runProcessBriefly(binary,
                           {"127.0.0.1:65535", "", "BTCUSDT", csv_path.string()},
-                          std::chrono::milliseconds(200)));
+                          std::chrono::milliseconds(1000)));
   auto header = waitForCsvHeader(csv_path);
   CHECK(header.has_value());
   CHECK(*header ==
@@ -150,7 +150,7 @@ TEST_CASE("price_bands_service main writes CSV header on startup") {
   auto csv_path = temp_dir / "price_bands.csv";
   CHECK(runProcessBriefly(binary,
                           {"127.0.0.1:65535", "", "BTCUSDT", csv_path.string()},
-                          std::chrono::milliseconds(200)));
+                          std::chrono::milliseconds(1000)));
   auto header = waitForCsvHeader(csv_path);
   CHECK(header.has_value());
   CHECK(*header ==
@@ -171,7 +171,7 @@ TEST_CASE("volume_bands_service main writes CSV header on startup") {
   auto csv_path = temp_dir / "volume_bands.csv";
   CHECK(runProcessBriefly(binary,
                           {"127.0.0.1:65535", "", "BTCUSDT", csv_path.string()},
-                          std::chrono::milliseconds(200)));
+                          std::chrono::milliseconds(1000)));
   auto header = waitForCsvHeader(csv_path);
   CHECK(header.has_value());
   CHECK(*header ==

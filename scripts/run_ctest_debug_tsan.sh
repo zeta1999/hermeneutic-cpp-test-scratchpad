@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 SCRIPT_DIR=$(CDPATH= cd -- "$(dirname "$0")" && pwd)
+
+export PATH=$SCRIPT_DIR/../.deps-cache/$(uname -s | tr '[:upper:]' '[:lower:]')/grpc-build/third_party/protobuf:$PATH
+echo PATH=$PATH
+$SCRIPT_DIR/compile.sh
+
 source "$SCRIPT_DIR/support/build_variants.sh"
 BUILD_DIR=${BUILD_DIR:-"$HERMENEUTIC_ROOT/build.debug-tsan"}
 SAN_FLAGS="-fsanitize=thread"
@@ -27,13 +32,7 @@ find_protoc_in_build() {
 }
 
 default_cache_root() {
-  if [ -n "${HERMENEUTIC_DEPS_DIR:-}" ]; then
-    printf '%s' "$HERMENEUTIC_DEPS_DIR"
-    return
-  fi
-  local host_os="$(uname -s 2>/dev/null || echo unknown)"
-  host_os=$(printf '%s' "$host_os" | tr '[:upper:]' '[:lower:]')
-  printf '%s' "$HERMENEUTIC_ROOT/.deps-cache/$host_os"
+  printf '%s' "$HERMENEUTIC_DEPS_DIR"
 }
 
 default_protoc_build_dir() {
@@ -74,16 +73,24 @@ ensure_non_sanitized_protoc() {
   printf '%s' "$candidate"
 }
 
+
 PROTOC_BIN=$(ensure_non_sanitized_protoc)
 CMAKE_ARGS+=("-DProtobuf_PROTOC_EXECUTABLE=$PROTOC_BIN")
 ensure_build_dir "$BUILD_DIR" "${CMAKE_ARGS[@]}"
 sanitize_env_default tsan
 echo "$BUILD_DIR" "${CMAKE_ARGS[@]}"
 
+extra_config_args=()
+while IFS= read -r line; do
+  extra_config_args+=("$line")
+done < <(_hermeneutic_ccache_args)
+
 cmake -S . -B "$BUILD_DIR" \
     -DCMAKE_BUILD_TYPE=Debug \
     -DHERMENEUTIC_ENABLE_DEBUG_ASSERTS=ON \
-    "-DPROTOBUF_PROTOC_EXECUTABLE=$PROTOC_BIN"
+    "-DProtobuf_PROTOC_EXECUTABLE=$PROTOC_BIN" \
+    "-DFETCHCONTENT_BASE_DIR=${HERMENEUTIC_DEPS_DIR}" \
+    "${extra_config_args[@]}"
 
 cmake --build "$BUILD_DIR" --parallel "${BUILD_PARALLEL:-$(build_jobs)}" 
 ctest --test-dir "$BUILD_DIR" --output-on-failure -j "$(ctest_jobs)" 

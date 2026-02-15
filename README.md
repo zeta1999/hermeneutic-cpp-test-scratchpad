@@ -49,6 +49,12 @@ The build preset pins `CMAKE_BUILD_PARALLEL_LEVEL` to 8 so future `cmake --build
 invocations avoid oversubscribing local CPUs; feel free to opt back into manual
 `--parallel` flags if you need a different level of concurrency.
 
+All helper scripts (for example `scripts/run_ctest_debug_{asan,tsan}.sh`, the
+`run_local_stack*` variants, and `scripts/compile.sh`) pick up the same limits via
+`BUILD_PARALLEL` (for builds) and `CTEST_JOBS` (for `ctest`). Leave them unset to
+default to the detected core count capped at 8, or export new values if you want
+more/fewer concurrent jobs.
+
 Third-party dependency tests (for example re2's `charclass_test` and similar)
 are disabled by default via `RE2_BUILD_TESTING=OFF` so `cmake --build` only
 produces the libraries our binaries need. If you really need to exercise those

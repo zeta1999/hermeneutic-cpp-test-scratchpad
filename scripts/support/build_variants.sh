@@ -5,6 +5,13 @@ if [ -z "${HERMENEUTIC_ROOT:-}" ]; then
   HERMENEUTIC_ROOT=$(CDPATH= cd -- "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)
 fi
 
+if [ -z "${HERMENEUTIC_DEPS_DIR:-}" ]; then
+  host_os=$(uname -s 2>/dev/null || echo unknown)
+  host_os=$(printf '%s' "$host_os" | tr '[:upper:]' '[:lower:]')
+  HERMENEUTIC_DEPS_DIR="$HERMENEUTIC_ROOT/.deps-cache/$host_os"
+fi
+export HERMENEUTIC_DEPS_DIR
+
 detect_core_count() {
   local count
   if command -v sysctl >/dev/null 2>&1; then
@@ -24,12 +31,21 @@ detect_core_count() {
 
 DEFAULT_BUILD_CORES=$(detect_core_count)
 
+_hermeneutic_ccache_args() {
+  if command -v ccache >/dev/null 2>&1; then
+    printf '%s\n' "-DCMAKE_C_COMPILER_LAUNCHER=ccache"
+    printf '%s\n' "-DCMAKE_CXX_COMPILER_LAUNCHER=ccache"
+  fi
+}
+
 ensure_build_dir() {
   local build_dir=$1
   shift || true
-  if [ ! -f "$build_dir/CMakeCache.txt" ]; then
-    cmake -S "$HERMENEUTIC_ROOT" -B "$build_dir" "$@"
-  fi
+  local args=("$@" "-DFETCHCONTENT_BASE_DIR=${HERMENEUTIC_DEPS_DIR}")
+  while IFS= read -r line; do
+    args+=("$line")
+  done < <(_hermeneutic_ccache_args)
+  cmake -S "$HERMENEUTIC_ROOT" -B "$build_dir" "${args[@]}"
 }
 
 build_jobs() {

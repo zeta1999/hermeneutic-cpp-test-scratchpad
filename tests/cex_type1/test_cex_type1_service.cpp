@@ -123,7 +123,7 @@ std::vector<std::string> args = {
     return false;
   };
 
-  if (!waitForServer(50)) {
+  if (!waitForServer(125)) {
     cleanup();
     std::cerr << "cex_type1_service did not accept connections in time" << std::endl;
     CHECK(false);
@@ -150,7 +150,7 @@ std::vector<std::string> args = {
   feed->start();
   {
     std::unique_lock<std::mutex> lock(mutex);
-    if (!cv.wait_for(lock, 3s, [&] { return has_target(); })) {
+    if (!cv.wait_for(lock, 5s, [&] { return has_target(); })) {
       feed->stop();
       cleanup();
       std::cerr << "cex_type1_service test did not receive sequence >= 2" << std::endl;

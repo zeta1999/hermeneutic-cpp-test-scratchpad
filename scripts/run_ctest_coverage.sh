@@ -65,18 +65,35 @@ if [ "$TOOLCHAIN" = "Clang" ]; then
   for bin in "${binaries[@]}"; do
     cov_objects+=("-object" "$bin")
   done
-  "$llvm_cov" report -ignore-filename-regex "/_deps/" "${cov_objects[@]}" \
-    -instr-profile "$BUILD_DIR/coverage/coverage.profdata" \
-    > "$BUILD_DIR/coverage/llvm-cov-report.txt"
+  # Ignore vendored targets (build/_deps) and cached dependency trees (.deps-*) so
+  # coverage only reflects our sources.
+  # gcovr on Linux complains if filters use backslashes (interpreted as Windows
+  # path separators), so prefer character classes like "[.]" instead of "\\.".
+  IGNORE_PATTERNS=(
+    "/_deps/"
+    "/[.]deps-cache/"
+    "/[.]deps-[^/]+/"
+    "/deps-cache/"
+    "/deps-[^/]+/"
+  )
+  llvm_cov_cmd=("$llvm_cov" report)
+  for pat in "${IGNORE_PATTERNS[@]}"; do
+    llvm_cov_cmd+=(-ignore-filename-regex "$pat")
+  done
+  llvm_cov_cmd+=("${cov_objects[@]}" -instr-profile "$BUILD_DIR/coverage/coverage.profdata")
+  "${llvm_cov_cmd[@]}" > "$BUILD_DIR/coverage/llvm-cov-report.txt"
   printf '%s\n' "[coverage] LLVM coverage report written to $BUILD_DIR/coverage/llvm-cov-report.txt"
   printf '%s\n' "[coverage] Summary (first 20 lines):"
   head -n 20 "$BUILD_DIR/coverage/llvm-cov-report.txt"
   cat "$BUILD_DIR/coverage/llvm-cov-report.txt"
 else
   if command -v gcovr >/dev/null 2>&1; then
+    # gcovr takes explicit exclude globs; keep the vendored tree and .deps-* cache out.
     gcovr \
       -r "$HERMENEUTIC_ROOT" \
       --exclude '.*_deps/.*' \
+      --exclude 'deps-cache/.*' \
+      --exclude '.*/[.]deps-.*' \
       --exclude '.*/third_party/.*' \
       --exclude '.*/SQLParser/.*' \
       --exclude '.*/proto/grpc/channelz/.*' \

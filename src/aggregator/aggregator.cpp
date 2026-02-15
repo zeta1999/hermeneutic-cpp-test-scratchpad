@@ -26,11 +26,11 @@ void virtualUncross(std::vector<common::PriceLevel>& bids,
   const auto zero = Decimal::fromRaw(0);
   for (std::size_t i = 1; i < bids.size(); ++i) {
     HERMENEUTIC_ASSERT_DEBUG(bids[i - 1].price > bids[i].price,
-                             "bid levels must remain strictly descending before uncross!");
+                             "bid levels must remain strictly descending before uncross");
   }
   for (std::size_t i = 1; i < asks.size(); ++i) {
     HERMENEUTIC_ASSERT_DEBUG(asks[i - 1].price < asks[i].price,
-                             "ask levels must remain strictly ascending before uncross!");
+                             "ask levels must remain strictly ascending before uncross");
   }
   std::size_t bid_index = 0;
   std::size_t ask_index = 0;

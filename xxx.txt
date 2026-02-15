@@ -190,3 +190,5 @@ tsan failure on linux ~> f*** protoc should not be built with TSAN ~ lol
 check again for decimal encoding/representation ***
 uname -s | tr '[:upper:]' '[:lower:]' 
 BUILD_PARALLEL=4 ./scripts/run_ctest_debug.sh  (docker env)
+
+ok with linux this version

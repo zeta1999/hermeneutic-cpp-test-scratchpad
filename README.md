@@ -35,10 +35,15 @@ it via `brew install ccache` (macOS) or `sudo apt-get install -y ccache`
 (Debian/Ubuntu) to speed up rebuilds.
 
 Third-party dependencies fetched via CMake’s `FetchContent` API are cached under
-`.deps-cache/` by default (ignored by Git). Set `HERMENEUTIC_DEPS_DIR=/path/to/cache`
-before running CMake if you want to reuse a different location. Because nothing
-is cached inside `build*/`, you can `rm -rf build*` whenever you need a fresh
-configure without re-cloning spdlog/grpc/etc.
+`.deps-cache/<platform>/` by default (ignored by Git, `<platform>` is the
+lowercase `uname -s`/`CMAKE_HOST_SYSTEM_NAME`). Set
+`HERMENEUTIC_DEPS_DIR=/path/to/cache` before running CMake if you want to reuse
+a different location. Because nothing is cached inside `build*/`, you can
+`rm -rf build*` whenever you need a fresh configure without re-cloning
+spdlog/grpc/etc. Helper scripts that need a non-sanitized `protoc` (for example
+TSAN builds) also stage their binaries under
+`.deps-cache/<platform>/host-protoc`, so the host compiler survives those rage
+cleans too.
 
 The build preset pins `CMAKE_BUILD_PARALLEL_LEVEL` to 8 so future `cmake --build`
 invocations avoid oversubscribing local CPUs; feel free to opt back into manual
